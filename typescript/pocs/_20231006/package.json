@@ -7,12 +7,12 @@
     "build.watch": "tsc --build --watch",
     "jest": "jest",
     "lint": "eslint .",
-    "start": "ts-node _20231006/worker.ts",
-    "start.watch": "nodemon _20231006/worker.ts",
-    "test": "mocha --require ts-node/register --require source-map-support/register _20231006/mocha/*.test.ts",
-    "test.watch": "mocha --require ts-node/register --require source-map-support/register _20231006/mocha/*.test.ts -w --watch-files _20231006",
-    "test.coverage": "nyc --reporter=lcov --reporter=text-summary mocha --require ts-node/register --require source-map-support/register _20231006/mocha/*.test.ts",
-    "workflow": "ts-node _20231006/client.ts"
+    "start": "ts-node src/worker.ts",
+    "start.watch": "nodemon src/worker.ts",
+    "test": "mocha --require ts-node/register --require source-map-support/register src/mocha/*.test.ts",
+    "test.watch": "mocha --require ts-node/register --require source-map-support/register src/mocha/*.test.ts -w --watch-files src",
+    "test.coverage": "nyc --reporter=lcov --reporter=text-summary mocha --require ts-node/register --require source-map-support/register src/mocha/*.test.ts",
+    "workflow": "ts-node src/client.ts"
   },
   "nodemonConfig": {
     "execMap": {

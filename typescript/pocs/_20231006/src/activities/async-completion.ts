@@ -1,4 +1,3 @@
-// @@@SNIPSTART typescript-activity-complete-async
 import { CompleteAsyncError, Context } from '@temporalio/activity';
 import { AsyncCompletionClient } from '@temporalio/client';
 
@@ -14,4 +13,4 @@ async function doSomeWork(taskToken: Uint8Array): Promise<void> {
   // does some work...
   await client.complete(taskToken, "Job's done!");
 }
-// @@@SNIPEND
+

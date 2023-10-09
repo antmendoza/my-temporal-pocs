@@ -1,4 +1,4 @@
-import {Runtime, Worker} from '@temporalio/worker';
+import {Worker} from '@temporalio/worker';
 import * as activities from './activities';
 
 async function run() {

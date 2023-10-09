@@ -1,49 +1,102 @@
+import { ActivityFailure, ApplicationFailure, Client, WorkflowFailedError } from '@temporalio/client';
+import { Runtime, DefaultLogger, Worker } from '@temporalio/worker';
 import { TestWorkflowEnvironment } from '@temporalio/testing';
-import { Worker, Runtime, DefaultLogger, LogEntry } from '@temporalio/worker';
-import { v4 as uuid4 } from 'uuid';
+import assert from 'assert';
+import axios from 'axios';
+import { after, afterEach, before, describe, it } from 'mocha';
+import sinon from 'sinon';
+import { v4 as uuid } from 'uuid';
+import * as activities from './activities';
 import { httpWorkflow } from './workflows';
 import { WorkflowCoverage } from '@temporalio/nyc-test-coverage';
 
-let testEnv: TestWorkflowEnvironment;
-
 const workflowCoverage = new WorkflowCoverage();
 
-beforeAll(async () => {
-  // Use console.log instead of console.error to avoid red output
-  // Filter INFO log messages for clearer test output
-  Runtime.install({
-    logger: new DefaultLogger('WARN', (entry: LogEntry) => console.log(`[${entry.level}]`, entry.message)),
+describe('example workflow', async function () {
+  let shutdown: () => Promise<void>;
+  let execute: () => ReturnType<typeof httpWorkflow>;
+  let getClient: () => Client;
+
+  this.slow(10_000);
+  this.timeout(20_000);
+
+  before(async function () {
+    // Filter INFO log messages for clearer test output
+    Runtime.install({ logger: new DefaultLogger('WARN') });
+    const env = await TestWorkflowEnvironment.createTimeSkipping();
+
+    const worker = await Worker.create(
+      workflowCoverage.augmentWorkerOptions({
+        connection: env.nativeConnection,
+        taskQueue: 'test-activities',
+        workflowsPath: require.resolve('./workflows'),
+        activities,
+      })
+    );
+
+    const runPromise = worker.run();
+    shutdown = async () => {
+      worker.shutdown();
+      await runPromise;
+      await env.teardown();
+    };
+    getClient = () => env.client;
   });
 
-  testEnv = await TestWorkflowEnvironment.createTimeSkipping();
-});
+  beforeEach(() => {
+    const client = getClient();
 
-afterAll(async () => {
-  await testEnv?.teardown();
-});
+    execute = () =>
+      client.workflow.execute(httpWorkflow, {
+        taskQueue: 'test-activities',
+        workflowExecutionTimeout: 10_000,
+        // Use random ID because ID is meaningless for this test
+        workflowId: `test-${uuid()}`,
+      });
+  });
 
-afterAll(() => {
-  workflowCoverage.mergeIntoGlobalCoverage();
-});
+  after(async () => {
+    await shutdown();
+  });
 
-test('httpWorkflow with mock activity', async () => {
-  const { client, nativeConnection } = testEnv;
-  const worker = await Worker.create(
-    workflowCoverage.augmentWorkerOptions({
-      connection: nativeConnection,
-      taskQueue: 'test',
-      workflowsPath: require.resolve('./workflows'),
-      activities: {
-        makeHTTPRequest: async () => '99',
-      },
-    })
-  );
+  after(() => {
+    workflowCoverage.mergeIntoGlobalCoverage();
+  });
 
-  await worker.runUntil(async () => {
-    const result = await client.workflow.execute(httpWorkflow, {
-      workflowId: uuid4(),
-      taskQueue: 'test',
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns correct result', async () => {
+    const result = await execute();
+    assert.equal(result, 'The answer is 42');
+  });
+
+  it('retries one failure', async () => {
+    // Make the first request fail, but subsequent requests succeed
+    let numCalls = 0;
+    sinon.stub(axios, 'get').callsFake(() => {
+      if (numCalls++ === 0) {
+        return Promise.reject(new Error('first error'));
+      }
+      return Promise.resolve({ data: { args: { answer: '88' } } });
     });
-    expect(result).toEqual('The answer is 99');
+
+    const result = await execute();
+    assert.equal(result, 'The answer is 88');
+    assert.equal(numCalls, 2);
+  });
+
+  it('bubbles up activity errors', async () => {
+    sinon.stub(axios, 'get').callsFake(() => Promise.reject(new Error('example error')));
+
+    await assert.rejects(
+      execute,
+      (err: unknown) =>
+        err instanceof WorkflowFailedError &&
+        err.cause instanceof ActivityFailure &&
+        err.cause.cause instanceof ApplicationFailure &&
+        err.cause.cause.message === 'example error'
+    );
   });
 });
