@@ -6,6 +6,10 @@ async function run() {
     workflowsPath: require.resolve('./workflows'),
     activities,
     taskQueue: 'activities-examples',
+//    maxCachedWorkflows RAM
+//    maxConcurrentWorkflowTaskExecutions CPU
+//    maxConcurrentLocalActivityExecutions CPU
+//    maxConcurrentActivityTaskExecutions CPU
   });
 
   await worker.run();
