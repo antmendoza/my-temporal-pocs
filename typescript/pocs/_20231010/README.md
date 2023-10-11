@@ -2,7 +2,18 @@ This image is not meant to be used in production
 
 - add your client certificates into `/cert`
 - modify the `Dockerfile` changing TEMPORAL_NAMESPACE and TEMPORAL_ADDRESS
-- run `docker build  -t my-worker . &&  docker run  --rm my-worker`
+- build and start the worker: `docker build  -t my-worker . &&  docker run  --rm my-worker`
+- start the workflow: open a new terminal window
+  - export the following environment variables:
+```    
+    export TEMPORAL_ADDRESS=<namespaceId>.tmprl.cloud:7233
+    export TEMPORAL_NAMESPACE=<namespaceId>
+    export TEMPORAL_CLIENT_CERT_PATH=./certs/client.pem
+    export TEMPORAL_CLIENT_KEY_PATH=./certs/client.key
+```
+  - run `npm run worklfow` 
+
+
 
 
 Expected output:
