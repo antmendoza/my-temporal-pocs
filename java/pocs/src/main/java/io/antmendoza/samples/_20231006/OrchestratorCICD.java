@@ -14,7 +14,7 @@ public interface OrchestratorCICD {
   @WorkflowMethod
   void run(OrchestratorRequest request);
 
-  // We use the main workflow as interface for the rest of the workflows / child workflows.
+  // We use the main workflow as interface to communicate with their child workflows.
   // there is nothing wrong signaling childworkflows directly
   @SignalMethod
   void manualVerificationStageA(StageA.VerificationStageARequest request);
