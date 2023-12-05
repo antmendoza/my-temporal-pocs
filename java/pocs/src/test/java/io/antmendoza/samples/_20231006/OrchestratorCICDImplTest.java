@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import io.antmendoza.samples.TestEnvironment;
 import io.antmendoza.samples.TestUtilInterceptorTracker;
+import io.antmendoza.samples.TestUtilWorkerInterceptor;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import io.temporal.client.WorkflowClient;

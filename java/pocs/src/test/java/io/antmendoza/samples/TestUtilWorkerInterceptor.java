@@ -1,6 +1,7 @@
-package io.antmendoza.samples._20231006;
+package io.antmendoza.samples;
 
 import io.antmendoza.samples.TestUtilInterceptorTracker;
+import io.antmendoza.samples._20231006.TestUtilWorkflowInboundCallsInterceptor;
 import io.temporal.common.interceptors.WorkerInterceptorBase;
 import io.temporal.common.interceptors.WorkflowInboundCallsInterceptor;
 
