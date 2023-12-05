@@ -1,96 +1,137 @@
 package io.antmendoza.samples._20231205;
 
-import io.antmendoza.samples._20231006.StageB.StageBRequest;
-import io.antmendoza.samples._20231006.StageB.StageBResult;
-import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.failure.CanceledFailure;
-import io.temporal.failure.ChildWorkflowFailure;
+import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.*;
 import org.slf4j.Logger;
+
+import java.time.Duration;
+import java.util.function.Supplier;
 
 @WorkflowInterface
 public interface WizardUIWorkflow {
 
-  @WorkflowMethod
-  void run(WizardUIRequest request);
+    @WorkflowMethod
+    void run(WizardUIRequest request);
 
-  @SignalMethod
-  void forceMoveToScreen(ScreenID screenID);
-
-
-
-  @QueryMethod
-  ScreenID getNextScreen();
+    @SignalMethod
+    void forceMoveToScreen(ScreenID screenID);
 
 
-  @UpdateMethod
-  String submitScreen(UIData uiData);
+    @QueryMethod
+    ScreenID getCurrentScreen();
 
 
-  @UpdateValidatorMethod(updateName="submitScreen")
-  void submitScreenValidator(UIData uiData);
+    @UpdateMethod
+    String submitScreen(UIData uiData);
 
 
-  class WizardUIWorkflowImpl implements WizardUIWorkflow {
-
-    private final Logger log = Workflow.getLogger("WizardUIWorkflowImpl");
-    private boolean continueNextScreen = false;
-    private ScreenID nextScreen = null;
+    @UpdateValidatorMethod(updateName = "submitScreen")
+    void submitScreenValidator(UIData uiData);
 
 
-    private static String getWorkflowId() {
-      return Workflow.getInfo().getWorkflowId();
-    }
+    class WizardUIWorkflowImpl implements WizardUIWorkflow {
+
+        //For production development consider setting different activity options for each activity
+        final WizardUIActivity activity =
+                Workflow.newActivityStub(WizardUIActivity.class,
+                        ActivityOptions.newBuilder()
+                                .setStartToCloseTimeout(Duration.ofSeconds(2))
+                                .build());
+        private final Logger log = Workflow.getLogger("WizardUIWorkflowImpl");
+        private boolean continueNextScreen = false;
+        private ScreenID screen = null;
+        private boolean relatedLogicExecuted = false;
+
+        private static String getWorkflowId() {
+            return Workflow.getInfo().getWorkflowId();
+        }
+
+        @Override
+        public void run(WizardUIRequest request) {
+
+            boolean iterate = true;
+            while (iterate) {
+
+                Supplier<Boolean> execution = () -> {
+
+                    return true;
+                };
+
+                Workflow.await(() -> continueNextScreen);
 
 
-    @Override
-    public void run(WizardUIRequest request) {
+                if (isScreen_3()) {
+                    activity.activity3_1();
+                    this.screen = ScreenID.END;
+                }
 
 
+                if (isScreen_2()) {
+                    activity.activity2_1();
+                    this.screen = ScreenID.SCREEN_3;
+                }
 
-      boolean iterate = true;
-      while (iterate) {
+                if (isScreen_1()) {
+                    activity.activity1_1();
+                    activity.activity1_2();
+                    this.screen = ScreenID.SCREEN_2;
+                }
 
-        Workflow.await(() -> continueNextScreen);
-        this.continueNextScreen = false;
-        System.out.println("Unlock...");
 
-        if(isScreen_1()){
+                this.continueNextScreen = false;
+                this.relatedLogicExecuted = true;
 
-          return;
+                if (isLastScreen()) {
+                    return;
+                }
+
+            }
+        }
+
+        private boolean isScreen_3() {
+            return getCurrentScreen() == ScreenID.SCREEN_3;
+        }
+
+        private boolean isScreen_2() {
+            return getCurrentScreen() == ScreenID.SCREEN_2;
         }
 
 
-      }
+        private boolean isLastScreen() {
+            return getCurrentScreen().equals(ScreenID.END);
+        }
+
+        private boolean isScreen_1() {
+            return getCurrentScreen() == ScreenID.SCREEN_1;
+        }
+
+        @Override
+        public void forceMoveToScreen(ScreenID screenID) {
+            this.screen = screenID;
+        }
+
+        @Override
+        public ScreenID getCurrentScreen() {
+            return this.screen == null ? ScreenID.SCREEN_1 : this.screen;
+        }
+
+        @Override
+        public String submitScreen(UIData uiData) {
+            this.continueNextScreen = true;
+            this.relatedLogicExecuted = false;
+
+            Workflow.await(() -> this.relatedLogicExecuted);
+            return getCurrentScreen().toString();
+        }
+
+        @Override
+        public void submitScreenValidator(UIData uiData) {
+
+        }
+
+
     }
 
-    private boolean isScreen_1() {
-      return getNextScreen() == ScreenID.SCREEN_1;
+    class WizardUIRequest {
     }
-
-    @Override
-    public void forceMoveToScreen(ScreenID screenID) {
-        this.nextScreen = screenID;
-    }
-
-    @Override
-    public ScreenID getNextScreen() {
-      return this.nextScreen == null ? ScreenID.SCREEN_1: this.nextScreen;
-    }
-
-    @Override
-    public String submitScreen(UIData uiData) {
-      this.continueNextScreen = true;
-      return null;
-    }
-
-    @Override
-    public void submitScreenValidator(UIData uiData) {
-
-    }
-
-
-  }
-
-  class WizardUIRequest {}
 }

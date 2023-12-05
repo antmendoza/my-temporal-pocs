@@ -14,6 +14,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 public class WizardUIWorkflowTest {
 
@@ -35,29 +38,101 @@ public class WizardUIWorkflowTest {
 
 
     @Test
-    public void testStartWorkflow() {
+    public void testHappyPath() {
         final String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
         final String workflowId = "my-workflow-" + Math.random();
-        testWorkflowRule.getWorker().registerActivitiesImplementations(new WizardUIActivity.WizardUIActivityImpl());
+
+        WizardUIActivity activities = mock(WizardUIActivity.class);
+
+        testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
         testWorkflowRule.getTestEnvironment().start();
 
         final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
         final WizardUIWorkflow workflowExecution = createWorkflowStub(workflowId, workflowClient);
 
-
         //start async
         final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run, null);
 
 
-        workflowExecution.submitScreen(new UIData(Math.random()+""));
+        //get next screen
+        assertEquals(
+                ScreenID.SCREEN_1,
+                workflowExecution.getCurrentScreen());
 
+        String resultSubmitScreen_1 = workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        assertEquals(
+                ScreenID.SCREEN_2.toString(),
+                resultSubmitScreen_1);
+
+        //verify activity invocations
+        verify(activities, times(1)).activity1_1();
+        verify(activities, times(1)).activity1_2();
+
+        //get next screen
+        assertEquals(
+                ScreenID.SCREEN_2,
+                workflowExecution.getCurrentScreen());
+
+        String resultSubmitScreen_2 = workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        //verify activity invocations
+        verify(activities, times(1)).activity2_1();
+        assertEquals(
+                ScreenID.SCREEN_3.toString(),
+                resultSubmitScreen_2);
+
+        //get next screen
+        assertEquals(
+                ScreenID.SCREEN_3,
+                workflowExecution.getCurrentScreen());
+
+
+        workflowExecution.forceMoveToScreen(ScreenID.SCREEN_1);
+        assertEquals(
+                ScreenID.SCREEN_1,
+                workflowExecution.getCurrentScreen());
+
+
+        String resultSubmitScreen_1_secondTime = workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        assertEquals(
+                ScreenID.SCREEN_2.toString(),
+                resultSubmitScreen_1_secondTime);
+
+        //verify activity invocations
+        verify(activities, times(2)).activity1_1();
+        verify(activities, times(2)).activity1_2();
+
+
+
+
+        String resultSubmitScreen_2_secondTime = workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        //verify activity invocations
+        verify(activities, times(2)).activity2_1();
+        assertEquals(
+                ScreenID.SCREEN_3.toString(),
+                resultSubmitScreen_2_secondTime);
+
+
+        //get next screen
+        assertEquals(
+                ScreenID.SCREEN_3,
+                workflowExecution.getCurrentScreen());
+
+        //submit next screen
+        String resultSubmitScreen_3 = workflowExecution.submitScreen(new UIData(Math.random()+""));
+        verify(activities, times(1)).activity3_1();
+        assertEquals(
+                ScreenID.END.toString(),
+                resultSubmitScreen_3);
 
         // wait for main workflow to complete
         workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
+
+
         assertEquals(
                 WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
                 TestEnvironment.describeWorkflowExecution(execution, namespace,testWorkflowRule).getWorkflowExecutionInfo().getStatus());
     }
+
 
     private WizardUIWorkflow createWorkflowStub(String workflowId, WorkflowClient workflowClient) {
         final WorkflowOptions options =
