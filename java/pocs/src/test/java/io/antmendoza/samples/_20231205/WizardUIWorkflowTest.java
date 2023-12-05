@@ -13,6 +13,8 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.concurrent.CompletableFuture;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -119,6 +121,54 @@ public class WizardUIWorkflowTest {
         assertEquals(
                 ScreenID.END.toString(),
                 resultSubmitScreen_3);
+
+        // wait for main workflow to complete
+        workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
+
+
+        assertEquals(
+                WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
+                TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
+    }
+    @Test
+    public void testConcurrentInvocationsToSubmitScreen() {
+        final String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
+        final String workflowId = "my-workflow-" + Math.random();
+
+        WizardUIActivity activities = mock(WizardUIActivity.WizardUIActivityImpl.class);
+        //We simulate sleep during test to introduce delays on submitScreen method
+        doCallRealMethod().when(activities).activity1_1();
+        doCallRealMethod().when(activities).activity1_2();
+        doCallRealMethod().when(activities).activity2_1();
+        doCallRealMethod().when(activities).activity3_1();
+        doCallRealMethod().when(activities).activity3_2();
+
+        testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
+        testWorkflowRule.getTestEnvironment().start();
+
+        final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
+        final WizardUIWorkflow workflowExecution =
+                createWorkflowStub(workflowId, workflowClient);
+
+
+
+        //start async
+        final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run, null);
+
+
+
+        CompletableFuture.runAsync(()->{
+            workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        });
+
+        CompletableFuture.runAsync(()->{
+            workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        });
+
+        CompletableFuture.runAsync(()->{
+            workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        });
+
 
         // wait for main workflow to complete
         workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);

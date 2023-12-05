@@ -5,6 +5,8 @@ import io.temporal.workflow.*;
 import org.slf4j.Logger;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @WorkflowInterface
 public interface WizardUIWorkflow {
@@ -37,21 +39,19 @@ public interface WizardUIWorkflow {
                                 .setStartToCloseTimeout(Duration.ofSeconds(2))
                                 .build());
         private final Logger log = Workflow.getLogger("WizardUIWorkflowImpl");
-        private boolean continueNextScreen = false;
+        public List<UIData> data = new ArrayList<UIData>();
         private ScreenID screen = null;
-        private boolean relatedLogicExecuted = false;
-
-        private static String getWorkflowId() {
-            return Workflow.getInfo().getWorkflowId();
-        }
 
         @Override
         public void run(WizardUIRequest request) {
 
-            boolean iterate = true;
-            while (iterate) {
 
-                Workflow.await(() -> continueNextScreen);
+            while (!data.isEmpty() || !isLastScreen()) {
+
+                Workflow.await(() -> !data.isEmpty());
+
+                UIData uiData = data.get(0);
+
 
                 if (isScreen_3()) {
                     activity.activity3_1();
@@ -71,9 +71,7 @@ public interface WizardUIWorkflow {
                     this.screen = ScreenID.SCREEN_2;
                 }
 
-
-                this.continueNextScreen = false;
-                this.relatedLogicExecuted = true;
+                data.remove(uiData);
 
                 if (isLastScreen()) {
                     return;
@@ -111,10 +109,10 @@ public interface WizardUIWorkflow {
 
         @Override
         public String submitScreen(UIData uiData) {
-            this.continueNextScreen = true;
-            this.relatedLogicExecuted = false;
+            Workflow.await(() -> this.data.isEmpty());
+            this.data.add(uiData);
 
-            Workflow.await(() -> this.relatedLogicExecuted);
+            Workflow.await(() -> !this.data.contains(uiData));
             return getCurrentScreen().toString();
         }
 
