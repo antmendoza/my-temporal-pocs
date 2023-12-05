@@ -3,10 +3,10 @@ package io.antmendoza.samples._20231006;
 import static io.antmendoza.samples._20231006.StageB.VerificationStageBStatus.*;
 import static org.junit.Assert.assertEquals;
 
+import io.antmendoza.samples.TestEnvironment;
+import io.antmendoza.samples.TestUtilInterceptorTracker;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
-import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
-import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
@@ -73,7 +73,7 @@ public class OrchestratorCICDImplTest {
     workflowStubStageB.getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
-        describeWorkflowExecution(workflowStubStageB.getExecution(), namespace)
+        TestEnvironment.describeWorkflowExecution(workflowStubStageB.getExecution(), namespace, testWorkflowRule)
             .getWorkflowExecutionInfo()
             .getStatus());
 
@@ -81,7 +81,7 @@ public class OrchestratorCICDImplTest {
     workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
-        describeWorkflowExecution(execution, namespace).getWorkflowExecutionInfo().getStatus());
+        TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
   }
 
   @Test(timeout = 4000)
@@ -112,7 +112,7 @@ public class OrchestratorCICDImplTest {
     workflowStubStageA.getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
-        describeWorkflowExecution(workflowStubStageA.getExecution(), namespace)
+        TestEnvironment.describeWorkflowExecution(workflowStubStageA.getExecution(), namespace, testWorkflowRule)
             .getWorkflowExecutionInfo()
             .getStatus());
 
@@ -145,7 +145,7 @@ public class OrchestratorCICDImplTest {
     workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
-        describeWorkflowExecution(execution, namespace).getWorkflowExecutionInfo().getStatus());
+        TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
   }
 
   @Test(timeout = 4000)
@@ -175,7 +175,7 @@ public class OrchestratorCICDImplTest {
     workflowStubStageA.getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
-        describeWorkflowExecution(workflowStubStageA.getExecution(), namespace)
+        TestEnvironment.describeWorkflowExecution(workflowStubStageA.getExecution(), namespace, testWorkflowRule)
             .getWorkflowExecutionInfo()
             .getStatus());
 
@@ -209,7 +209,7 @@ public class OrchestratorCICDImplTest {
     workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
-        describeWorkflowExecution(execution, namespace).getWorkflowExecutionInfo().getStatus());
+        TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
   }
 
   @Test(timeout = 4000)
@@ -250,7 +250,7 @@ public class OrchestratorCICDImplTest {
     workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
-        describeWorkflowExecution(execution, namespace).getWorkflowExecutionInfo().getStatus());
+        TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
   }
 
   private OrchestratorCICD createWorkflowStub(String workflowId, WorkflowClient workflowClient) {
@@ -272,7 +272,7 @@ public class OrchestratorCICDImplTest {
         new Awaitable(
             () -> {
               return workflowExecutionStatus.equals(
-                  describeWorkflowExecution(executionB, namespace)
+                  TestEnvironment.describeWorkflowExecution(executionB, namespace, testWorkflowRule)
                       .getWorkflowExecutionInfo()
                       .getStatus());
             }));
@@ -280,27 +280,6 @@ public class OrchestratorCICDImplTest {
 
   private void waitUntilTrue(Awaitable r) {
     r.returnWhenTrue();
-  }
-
-  private DescribeWorkflowExecutionResponse describeWorkflowExecution(
-      WorkflowExecution execution, String namespace) {
-
-    DescribeWorkflowExecutionRequest.Builder builder =
-        DescribeWorkflowExecutionRequest.newBuilder()
-            .setNamespace(namespace)
-            // .setExecution(
-            //   WorkflowExecution.newBuilder()
-            //       .setWorkflowId(execution.getWorkflowId())
-            //       .setRunId(execution.getRunId())
-            //       .build())
-            .setExecution(execution);
-    DescribeWorkflowExecutionResponse result =
-        testWorkflowRule
-            .getTestEnvironment()
-            .getWorkflowServiceStubs()
-            .blockingStub()
-            .describeWorkflowExecution(builder.build());
-    return result;
   }
 
   private TestWorkflowRule.Builder createTestRule() {

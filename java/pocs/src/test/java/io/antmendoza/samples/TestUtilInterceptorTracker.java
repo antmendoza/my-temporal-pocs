@@ -1,4 +1,4 @@
-package io.antmendoza.samples._20231006;
+package io.antmendoza.samples;
 
 import io.temporal.common.interceptors.WorkflowInboundCallsInterceptor;
 import io.temporal.common.interceptors.WorkflowOutboundCallsInterceptor;
