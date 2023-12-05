@@ -46,7 +46,7 @@ public interface WizardUIWorkflow {
         @Override
         public void run(WizardUIRequest request) {
 
-            while (!data.isEmpty() || !isLastScreen()) {
+            while (!isLastScreen()) {
 
                 //TODO watch eventHistoryLength and CAN if > 1000
 
@@ -83,14 +83,17 @@ public interface WizardUIWorkflow {
 
 
             if (isScreen_1(uiRequest)) {
+                //TODO are more logic based on uiRequest data, and maybe return a different value
                 return ScreenID.SCREEN_2;
             }
 
             if (isScreen_2(uiRequest)) {
+                //TODO are more logic based on uiRequest data, and maybe return a different value
                 return ScreenID.SCREEN_3;
             }
 
             if (isScreen_3(uiRequest)) {
+                //TODO are more logic based on uiRequest data, and maybe return a different value
                 return ScreenID.END;
             }
 
