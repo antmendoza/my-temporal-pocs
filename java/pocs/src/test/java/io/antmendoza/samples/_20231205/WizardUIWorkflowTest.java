@@ -14,9 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 public class WizardUIWorkflowTest {
 
@@ -36,19 +34,25 @@ public class WizardUIWorkflowTest {
     }
 
 
-
     @Test
     public void testHappyPath() {
         final String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
         final String workflowId = "my-workflow-" + Math.random();
 
-        WizardUIActivity activities = mock(WizardUIActivity.class);
+        WizardUIActivity activities = mock(WizardUIActivity.WizardUIActivityImpl.class);
+        //We simulate sleep during test to introduce delays on submitScreen method
+        doCallRealMethod().when(activities).activity1_1();
+        doCallRealMethod().when(activities).activity1_2();
+        doCallRealMethod().when(activities).activity2_1();
+        doCallRealMethod().when(activities).activity3_1();
+        doCallRealMethod().when(activities).activity3_2();
 
         testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
         testWorkflowRule.getTestEnvironment().start();
 
         final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
-        final WizardUIWorkflow workflowExecution = createWorkflowStub(workflowId, workflowClient);
+        final WizardUIWorkflow workflowExecution =
+                createWorkflowStub(workflowId, workflowClient);
 
         //start async
         final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run, null);
@@ -102,8 +106,6 @@ public class WizardUIWorkflowTest {
         verify(activities, times(2)).activity1_2();
 
 
-
-
         String resultSubmitScreen_2_secondTime = workflowExecution.submitScreen(new UIData(Math.random() + ""));
         //verify activity invocations
         verify(activities, times(2)).activity2_1();
@@ -118,8 +120,9 @@ public class WizardUIWorkflowTest {
                 workflowExecution.getCurrentScreen());
 
         //submit next screen
-        String resultSubmitScreen_3 = workflowExecution.submitScreen(new UIData(Math.random()+""));
+        String resultSubmitScreen_3 = workflowExecution.submitScreen(new UIData(Math.random() + ""));
         verify(activities, times(1)).activity3_1();
+        verify(activities, times(1)).activity3_2();
         assertEquals(
                 ScreenID.END.toString(),
                 resultSubmitScreen_3);
@@ -130,7 +133,7 @@ public class WizardUIWorkflowTest {
 
         assertEquals(
                 WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
-                TestEnvironment.describeWorkflowExecution(execution, namespace,testWorkflowRule).getWorkflowExecutionInfo().getStatus());
+                TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
     }
 
 

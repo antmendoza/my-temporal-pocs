@@ -5,7 +5,6 @@ import io.temporal.workflow.*;
 import org.slf4j.Logger;
 
 import java.time.Duration;
-import java.util.function.Supplier;
 
 @WorkflowInterface
 public interface WizardUIWorkflow {
@@ -52,16 +51,11 @@ public interface WizardUIWorkflow {
             boolean iterate = true;
             while (iterate) {
 
-                Supplier<Boolean> execution = () -> {
-
-                    return true;
-                };
-
                 Workflow.await(() -> continueNextScreen);
-
 
                 if (isScreen_3()) {
                     activity.activity3_1();
+                    activity.activity3_2();
                     this.screen = ScreenID.END;
                 }
 
