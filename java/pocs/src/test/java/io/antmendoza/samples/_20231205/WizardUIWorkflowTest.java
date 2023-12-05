@@ -68,7 +68,7 @@ public class WizardUIWorkflowTest {
                 ScreenID.SCREEN_1,
                 workflowExecution.getCurrentScreen());
 
-        String resultSubmitScreen_1 = workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        String resultSubmitScreen_1 = workflowExecution.submitScreen(new UIData("1"));
         assertEquals(
                 ScreenID.SCREEN_2.toString(),
                 resultSubmitScreen_1);
@@ -82,7 +82,7 @@ public class WizardUIWorkflowTest {
                 ScreenID.SCREEN_2,
                 workflowExecution.getCurrentScreen());
 
-        String resultSubmitScreen_2 = workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        String resultSubmitScreen_2 = workflowExecution.submitScreen(new UIData("2"));
         //verify activity invocations
         verify(activities, times(1)).activity2_1();
         assertEquals(
@@ -95,13 +95,13 @@ public class WizardUIWorkflowTest {
                 workflowExecution.getCurrentScreen());
 
 
-        workflowExecution.forceMoveToScreen(ScreenID.SCREEN_1);
+        workflowExecution.forceNavigateToScreen(ScreenID.SCREEN_1);
         assertEquals(
                 ScreenID.SCREEN_1,
                 workflowExecution.getCurrentScreen());
 
 
-        String resultSubmitScreen_1_secondTime = workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        String resultSubmitScreen_1_secondTime = workflowExecution.submitScreen(new UIData( "1"));
         assertEquals(
                 ScreenID.SCREEN_2.toString(),
                 resultSubmitScreen_1_secondTime);
@@ -110,7 +110,7 @@ public class WizardUIWorkflowTest {
         verify(activities, times(2)).activity1_1();
         verify(activities, times(2)).activity1_2();
 
-        workflowExecution.forceMoveToScreen(ScreenID.SCREEN_3);
+        workflowExecution.forceNavigateToScreen(ScreenID.SCREEN_3);
 
         //get next screen
         assertEquals(
@@ -118,7 +118,7 @@ public class WizardUIWorkflowTest {
                 workflowExecution.getCurrentScreen());
 
         //submit next screen
-        String resultSubmitScreen_3 = workflowExecution.submitScreen(new UIData(Math.random() + ""));
+        String resultSubmitScreen_3 = workflowExecution.submitScreen(new UIData("3"));
         verify(activities, times(1)).activity3_1();
         verify(activities, times(1)).activity3_2();
         assertEquals(
@@ -165,7 +165,7 @@ public class WizardUIWorkflowTest {
         IntStream.rangeClosed(1, 3).parallel().forEach(r -> {
             CompletableFuture.supplyAsync(() ->
                             workflowExecution
-                                    .submitScreen(new UIData(Math.random() + "")))
+                                    .submitScreen(new UIData(r+ "")))
                     .thenAccept(result -> {
                         retults.add(result);
                     });

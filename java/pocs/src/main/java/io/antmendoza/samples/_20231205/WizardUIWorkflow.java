@@ -15,7 +15,8 @@ public interface WizardUIWorkflow {
     void run(WizardUIRequest request);
 
     @SignalMethod
-    void forceMoveToScreen(ScreenID screenID);
+    //TODO this should be UpdateMethod, so it can return the page
+    void forceNavigateToScreen(ScreenID screenID);
 
 
     @QueryMethod
@@ -57,19 +58,19 @@ public interface WizardUIWorkflow {
                 if (isScreen_3()) {
                     activity.activity3_1();
                     activity.activity3_2();
-                    this.screen = ScreenID.END;
+                    this.screen = this.defineNavigation(uiData);
                 }
 
 
                 if (isScreen_2()) {
                     activity.activity2_1();
-                    this.screen = ScreenID.SCREEN_3;
+                    this.screen = this.defineNavigation(uiData);
                 }
 
                 if (isScreen_1()) {
                     activity.activity1_1();
                     activity.activity1_2();
-                    this.screen = ScreenID.SCREEN_2;
+                    this.screen = this.defineNavigation(uiData);
                 }
 
                 data.remove(uiData);
@@ -79,6 +80,28 @@ public interface WizardUIWorkflow {
                 }
 
             }
+        }
+
+        private ScreenID defineNavigation(UIData uiData) {
+
+
+            if(uiData.equals(new UIData("1"))){
+                return ScreenID.SCREEN_2;
+
+            }
+
+            if(uiData.equals(new UIData("2"))){
+                return ScreenID.SCREEN_3;
+
+            }
+
+            if(uiData.equals(new UIData("3"))){
+                return ScreenID.END;
+
+            }
+            throw new RuntimeException("Navigation not defined for " + uiData);
+
+
         }
 
         private boolean isScreen_3() {
@@ -99,7 +122,7 @@ public interface WizardUIWorkflow {
         }
 
         @Override
-        public void forceMoveToScreen(ScreenID screenID) {
+        public void forceNavigateToScreen(ScreenID screenID) {
             this.screen = screenID;
         }
 
