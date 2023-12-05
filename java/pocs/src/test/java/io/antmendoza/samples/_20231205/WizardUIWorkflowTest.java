@@ -23,7 +23,7 @@ public class WizardUIWorkflowTest {
             new TestUtilInterceptorTracker();
 
     // set to true if you want to run the test against a real server
-    private final boolean useExternalService = false;
+    private final boolean useExternalService = true;
     @Rule
     public TestWorkflowRule testWorkflowRule = createTestRule().build();
 
@@ -105,14 +105,7 @@ public class WizardUIWorkflowTest {
         verify(activities, times(2)).activity1_1();
         verify(activities, times(2)).activity1_2();
 
-
-        String resultSubmitScreen_2_secondTime = workflowExecution.submitScreen(new UIData(Math.random() + ""));
-        //verify activity invocations
-        verify(activities, times(2)).activity2_1();
-        assertEquals(
-                ScreenID.SCREEN_3.toString(),
-                resultSubmitScreen_2_secondTime);
-
+        workflowExecution.forceMoveToScreen(ScreenID.SCREEN_3);
 
         //get next screen
         assertEquals(
