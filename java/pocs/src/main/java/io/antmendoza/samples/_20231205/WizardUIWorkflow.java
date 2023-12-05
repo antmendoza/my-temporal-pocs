@@ -72,9 +72,6 @@ public interface WizardUIWorkflow {
                 }
 
                 data.remove(uiRequest);
-                if (isLastScreen()) {
-                    return;
-                }
 
             }
         }
