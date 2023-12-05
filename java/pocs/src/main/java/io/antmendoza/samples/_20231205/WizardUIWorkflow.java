@@ -33,25 +33,26 @@ public interface WizardUIWorkflow {
     class WizardUIWorkflowImpl implements WizardUIWorkflow {
 
         //For production development consider setting different activity options for each activity
-        final WizardUIActivity activity =
+        private final Logger log = Workflow.getLogger("WizardUIWorkflowImpl");
+        private final WizardUIActivity activity =
                 Workflow.newActivityStub(WizardUIActivity.class,
                         ActivityOptions.newBuilder()
                                 .setStartToCloseTimeout(Duration.ofSeconds(2))
                                 .build());
-        private final Logger log = Workflow.getLogger("WizardUIWorkflowImpl");
-        public List<UIData> data = new ArrayList<UIData>();
+
+        public List<UIData> data = new ArrayList<>();
         private ScreenID screen = null;
 
         @Override
         public void run(WizardUIRequest request) {
 
-
             while (!data.isEmpty() || !isLastScreen()) {
+
+                //TODO watch eventHistoryLength and CAN if > 1000
 
                 Workflow.await(() -> !data.isEmpty());
 
                 UIData uiData = data.get(0);
-
 
                 if (isScreen_3()) {
                     activity.activity3_1();
@@ -118,6 +119,11 @@ public interface WizardUIWorkflow {
 
         @Override
         public void submitScreenValidator(UIData uiData) {
+            if(uiData.equals(new UIData(null))){
+                throw new NullPointerException("Can not provide null values");
+            }
+
+            //TODO or reject request if !this.data.isEmpty()
 
         }
 

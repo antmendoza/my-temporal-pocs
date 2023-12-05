@@ -7,9 +7,12 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.client.WorkflowUpdateException;
+import io.temporal.failure.ApplicationFailure;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.WorkerFactoryOptions;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -42,12 +45,6 @@ public class WizardUIWorkflowTest {
         final String workflowId = "my-workflow-" + Math.random();
 
         WizardUIActivity activities = mock(WizardUIActivity.WizardUIActivityImpl.class);
-        //We simulate sleep during test to introduce delays on submitScreen method
-        doCallRealMethod().when(activities).activity1_1();
-        doCallRealMethod().when(activities).activity1_2();
-        doCallRealMethod().when(activities).activity2_1();
-        doCallRealMethod().when(activities).activity3_1();
-        doCallRealMethod().when(activities).activity3_2();
 
         testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
         testWorkflowRule.getTestEnvironment().start();
@@ -130,13 +127,14 @@ public class WizardUIWorkflowTest {
                 WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
                 TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
     }
+
     @Test
     public void testConcurrentInvocationsToSubmitScreen() {
         final String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
         final String workflowId = "my-workflow-" + Math.random();
 
         WizardUIActivity activities = mock(WizardUIActivity.WizardUIActivityImpl.class);
-        //We simulate sleep during test to introduce delays on submitScreen method
+        //Add sleep during test to introduce delays on submitScreen method
         doCallRealMethod().when(activities).activity1_1();
         doCallRealMethod().when(activities).activity1_2();
         doCallRealMethod().when(activities).activity2_1();
@@ -151,21 +149,19 @@ public class WizardUIWorkflowTest {
                 createWorkflowStub(workflowId, workflowClient);
 
 
-
         //start async
         final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run, null);
 
 
-
-        CompletableFuture.runAsync(()->{
+        CompletableFuture.runAsync(() -> {
             workflowExecution.submitScreen(new UIData(Math.random() + ""));
         });
 
-        CompletableFuture.runAsync(()->{
+        CompletableFuture.runAsync(() -> {
             workflowExecution.submitScreen(new UIData(Math.random() + ""));
         });
 
-        CompletableFuture.runAsync(()->{
+        CompletableFuture.runAsync(() -> {
             workflowExecution.submitScreen(new UIData(Math.random() + ""));
         });
 
@@ -177,6 +173,38 @@ public class WizardUIWorkflowTest {
         assertEquals(
                 WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
                 TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
+    }
+
+
+    @Test
+    public void testValidateUpdate() {
+        final String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
+        final String workflowId = "my-workflow-" + Math.random();
+
+        WizardUIActivity activities = mock(WizardUIActivity.WizardUIActivityImpl.class);
+
+        testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
+        testWorkflowRule.getTestEnvironment().start();
+
+        final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
+        final WizardUIWorkflow workflowExecution =
+                createWorkflowStub(workflowId, workflowClient);
+
+
+        //start async
+        WorkflowClient.start(workflowExecution::run, null);
+
+
+        try {
+            workflowExecution.submitScreen(new UIData(null));
+            Assert.fail();
+        } catch (WorkflowUpdateException e) {
+             assertEquals(
+                    NullPointerException.class.getName(),
+                     ((ApplicationFailure)e.getCause()).getType());
+
+        }
+
     }
 
 
