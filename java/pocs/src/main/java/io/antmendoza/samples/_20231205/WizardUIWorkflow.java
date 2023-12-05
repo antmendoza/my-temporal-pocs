@@ -79,6 +79,40 @@ public interface WizardUIWorkflow {
             }
         }
 
+        @Override
+        public String forceNavigateToScreen(ScreenID screenID) {
+
+            this.screen = screenID;
+            return getCurrentScreen().toString();
+        }
+
+        @Override
+        public ScreenID getCurrentScreen() {
+            return this.screen == null ? ScreenID.SCREEN_1 : this.screen;
+        }
+
+        @Override
+        public String submitScreen(UIRequest uiRequest) {
+
+            Workflow.await(() -> this.data.isEmpty());
+            this.data.add(uiRequest);
+
+            Workflow.await(() -> !this.data.contains(uiRequest));
+            return getCurrentScreen().toString();
+
+        }
+
+        @Override
+        public void submitScreenValidator(UIRequest uiRequest) {
+            if (uiRequest.isScreenId(null)) {
+                throw new NullPointerException("Can not provide null values");
+            }
+
+            //TODO or reject request if !this.data.isEmpty()
+
+        }
+
+
         private ScreenID defineNavigation(UIRequest uiRequest) {
 
 
@@ -117,39 +151,6 @@ public interface WizardUIWorkflow {
 
         private boolean isScreen_1(UIRequest uiRequest) {
             return uiRequest.isScreenId("1");
-        }
-
-        @Override
-        public String forceNavigateToScreen(ScreenID screenID) {
-
-            this.screen = screenID;
-            return getCurrentScreen().toString();
-        }
-
-        @Override
-        public ScreenID getCurrentScreen() {
-            return this.screen == null ? ScreenID.SCREEN_1 : this.screen;
-        }
-
-        @Override
-        public String submitScreen(UIRequest uiRequest) {
-
-            Workflow.await(() -> this.data.isEmpty());
-            this.data.add(uiRequest);
-
-            Workflow.await(() -> !this.data.contains(uiRequest));
-            return getCurrentScreen().toString();
-
-        }
-
-        @Override
-        public void submitScreenValidator(UIRequest uiRequest) {
-            if (uiRequest.isScreenId(null)) {
-                throw new NullPointerException("Can not provide null values");
-            }
-
-            //TODO or reject request if !this.data.isEmpty()
-
         }
 
 
