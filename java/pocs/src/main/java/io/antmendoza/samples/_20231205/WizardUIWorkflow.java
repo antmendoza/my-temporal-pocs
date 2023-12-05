@@ -14,9 +14,8 @@ public interface WizardUIWorkflow {
     @WorkflowMethod
     void run(WizardUIRequest request);
 
-    @SignalMethod
-    //TODO this should be UpdateMethod, so it can return the page
-    void forceNavigateToScreen(ScreenID screenID);
+    @UpdateMethod
+    String forceNavigateToScreen(ScreenID screenID);
 
 
     @QueryMethod
@@ -24,11 +23,11 @@ public interface WizardUIWorkflow {
 
 
     @UpdateMethod
-    String submitScreen(UIData uiData);
+    String submitScreen(UIRequest uiRequest);
 
 
     @UpdateValidatorMethod(updateName = "submitScreen")
-    void submitScreenValidator(UIData uiData);
+    void submitScreenValidator(UIRequest uiRequest);
 
 
     class WizardUIWorkflowImpl implements WizardUIWorkflow {
@@ -41,7 +40,7 @@ public interface WizardUIWorkflow {
                                 .setStartToCloseTimeout(Duration.ofSeconds(2))
                                 .build());
 
-        public List<UIData> data = new ArrayList<>();
+        public List<UIRequest> data = new ArrayList<>();
         private ScreenID screen = null;
 
         @Override
@@ -52,29 +51,27 @@ public interface WizardUIWorkflow {
                 //TODO watch eventHistoryLength and CAN if > 1000
 
                 Workflow.await(() -> !data.isEmpty());
+                UIRequest uiRequest = data.get(0);
 
-                UIData uiData = data.get(0);
-
-                if (isScreen_3()) {
+                if (isScreen_3(uiRequest)) {
                     activity.activity3_1();
                     activity.activity3_2();
-                    this.screen = this.defineNavigation(uiData);
+                    this.screen = this.defineNavigation(uiRequest);
                 }
 
 
-                if (isScreen_2()) {
+                if (isScreen_2(uiRequest)) {
                     activity.activity2_1();
-                    this.screen = this.defineNavigation(uiData);
+                    this.screen = this.defineNavigation(uiRequest);
                 }
 
-                if (isScreen_1()) {
+                if (isScreen_1(uiRequest)) {
                     activity.activity1_1();
                     activity.activity1_2();
-                    this.screen = this.defineNavigation(uiData);
+                    this.screen = this.defineNavigation(uiRequest);
                 }
 
-                data.remove(uiData);
-
+                data.remove(uiRequest);
                 if (isLastScreen()) {
                     return;
                 }
@@ -82,34 +79,32 @@ public interface WizardUIWorkflow {
             }
         }
 
-        private ScreenID defineNavigation(UIData uiData) {
+        private ScreenID defineNavigation(UIRequest uiRequest) {
 
 
-            if(uiData.equals(new UIData("1"))){
+            if (isScreen_1(uiRequest)) {
                 return ScreenID.SCREEN_2;
-
             }
 
-            if(uiData.equals(new UIData("2"))){
+            if (isScreen_2(uiRequest)) {
                 return ScreenID.SCREEN_3;
-
             }
 
-            if(uiData.equals(new UIData("3"))){
+            if (isScreen_3(uiRequest)) {
                 return ScreenID.END;
-
             }
-            throw new RuntimeException("Navigation not defined for " + uiData);
+
+            throw new RuntimeException("Navigation not defined for " + uiRequest);
 
 
         }
 
-        private boolean isScreen_3() {
-            return getCurrentScreen() == ScreenID.SCREEN_3;
+        private boolean isScreen_3(UIRequest uiRequest) {
+            return uiRequest.isScreenId("3");
         }
 
-        private boolean isScreen_2() {
-            return getCurrentScreen() == ScreenID.SCREEN_2;
+        private boolean isScreen_2(UIRequest uiRequest) {
+            return uiRequest.isScreenId("2");
         }
 
 
@@ -117,13 +112,15 @@ public interface WizardUIWorkflow {
             return getCurrentScreen().equals(ScreenID.END);
         }
 
-        private boolean isScreen_1() {
-            return getCurrentScreen() == ScreenID.SCREEN_1;
+        private boolean isScreen_1(UIRequest uiRequest) {
+            return uiRequest.isScreenId("1");
         }
 
         @Override
-        public void forceNavigateToScreen(ScreenID screenID) {
+        public String forceNavigateToScreen(ScreenID screenID) {
+
             this.screen = screenID;
+            return getCurrentScreen().toString();
         }
 
         @Override
@@ -132,17 +129,19 @@ public interface WizardUIWorkflow {
         }
 
         @Override
-        public String submitScreen(UIData uiData) {
-            Workflow.await(() -> this.data.isEmpty());
-            this.data.add(uiData);
+        public String submitScreen(UIRequest uiRequest) {
 
-            Workflow.await(() -> !this.data.contains(uiData));
+            Workflow.await(() -> this.data.isEmpty());
+            this.data.add(uiRequest);
+
+            Workflow.await(() -> !this.data.contains(uiRequest));
             return getCurrentScreen().toString();
+
         }
 
         @Override
-        public void submitScreenValidator(UIData uiData) {
-            if(uiData.equals(new UIData(null))){
+        public void submitScreenValidator(UIRequest uiRequest) {
+            if (uiRequest.isScreenId(null)) {
                 throw new NullPointerException("Can not provide null values");
             }
 

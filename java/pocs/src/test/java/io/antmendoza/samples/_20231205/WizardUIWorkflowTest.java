@@ -68,7 +68,7 @@ public class WizardUIWorkflowTest {
                 ScreenID.SCREEN_1,
                 workflowExecution.getCurrentScreen());
 
-        String resultSubmitScreen_1 = workflowExecution.submitScreen(new UIData("1"));
+        String resultSubmitScreen_1 = workflowExecution.submitScreen(new UIRequest("1"));
         assertEquals(
                 ScreenID.SCREEN_2.toString(),
                 resultSubmitScreen_1);
@@ -82,7 +82,7 @@ public class WizardUIWorkflowTest {
                 ScreenID.SCREEN_2,
                 workflowExecution.getCurrentScreen());
 
-        String resultSubmitScreen_2 = workflowExecution.submitScreen(new UIData("2"));
+        String resultSubmitScreen_2 = workflowExecution.submitScreen(new UIRequest("2"));
         //verify activity invocations
         verify(activities, times(1)).activity2_1();
         assertEquals(
@@ -95,13 +95,13 @@ public class WizardUIWorkflowTest {
                 workflowExecution.getCurrentScreen());
 
 
-        workflowExecution.forceNavigateToScreen(ScreenID.SCREEN_1);
+        String navigateToScreen_1 = workflowExecution.forceNavigateToScreen(ScreenID.SCREEN_1);
         assertEquals(
-                ScreenID.SCREEN_1,
-                workflowExecution.getCurrentScreen());
+                ScreenID.SCREEN_1.toString(),
+                navigateToScreen_1);
 
 
-        String resultSubmitScreen_1_secondTime = workflowExecution.submitScreen(new UIData( "1"));
+        String resultSubmitScreen_1_secondTime = workflowExecution.submitScreen(new UIRequest("1"));
         assertEquals(
                 ScreenID.SCREEN_2.toString(),
                 resultSubmitScreen_1_secondTime);
@@ -110,15 +110,13 @@ public class WizardUIWorkflowTest {
         verify(activities, times(2)).activity1_1();
         verify(activities, times(2)).activity1_2();
 
-        workflowExecution.forceNavigateToScreen(ScreenID.SCREEN_3);
-
-        //get next screen
+        String navigateToScreen_3 = workflowExecution.forceNavigateToScreen(ScreenID.SCREEN_3);
         assertEquals(
-                ScreenID.SCREEN_3,
-                workflowExecution.getCurrentScreen());
+                ScreenID.SCREEN_3.toString(),
+                navigateToScreen_3);
 
         //submit next screen
-        String resultSubmitScreen_3 = workflowExecution.submitScreen(new UIData("3"));
+        String resultSubmitScreen_3 = workflowExecution.submitScreen(new UIRequest("3"));
         verify(activities, times(1)).activity3_1();
         verify(activities, times(1)).activity3_2();
         assertEquals(
@@ -158,18 +156,24 @@ public class WizardUIWorkflowTest {
         //start async
         final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run, null);
 
-        final List<String> retults = Lists.newArrayList(workflowExecution.getCurrentScreen().toString());
+        final List<String> results = Lists.newArrayList(workflowExecution.getCurrentScreen().toString());
 
 
-        //Concurrent updates
-        IntStream.rangeClosed(1, 3).parallel().forEach(r -> {
-            CompletableFuture.supplyAsync(() ->
-                            workflowExecution
-                                    .submitScreen(new UIData(r+ "")))
-                    .thenAccept(result -> {
-                        retults.add(result);
-                    });
+        //Concurrent invocations to updateWorkflow
+        //TODO use ExecutorService
+        IntStream.rangeClosed(1, 2).parallel().forEach(r -> {
+            CompletableFuture.runAsync(() -> results.add(workflowExecution
+                    .submitScreen(new UIRequest(r + ""))));
+
+            CompletableFuture.runAsync(() -> results.add(workflowExecution
+                            .submitScreen(new UIRequest(r + "")))
+            );
         });
+
+        //Wait to ensure the request for the screen 3 is submitted the latest one, to close the workflow
+        Thread.sleep(1000);
+        results.add(workflowExecution
+                .submitScreen(new UIRequest("3")));
 
 
         // wait for main workflow to complete
@@ -180,16 +184,18 @@ public class WizardUIWorkflowTest {
                 WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
                 TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
 
-        verify(activities, times(1)).activity1_1();
-        verify(activities, times(1)).activity1_2();
-        verify(activities, times(1)).activity2_1();
+        verify(activities, times(2)).activity1_1();
+        verify(activities, times(2)).activity1_2();
+        verify(activities, times(2)).activity2_1();
         verify(activities, times(1)).activity3_1();
         verify(activities, times(1)).activity3_2();
 
 
-        assertThat(retults, containsInAnyOrder(
+        assertThat(results, containsInAnyOrder(
                 ScreenID.SCREEN_1.toString(),
                 ScreenID.SCREEN_2.toString(),
+                ScreenID.SCREEN_2.toString(),
+                ScreenID.SCREEN_3.toString(),
                 ScreenID.SCREEN_3.toString(),
                 ScreenID.END.toString()
         ));
@@ -217,13 +223,12 @@ public class WizardUIWorkflowTest {
 
 
         try {
-            workflowExecution.submitScreen(new UIData(null));
+            workflowExecution.submitScreen(new UIRequest(null));
             Assert.fail();
         } catch (WorkflowUpdateException e) {
             assertEquals(
                     NullPointerException.class.getName(),
                     ((ApplicationFailure) e.getCause()).getType());
-
         }
 
     }
