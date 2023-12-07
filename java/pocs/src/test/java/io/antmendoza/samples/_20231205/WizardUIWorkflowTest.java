@@ -60,7 +60,7 @@ public class WizardUIWorkflowTest {
                 createWorkflowStub(workflowId, workflowClient);
 
         //start async
-        final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run, null);
+        final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run);
 
 
         //get next screen
@@ -154,7 +154,7 @@ public class WizardUIWorkflowTest {
 
 
         //start async
-        final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run, null);
+        final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run);
 
         final List<String> results = Lists.newArrayList(workflowExecution.getCurrentScreen().toString());
 
@@ -219,7 +219,7 @@ public class WizardUIWorkflowTest {
 
 
         //start async
-        WorkflowClient.start(workflowExecution::run, null);
+        WorkflowClient.start(workflowExecution::run);
 
 
         try {
@@ -254,7 +254,7 @@ public class WizardUIWorkflowTest {
                                                 new TestUtilWorkerInterceptor(testUtilInterceptorTracker))
                                         .build())
                         .setWorkflowTypes(
-                                WizardUIWorkflow.WizardUIWorkflowImpl.class)
+                                WizardUIWorkflow.WizardUIWorkflowImplBufferRequests.class)
                         .setDoNotStart(true);
 
         if (useExternalService) {
