@@ -129,6 +129,9 @@ public interface WizardUIWorkflow {
 
         @Override
         public void submitScreenValidator(UIRequest uiRequest) {
+            // this method is part of the workflow-update life cycle, it gets executed just before,
+            // and allows us to validate and reject request
+
             if (uiRequest.isScreenId(null)) {
                 throw new NullPointerException("Can not provide null values");
             }
