@@ -33,7 +33,7 @@ public class WizardUIWorkflowTest {
     private static TestUtilInterceptorTracker testUtilInterceptorTracker =
             new TestUtilInterceptorTracker();
 
-    // set to true if you want to run the test with a "real" server
+    // set to true if you want to run the test with a "real" server, see createTestRule method
     private final boolean useExternalService = false;
     @Rule
     public TestWorkflowRule testWorkflowRule = createTestRule().build();
