@@ -34,7 +34,7 @@ public class WizardUIWorkflowTest {
             new TestUtilInterceptorTracker();
 
     // set to true if you want to run the test with a "real" server
-    private final boolean useExternalService = false;
+    private final boolean useExternalService = true;
     @Rule
     public TestWorkflowRule testWorkflowRule = createTestRule().build();
 
