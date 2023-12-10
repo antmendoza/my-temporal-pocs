@@ -50,16 +50,8 @@ public interface WizardUIWorkflow {
 
             while (!isLastScreen()) {
 
-                CancellationScope cancellableTimer =
-                        Workflow.newCancellationScope(
-                                () -> {
-                                    //for test purpose we use seconds, but it can be minutes, hours, days...
-                                    final Duration duration = Duration.ofSeconds(3);
-                                    Workflow.newTimer(duration).thenApply(t -> {
-                                        activity.sendNotification();
-                                        return t;
-                                    });
-                                });
+                //for test purpose we set the timer to seconds, but it can be minutes, hours, days...
+                CancellationScope cancellableTimer = createCancellableTimer(Duration.ofSeconds(3));
                 cancellableTimer.run();
 
 
@@ -93,6 +85,18 @@ public interface WizardUIWorkflow {
                 data.remove(uiRequest);
 
             }
+        }
+
+        private CancellationScope createCancellableTimer(Duration duration) {
+            CancellationScope cancellableTimer =
+                    Workflow.newCancellationScope(
+                            () -> {
+                                Workflow.newTimer(duration).thenApply(t -> {
+                                    activity.sendNotification();
+                                    return t;
+                                });
+                            });
+            return cancellableTimer;
         }
 
         @Override
