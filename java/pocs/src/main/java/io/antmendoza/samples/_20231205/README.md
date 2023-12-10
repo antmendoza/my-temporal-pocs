@@ -7,7 +7,8 @@ the second and any other incoming requests until the previous one gets processed
 - [x] **Validate request:** The system should be able to validate request and reject request with incomplete data. For this 
 example we will reject requests if `data==null`
 - [x] **Navigate between screens:** The user can navigate between screens and resubmit the data as many times as needed.
-- [x] **Reminders:** Send a reminder to the user if they are inactive for 3 minutes.
+- [x] **Reminders:** Send a reminder to the user if they are inactive for 3 seconds 
+    > For test purpose we use seconds, but it can be minutes, hours, days...
 
 
 ## Implementation
