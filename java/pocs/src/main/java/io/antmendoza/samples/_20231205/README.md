@@ -55,7 +55,8 @@ Once `submitScreen` receives a request:
 At this point the while loop will end and the workflow will complete
 
 Additionally:
-- the method `navigateTo` allows the user to set the value of the page they want to navigate
+- the method `navigateTo` allows the user to navigate from one screen to another. It will persist in a workflow variable the last
+screen the user has navigated to.
 - the method `submitScreenValidator` will validate the request
 before it gets processed by `submitScreen`. If the request is rejected 
 it won't be recorded in the Workflow Event History.
