@@ -32,8 +32,9 @@ public interface WizardUIWorkflow {
 
     class WizardUIWorkflowImplBufferRequests implements WizardUIWorkflow {
 
-        //For production development consider setting different activity options for each activity
         private final Logger log = Workflow.getLogger("WizardUIWorkflowImpl");
+
+        //For production development consider setting different activity options for each activity
         private final WizardUIActivity activity =
                 Workflow.newActivityStub(WizardUIActivity.class,
                         ActivityOptions.newBuilder()
