@@ -2,11 +2,12 @@
 
 The application present several screens for the user to submit information. We want to build a system to manage
 the navigation between screens, having the following specifications:
-- **Prevent race condition:** If two screens (or the same screen) are submitted at the same time, the code will block 
+- [x] **Prevent race condition:** If two screens (or the same screen) are submitted at the same time, the code will block 
 the second and any other incoming requests until the previous one gets processed.
-- **Validate request:** The system should be able to validate request and reject request with incomplete data. For this 
+- [x] **Validate request:** The system should be able to validate request and reject request with incomplete data. For this 
 example we will reject requests if `data==null`
-- **Navigate between screens:** The user can navigate between screens and resubmit the data as many times as needed. 
+- [x] **Navigate between screens:** The user can navigate between screens and resubmit the data as many times as needed.
+- [x] **Reminders:** Send a reminder to the user if they are inactive for 3 minutes.
 
 
 ## Implementation
@@ -23,6 +24,8 @@ request to complete.
 
 - [Workflow query](https://docs.temporal.io/workflows#query): To get the internal workflow state (eg. instance variable).
 
+- [Timers](https://docs.temporal.io/dev-guide/java/features#timers) //TODO
+
 ## How it works
 
 1 - After staring the workflow, the Worker will start running the main workflow method `run` until it gets `#1#`.
@@ -30,7 +33,9 @@ request to complete.
 `Workflow.await(() -> !data.isEmpty()); // #1#` will block the execution until the supplier condition returns `true`.
 
 2 - The workflow exposes the method `submitScreen` that accepts request. This is an [update method](https://docs.temporal.io/workflows#update) 
-that will block the caller until the method returns. 
+that will block the caller until the method returns.
+
+//TODO add timer doc
 
 Once `submitScreen` receives a request:
   - `Workflow.await(() -> this.data.isEmpty()); // #2#`: We use this statement to check if the workflow is not processing other request 

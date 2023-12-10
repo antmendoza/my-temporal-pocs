@@ -15,6 +15,8 @@ public interface WizardUIActivity {
 
     void activity3_2();
 
+    void sendNotification();
+
 
     class WizardUIActivityImpl implements WizardUIActivity {
 
@@ -54,6 +56,12 @@ public interface WizardUIActivity {
 
         @Override
         public void activity3_2() {
+            randomSleep();
+            //Do nothing
+        }
+
+        @Override
+        public void sendNotification() {
             randomSleep();
             //Do nothing
         }

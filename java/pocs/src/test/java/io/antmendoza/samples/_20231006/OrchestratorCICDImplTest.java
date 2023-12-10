@@ -78,7 +78,7 @@ public class OrchestratorCICDImplTest {
             .getWorkflowExecutionInfo()
             .getStatus());
 
-    // wait for main workflow to complete
+    // wait for workflow to complete
     workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
@@ -142,7 +142,7 @@ public class OrchestratorCICDImplTest {
     // signal stageB to complete
     orchestratorCICD.manualVerificationStageB(new StageB.VerificationStageBStatus(STATUS_OK));
 
-    // wait for main workflow to complete
+    // wait for workflow to complete
     workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
@@ -206,7 +206,7 @@ public class OrchestratorCICDImplTest {
 
     orchestratorCICD.manualVerificationStageB(new StageB.VerificationStageBStatus(STATUS_OK));
 
-    // wait for main workflow to complete
+    // wait for workflow to complete
     workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
@@ -247,7 +247,7 @@ public class OrchestratorCICDImplTest {
 
     workflowClient.newUntypedWorkflowStub(StageB.buildWorkflowId(workflowId)).cancel();
 
-    // wait for main workflow to complete
+    // wait for workflow to complete
     workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
     assertEquals(
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,

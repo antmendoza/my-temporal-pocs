@@ -35,6 +35,7 @@ public interface WizardUIWorkflow {
         private final Logger log = Workflow.getLogger("WizardUIWorkflowImpl");
 
         //For production development consider setting different activity options for each activity
+        // and maybe different interfaces
         private final WizardUIActivity activity =
                 Workflow.newActivityStub(WizardUIActivity.class,
                         ActivityOptions.newBuilder()
@@ -49,9 +50,18 @@ public interface WizardUIWorkflow {
 
             while (!isLastScreen()) {
 
-                //TODO watch eventHistoryLength and CAN if > 1000
+                CancellationScope cancellableTimer =
+                        Workflow.newCancellationScope(
+                                () -> Workflow.newTimer(Duration.ofSeconds(3)).thenApply(t -> {
+                                    activity.sendNotification();
+                                    return t;
+                                }));
+                cancellableTimer.run();
 
+
+                //TODO watch eventHistoryLength and CAN if > 1000
                 Workflow.await(() -> !data.isEmpty()); //#1# See README.md
+                cancellableTimer.cancel();
 
                 //Process the data one by one
                 UIRequest uiRequest = data.get(0);
@@ -61,19 +71,19 @@ public interface WizardUIWorkflow {
                     activity.activity3_1();
                     activity.activity3_2();
                     //and base on some "rules" we decide what is the next page
-                    this.screen = this.defineNavigation(uiRequest);
+                    this.defineNavigation(uiRequest);
                 }
 
 
                 if (isScreen_2(uiRequest)) {
                     activity.activity2_1();
-                    this.screen = this.defineNavigation(uiRequest);
+                    this.defineNavigation(uiRequest);
                 }
 
                 if (isScreen_1(uiRequest)) {
                     activity.activity1_1();
                     activity.activity1_2();
-                    this.screen = this.defineNavigation(uiRequest);
+                    this.defineNavigation(uiRequest);
                 }
 
                 data.remove(uiRequest);
@@ -116,18 +126,21 @@ public interface WizardUIWorkflow {
         }
 
 
-        private ScreenID defineNavigation(UIRequest uiRequest) {
+        private void defineNavigation(UIRequest uiRequest) {
 
             if (isScreen_1(uiRequest)) {
-                return ScreenID.SCREEN_2;
+                this.screen = ScreenID.SCREEN_2;
+                return;
             }
 
             if (isScreen_2(uiRequest)) {
-                return ScreenID.SCREEN_3;
+                this.screen = ScreenID.SCREEN_3;
+                return;
             }
 
             if (isScreen_3(uiRequest)) {
-                return ScreenID.END;
+                this.screen = ScreenID.END;
+                return;
             }
 
             throw new RuntimeException("Navigation not defined for " + uiRequest);

@@ -17,9 +17,9 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,6 +35,18 @@ public class WizardUIWorkflowTest {
 
     @Rule
     public TestWorkflowRule testWorkflowRule = createTestRule().build();
+    private final String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
+
+    private static WizardUIActivity mockActivities() {
+        WizardUIActivity activities = mock(WizardUIActivity.WizardUIActivityImpl.class);
+        //Add sleep on purpose, to introduce delays on activity methods
+        doCallRealMethod().when(activities).activity1_1();
+        doCallRealMethod().when(activities).activity1_2();
+        doCallRealMethod().when(activities).activity2_1();
+        doCallRealMethod().when(activities).activity3_1();
+        doCallRealMethod().when(activities).activity3_2();
+        return activities;
+    }
 
     @After
     public void after() {
@@ -42,10 +54,8 @@ public class WizardUIWorkflowTest {
         testUtilInterceptorTracker = new TestUtilInterceptorTracker();
     }
 
-
     @Test
     public void testHappyPath() {
-        final String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
         final String workflowId = "my-workflow-" + Math.random();
 
         WizardUIActivity activities = mock(WizardUIActivity.WizardUIActivityImpl.class);
@@ -121,7 +131,7 @@ public class WizardUIWorkflowTest {
                 ScreenID.END.toString(),
                 resultSubmitScreen_3);
 
-        // wait for main workflow to complete
+        // wait for workflow to complete
         workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
 
 
@@ -131,17 +141,11 @@ public class WizardUIWorkflowTest {
     }
 
     @Test
-    public void testConcurrentInvocationsToSubmitScreen() throws ExecutionException, InterruptedException {
+    public void testConcurrentInvocationsToSubmitScreen() throws InterruptedException {
         final String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
         final String workflowId = "my-workflow-" + Math.random();
 
-        WizardUIActivity activities = mock(WizardUIActivity.WizardUIActivityImpl.class);
-        //Add sleep on purpose, to introduce delays on activity methods
-        doCallRealMethod().when(activities).activity1_1();
-        doCallRealMethod().when(activities).activity1_2();
-        doCallRealMethod().when(activities).activity2_1();
-        doCallRealMethod().when(activities).activity3_1();
-        doCallRealMethod().when(activities).activity3_2();
+        WizardUIActivity activities = mockActivities();
 
         testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
         testWorkflowRule.getTestEnvironment().start();
@@ -164,17 +168,17 @@ public class WizardUIWorkflowTest {
                     .submitScreen(new UIRequest(r + ""))));
 
             CompletableFuture.runAsync(() -> results.add(workflowExecution
-                            .submitScreen(new UIRequest(r + "")))
+                    .submitScreen(new UIRequest(r + "")))
             );
         });
 
         //Wait to ensure the request for the screen 3 is submitted the latest one, to close the workflow
-        Thread.sleep(1000);
+        Thread.sleep(1000); //TODO
         results.add(workflowExecution
                 .submitScreen(new UIRequest("3")));
 
 
-        // wait for main workflow to complete
+        // wait for workflow to complete
         workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
 
 
@@ -200,7 +204,6 @@ public class WizardUIWorkflowTest {
 
 
     }
-
 
     @Test
     public void testValidateUpdate() {
@@ -228,6 +231,49 @@ public class WizardUIWorkflowTest {
                     NullPointerException.class.getName(),
                     ((ApplicationFailure) e.getCause()).getType());
         }
+    }
+
+
+    @Test
+    public void testSendNotification() {
+        final String workflowId = "my-workflow-" + Math.random();
+
+        WizardUIActivity activities = mockActivities();
+
+        testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
+        testWorkflowRule.getTestEnvironment().start();
+
+        final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
+        final WizardUIWorkflow workflowExecution =
+                createWorkflowStub(workflowId, workflowClient);
+
+
+        //start async
+        final WorkflowExecution execution = WorkflowClient.start(workflowExecution::run);
+
+        verify(activities, times(0)).sendNotification();
+
+        testWorkflowRule.getTestEnvironment().sleep(Duration.ofSeconds(4));
+        verify(activities, times(1)).sendNotification();
+
+        workflowExecution.submitScreen(new UIRequest("1"));
+        testWorkflowRule.getTestEnvironment().sleep(Duration.ofSeconds(2));
+
+        workflowExecution.submitScreen(new UIRequest("1"));
+        testWorkflowRule.getTestEnvironment().sleep(Duration.ofSeconds(2));
+
+
+        //sendNotification should not be executed again
+        verify(activities, times(1)).sendNotification();
+
+        workflowExecution.submitScreen(new UIRequest("3"));
+
+        // wait for workflow to complete
+        workflowClient.newUntypedWorkflowStub(workflowId).getResult(Void.class);
+
+        assertEquals(
+                WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
+                TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
 
     }
 
