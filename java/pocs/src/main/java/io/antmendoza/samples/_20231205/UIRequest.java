@@ -35,4 +35,12 @@ public class UIRequest {
         }
         return this.screenId.equals(value);
     }
+
+    @Override
+    public String toString() {
+        return "UIRequest{" +
+                "id='" + id + '\'' +
+                ", screenId='" + screenId + '\'' +
+                '}';
+    }
 }

@@ -33,8 +33,6 @@ public class WizardUIWorkflowTest {
     private static TestUtilInterceptorTracker testUtilInterceptorTracker =
             new TestUtilInterceptorTracker();
 
-    // set to true if you want to run the test with a "real" server, see createTestRule method
-    private final boolean useExternalService = false;
     @Rule
     public TestWorkflowRule testWorkflowRule = createTestRule().build();
 
@@ -95,7 +93,7 @@ public class WizardUIWorkflowTest {
                 workflowExecution.getCurrentScreen());
 
 
-        String navigateToScreen_1 = workflowExecution.forceNavigateToScreen(ScreenID.SCREEN_1);
+        String navigateToScreen_1 = workflowExecution.navigateTo(ScreenID.SCREEN_1);
         assertEquals(
                 ScreenID.SCREEN_1.toString(),
                 navigateToScreen_1);
@@ -110,7 +108,7 @@ public class WizardUIWorkflowTest {
         verify(activities, times(2)).activity1_1();
         verify(activities, times(2)).activity1_2();
 
-        String navigateToScreen_3 = workflowExecution.forceNavigateToScreen(ScreenID.SCREEN_3);
+        String navigateToScreen_3 = workflowExecution.navigateTo(ScreenID.SCREEN_3);
         assertEquals(
                 ScreenID.SCREEN_3.toString(),
                 navigateToScreen_3);
@@ -256,6 +254,10 @@ public class WizardUIWorkflowTest {
                         .setWorkflowTypes(
                                 WizardUIWorkflow.WizardUIWorkflowImplBufferRequests.class)
                         .setDoNotStart(true);
+
+
+        // set to true if you want to run the test with a "real" server
+        final boolean useExternalService = Boolean.parseBoolean(System.getenv("TEST_LOCALHOST"));
 
         if (useExternalService) {
             builder
