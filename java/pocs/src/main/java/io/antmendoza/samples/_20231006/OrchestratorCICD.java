@@ -48,9 +48,9 @@ public interface OrchestratorCICD {
             while (executeSteps(stageBResult)) {
                 // TODO watch workflow history and continueAsNew when required
 
-                executeStageA(workflowId);
-
                 try {
+                    executeStageA(workflowId);
+
                     stageBResult = executeStageB(workflowId);
 
                 } catch (ChildWorkflowFailure childWorkflowFailure) {
@@ -66,12 +66,11 @@ public interface OrchestratorCICD {
 
         private StageBResult executeStageB(String workflowId) {
             StageBResult stageBResult;
-            stageB =
-                    Workflow.newChildWorkflowStub(
-                            StageB.class,
-                            ChildWorkflowOptions.newBuilder()
-                                    .setWorkflowId(StageB.buildWorkflowId(workflowId))
-                                    .build());
+
+            //or start the child workflow sync
+            stageB = Workflow.newChildWorkflowStub(StageB.class,
+                    ChildWorkflowOptions.newBuilder()
+                            .setWorkflowId(StageB.buildWorkflowId(workflowId)).build());
             final Promise<StageBResult> resultStageB = Async.function(stageB::run, new StageBRequest());
             final Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(stageB);
 
@@ -87,12 +86,12 @@ public interface OrchestratorCICD {
         }
 
         private void executeStageA(String workflowId) {
-            stageA =
-                    Workflow.newChildWorkflowStub(
-                            StageA.class,
-                            ChildWorkflowOptions.newBuilder()
-                                    .setWorkflowId(StageA.buildWorkflowId(workflowId))
-                                    .build());
+            stageA = Workflow.newChildWorkflowStub(StageA.class,
+                    ChildWorkflowOptions.newBuilder()
+                            .setWorkflowId(StageA.buildWorkflowId(workflowId))
+                            .build());
+
+            //or start the child workflow sync
             final Promise<Void> resultStageA = Async.procedure(stageA::run, new StageA.StageARequest());
             final Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(stageA);
 
@@ -106,14 +105,16 @@ public interface OrchestratorCICD {
         @Override
         public void manualVerificationStageA(StageA.VerificationStageARequest request) {
 
-            Workflow.newExternalWorkflowStub(StageA.class, StageA.buildWorkflowId(getWorkflowId()))
+            Workflow.newExternalWorkflowStub(StageA.class,
+                            StageA.buildWorkflowId(getWorkflowId()))
                     .manualVerificationStageA(request);
         }
 
         @Override
         public void manualVerificationStageB(StageB.VerificationStageBStatus verificationStageBStatus) {
 
-            Workflow.newExternalWorkflowStub(StageB.class, StageB.buildWorkflowId(getWorkflowId()))
+            Workflow.newExternalWorkflowStub(StageB.class,
+                            StageB.buildWorkflowId(getWorkflowId()))
                     .manualVerificationStageB(verificationStageBStatus);
         }
     }
