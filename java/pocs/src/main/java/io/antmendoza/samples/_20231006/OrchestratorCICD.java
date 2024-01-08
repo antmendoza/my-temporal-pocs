@@ -1,7 +1,6 @@
 package io.antmendoza.samples._20231006;
 
 import io.antmendoza.samples._20231006.StageB.StageBRequest;
-import io.antmendoza.samples._20231006.StageB.StageBResult;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.failure.CanceledFailure;
 import io.temporal.failure.ChildWorkflowFailure;
@@ -33,8 +32,8 @@ public interface OrchestratorCICD {
             return Workflow.getInfo().getWorkflowId();
         }
 
-        private static boolean executeSteps(StageBResult stageBResult) {
-            return stageBResult == null || stageBResult.getVerificationStageBStatus().retryFromStageA();
+        private static boolean executeSteps(StageResult stageResult) {
+            return stageResult == null || stageResult.getVerificationStageBStatus().retryFromStageA();
         }
 
         @Override
@@ -43,15 +42,16 @@ public interface OrchestratorCICD {
             String workflowId = getWorkflowId();
             log.info("Starting with runId:" + Workflow.getInfo().getRunId());
 
-            StageBResult stageBResult = null;
+            StageResult stageResult = null;
 
-            while (executeSteps(stageBResult)) {
+            while (executeSteps(stageResult)) {
                 // TODO watch workflow history and continueAsNew when required
+
 
                 try {
                     executeStageA(workflowId);
 
-                    stageBResult = executeStageB(workflowId);
+                    stageResult = executeStageB(workflowId);
 
                 } catch (ChildWorkflowFailure childWorkflowFailure) {
                     if (childWorkflowFailure.getCause() instanceof CanceledFailure) {
@@ -64,14 +64,14 @@ public interface OrchestratorCICD {
             }
         }
 
-        private StageBResult executeStageB(String workflowId) {
-            StageBResult stageBResult;
+        private StageResult executeStageB(String workflowId) {
+            StageResult stageResult;
 
             //or start the child workflow sync
             stageB = Workflow.newChildWorkflowStub(StageB.class,
                     ChildWorkflowOptions.newBuilder()
                             .setWorkflowId(StageB.buildWorkflowId(workflowId)).build());
-            final Promise<StageBResult> resultStageB = Async.function(stageB::run, new StageBRequest());
+            final Promise<StageResult> resultStageB = Async.function(stageB::run, new StageBRequest());
             final Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(stageB);
 
             // Wait for child to start
@@ -81,8 +81,8 @@ public interface OrchestratorCICD {
             Promise.allOf(resultStageB).get();
 
             // TODO handle
-            stageBResult = resultStageB.get();
-            return stageBResult;
+            stageResult = resultStageB.get();
+            return stageResult;
         }
 
         private void executeStageA(String workflowId) {

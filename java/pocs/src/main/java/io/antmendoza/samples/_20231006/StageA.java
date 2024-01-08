@@ -14,7 +14,7 @@ public interface StageA {
   }
 
   @WorkflowMethod
-  void run(StageARequest request);
+  StageResult run(StageARequest request);
 
   @SignalMethod
   void manualVerificationStageA(VerificationStageARequest verificationStageARequest);
@@ -29,11 +29,13 @@ public interface StageA {
     private VerificationStageARequest verificationStageARequest;
 
     @Override
-    public void run(StageARequest request) {
+    public StageResult run(StageARequest request) {
 
       log.info("Starting with runId:" + Workflow.getInfo().getRunId());
 
       Workflow.await(() -> verificationStageARequest != null);
+
+      return new StageResult();
     }
 
     @Override

@@ -13,7 +13,7 @@ public interface StageB {
   }
 
   @WorkflowMethod
-  StageBResult run(StageBRequest stageBRequest);
+  StageResult run(StageBRequest stageBRequest);
 
   @SignalMethod
   void manualVerificationStageB(VerificationStageBStatus verificationStageBStatus);
@@ -31,7 +31,7 @@ public interface StageB {
     private VerificationStageBStatus verificationStageBStatus;
 
     @Override
-    public StageBResult run(StageBRequest stageBRequest) {
+    public StageResult run(StageBRequest stageBRequest) {
 
       log.info("Starting with runId:" + Workflow.getInfo().getRunId());
 
@@ -44,7 +44,7 @@ public interface StageB {
             new StageBRequest());
       }
 
-      return new StageBResult(verificationStageBStatus);
+      return new StageResult(verificationStageBStatus);
     }
 
     @Override
@@ -87,17 +87,4 @@ public interface StageB {
     }
   }
 
-  public class StageBResult {
-    private VerificationStageBStatus verificationStageBStatus;
-
-    public StageBResult() {}
-
-    public StageBResult(VerificationStageBStatus verificationStageBStatus) {
-      this.verificationStageBStatus = verificationStageBStatus;
-    }
-
-    public VerificationStageBStatus getVerificationStageBStatus() {
-      return verificationStageBStatus;
-    }
-  }
 }
