@@ -1,6 +1,7 @@
 package io.antmendoza.samples._20231205;
 
 import io.temporal.activity.ActivityOptions;
+import io.temporal.failure.ApplicationFailure;
 import io.temporal.workflow.*;
 import org.slf4j.Logger;
 
@@ -45,8 +46,13 @@ public interface WizardUIWorkflow {
         public List<UIRequest> data = new ArrayList<>();
         private ScreenID screen = null;
 
+        private String datatest = null;
+
+
         @Override
         public void run() {
+
+            datatest = "test";
 
             while (!isLastScreen()) {
 
@@ -112,6 +118,11 @@ public interface WizardUIWorkflow {
 
         @Override
         public String submitScreen(UIRequest uiRequest) {
+
+
+            if(datatest == null){
+                throw ApplicationFailure.newNonRetryableFailure("Test is null", "Test_is_null" + Workflow.getInfo().getWorkflowId());
+            }
 
             Workflow.await(() -> this.data.isEmpty()); // #2#
 

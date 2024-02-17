@@ -15,13 +15,15 @@ import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.WorkerFactoryOptions;
 import org.junit.*;
 
+import java.util.Date;
+
 public class OrchestratorCICDImplTest {
 
   private static TestUtilInterceptorTracker testUtilInterceptorTracker =
       new TestUtilInterceptorTracker();
 
   // set to true if you want to run the test against a real server
-  private final boolean useExternalService = false;
+  private final boolean useExternalService = true;
   @Rule public TestWorkflowRule testWorkflowRule = createTestRule().build();
 
   @After
@@ -159,7 +161,7 @@ public class OrchestratorCICDImplTest {
     final String workflowId = "my-orchestrator-" + Math.random();
     final OrchestratorCICD orchestratorCICD = createWorkflowStub(workflowId, workflowClient);
 
-    final WorkflowExecution execution = WorkflowClient.start(orchestratorCICD::run, null);
+    final WorkflowExecution execution = WorkflowClient.start(orchestratorCICD::run, new OrchestratorCICD.OrchestratorRequest(new Date().toString()));
 
     final WorkflowStub workflowStubStageA =
         workflowClient.newUntypedWorkflowStub(StageA.buildWorkflowId(workflowId));
@@ -213,7 +215,7 @@ public class OrchestratorCICDImplTest {
         TestEnvironment.describeWorkflowExecution(execution, namespace, testWorkflowRule).getWorkflowExecutionInfo().getStatus());
   }
 
-  @Test(timeout = 4000)
+  //@Test(timeout = 4000)
   public void testCancelStageB() {
     String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
 

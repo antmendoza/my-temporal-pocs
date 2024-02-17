@@ -42,26 +42,40 @@ public interface OrchestratorCICD {
             String workflowId = getWorkflowId();
             log.info("Starting with runId:" + Workflow.getInfo().getRunId());
 
-            StageResult stageResult = null;
+            StageResult stageResult = new StageResult("stageA");
 
-            while (executeSteps(stageResult)) {
+            while (calculateNextStep(stageResult) != null) {
                 // TODO watch workflow history and continueAsNew when required
+                switch (calculateNextStep(stageResult)){
 
+                    case "stageA":
+                        stageResult = executeStageA(workflowId);
+                        break;
 
-                try {
-                    executeStageA(workflowId);
+                    case "stageB":
+                        stageResult = executeStageB(workflowId);
+                        break;
 
-                    stageResult = executeStageB(workflowId);
+                    default:
+                        break;
 
-                } catch (ChildWorkflowFailure childWorkflowFailure) {
-                    if (childWorkflowFailure.getCause() instanceof CanceledFailure) {
-                        // TODO Child was cancelled,
-                        // To compensate you can either run saga
-                        // or start a new workflow in abandon mode to let this one complete
-                    }
-                    return;
                 }
+
             }
+        }
+
+        private String calculateNextStep(final StageResult stageResult) {
+
+
+            if (stageResult.getVerificationStageBStatus() != null &&
+                    stageResult.getVerificationStageBStatus().retryFromStageA()){
+                return  "stageA";
+            }
+
+            return stageResult.getStage();
+
+
+
         }
 
         private StageResult executeStageB(String workflowId) {
@@ -85,14 +99,14 @@ public interface OrchestratorCICD {
             return stageResult;
         }
 
-        private void executeStageA(String workflowId) {
+        private StageResult executeStageA(String workflowId) {
             stageA = Workflow.newChildWorkflowStub(StageA.class,
                     ChildWorkflowOptions.newBuilder()
                             .setWorkflowId(StageA.buildWorkflowId(workflowId))
                             .build());
 
             //or start the child workflow sync
-            final Promise<Void> resultStageA = Async.procedure(stageA::run, new StageA.StageARequest());
+            final Promise<StageResult> resultStageA = Async.function(stageA::run, new StageA.StageARequest());
             final Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(stageA);
 
             // Wait for child to start
@@ -100,6 +114,8 @@ public interface OrchestratorCICD {
 
             // Wait for the stageA to complete
             Promise.allOf(resultStageA).get();
+
+            return new StageResult("stageB");
         }
 
         @Override
@@ -120,5 +136,15 @@ public interface OrchestratorCICD {
     }
 
     class OrchestratorRequest {
+
+        private String data;
+
+        public OrchestratorRequest() {
+        }
+
+
+        public OrchestratorRequest(String data) {
+            this.data = data;
+        }
     }
 }
