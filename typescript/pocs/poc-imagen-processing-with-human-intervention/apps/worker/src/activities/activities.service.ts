@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { UploadImageDto } from '@app/shared';
+import { ProcessRequest, UploadImageDto } from '@app/shared';
 import { activityInfo } from '@temporalio/activity';
 
 export interface UploadImageResponse {
@@ -14,33 +14,48 @@ export class ActivitiesService {
   constructor(public readonly httpService: HttpService) {}
 
   async uploadImage(image: string): Promise<UploadImageResponse> {
-    const url = 'random-url' + image;
+    const imgUrl = 'random-url' + image;
     const dto = {
       name: image,
-      url,
+      url: imgUrl,
       activityInfo: activityInfo(),
     } as UploadImageDto;
-    const config = {
-      timeout: activityInfo().startToCloseTimeoutMs - activityInfo().startToCloseTimeoutMs * 0.1,
-    };
-    const data = await this.httpService.axiosRef.put('http://localhost:3000/images/upload', dto, config);
+
+    const url = 'http://localhost:3000/images/upload';
+    const data = await this.put(url, dto);
 
     return {
       image,
-      url,
+      url: imgUrl,
       token: data.data,
     };
   }
 
-  async sendImageAndForget_1(image: string): Promise<void> {
-    const ms = 400;
-    await new Promise((resolve) => setTimeout(resolve, ms));
+  async sendImageToProcess1(image: string): Promise<void> {
+    await this.sendImageToProcess();
     return await new Promise((resolve) => resolve());
   }
 
-  async sendImageAndForget_2(image: string): Promise<void> {
-    const ms = 400;
-    await new Promise((resolve) => setTimeout(resolve, ms));
+  async sendImageToProcess2(image: string): Promise<void> {
+    await this.sendImageToProcess();
     return await new Promise((resolve) => resolve());
+  }
+
+  private async sendImageToProcess() {
+    const dto = {
+      activityInfo: activityInfo(),
+    } as ProcessRequest;
+
+    const url = 'http://localhost:3000/images/processX';
+
+    await this.put(url, dto);
+  }
+
+  private async put(url: string, dto: any) {
+    const config = {
+      timeout: activityInfo().startToCloseTimeoutMs - activityInfo().startToCloseTimeoutMs * 0.1,
+    };
+    const data = await this.httpService.axiosRef.put(url, dto, config);
+    return data;
   }
 }

@@ -14,6 +14,14 @@ export interface UploadImageDto {
   activityInfo: Info;
 }
 
+export interface ProcessRequest {
+  activityInfo: Info;
+}
+
+export interface ProcessSignalResponse {
+  callerActivity: string;
+}
+
 export type ExchangeRates = { [key: string]: number };
 
 export const getExchangeRatesQuery = defineQuery<ExchangeRates | null>('getExchangeRates');

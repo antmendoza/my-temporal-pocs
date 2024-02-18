@@ -1,11 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Client } from '@temporalio/client';
+import { ProcessSignalResponse } from '@app/shared';
 
 @Injectable()
-export class ExchangeRatesClient {
+export class TemporalWorkflowClient {
   constructor(@Inject('WORKFLOW_CLIENT') private client: Client) {}
 
-  async signalWorkflow(data: { workflowId: string; data: any }) {
-    return this.client.workflow.getHandle(data.workflowId).signal(data.data);
+  async signalWorkflow(signal: { workflowId: string; data: ProcessSignalResponse }) {
+    return this.client.workflow.getHandle(signal.workflowId).signal(signal.workflowId, signal.data);
   }
 }

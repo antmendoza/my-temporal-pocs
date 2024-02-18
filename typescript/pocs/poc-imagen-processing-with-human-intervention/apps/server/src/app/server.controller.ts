@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { ExchangeRatesClient } from './workflow.service';
-import { UploadImageDto } from '@app/shared';
+import { TemporalWorkflowClient } from './workflow.service';
+import { ProcessRequest, UploadImageDto } from '@app/shared';
 
 @Controller('images')
 export class ServerController {
-  constructor(private readonly exchangeRatesClient: ExchangeRatesClient) {}
+  constructor(private readonly temporalWorkflowClient: TemporalWorkflowClient) {}
 
   @Put('upload')
   async uploadImage(@Body() uploadImageDto: UploadImageDto): Promise<string> {
@@ -18,8 +18,21 @@ export class ServerController {
     });
   }
 
-  @Get('')
-  async upload(): Promise<string> {
-    return await new Promise((resolve) => resolve('OK'));
+  @Put('processX')
+  async processX(@Body() processRequest: ProcessRequest): Promise<string> {
+    //Signal back the caller after 10 seconds
+    new Promise(() => {
+      setTimeout(() => {
+        const activityInfo = processRequest.activityInfo;
+        this.temporalWorkflowClient.signalWorkflow({
+          workflowId: activityInfo.workflowExecution.workflowId,
+          data: { callerActivity: activityInfo.activityType },
+        });
+      }, 3000);
+    });
+
+    return await new Promise((resolve) => {
+      resolve('' + Math.random());
+    });
   }
 }

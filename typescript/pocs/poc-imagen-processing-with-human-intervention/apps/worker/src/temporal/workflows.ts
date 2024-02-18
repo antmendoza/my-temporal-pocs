@@ -13,7 +13,7 @@ import type { ActivitiesService, UploadImageResponse } from '../activities/activ
 import { defineSignal } from '@temporalio/workflow';
 import { ChildWorkflowHandle } from '@temporalio/workflow/src/workflow-handle';
 
-const { uploadImage, sendImageAndForget_1, sendImageAndForget_2 } = proxyActivities<ActivitiesService>({
+const { uploadImage, sendImageToProcess1, sendImageToProcess2 } = proxyActivities<ActivitiesService>({
   startToCloseTimeout: '5 seconds',
 });
 
@@ -72,7 +72,8 @@ export const stepCompleted = defineSignal<[StepCompleted]>('step1Completed');
 
 export async function processImage(image: Image): Promise<void> {
   //Failing some child workflows
-  if (image.name.endsWith('2')) {
+  const imageName = image.name;
+  if (imageName.endsWith('2')) {
     throw ApplicationFailure.create({ nonRetryable: true, message: 'Workflow intentionally failed' });
   }
 
@@ -82,10 +83,12 @@ export async function processImage(image: Image): Promise<void> {
     pending_request.push(step);
   });
 
-  await uploadImage(image.name).catch((e) => {
+  await uploadImage(imageName).catch((e) => {
     // This can fail, what to do?
     log.error(e);
   });
+
+  await Promise.all([sendImageToProcess1(imageName), sendImageToProcess2(imageName)]);
 
   let completed = true;
   while (!completed) {
@@ -103,5 +106,8 @@ export async function processImage(image: Image): Promise<void> {
       continue;
     }
   }
+
+  await sleep(5000);
+
   return;
 }

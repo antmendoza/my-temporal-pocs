@@ -9,6 +9,8 @@ export const processImagesWorkerProviders = [
     useFactory: async (activitiesService: ActivitiesService) => {
       const activities = {
         uploadImage: activitiesService.uploadImage.bind(activitiesService),
+        sendImageToProcess1: activitiesService.sendImageToProcess1.bind(activitiesService),
+        sendImageToProcess2: activitiesService.sendImageToProcess2.bind(activitiesService),
       };
 
       const worker = await Worker.create({
