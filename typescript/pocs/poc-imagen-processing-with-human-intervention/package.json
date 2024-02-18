@@ -12,6 +12,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "client": "ts-node apps/worker/src/temporal/client.ts",
     "test": "jest",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "worker": "nest start worker"
@@ -21,14 +22,15 @@
     "@nestjs/common": "^8.4.7",
     "@nestjs/core": "^8.4.7",
     "@nestjs/platform-express": "^8.4.7",
-    "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2",
-    "rxjs": "^7.4.0",
     "@temporalio/activity": "^1.9.0",
     "@temporalio/client": "^1.9.0",
     "@temporalio/common": "^1.9.0",
     "@temporalio/worker": "^1.9.0",
-    "@temporalio/workflow": "^1.9.0"
+    "@temporalio/workflow": "^1.9.0",
+    "nanoid": "^5.0.5",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "rxjs": "^7.4.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.1.3",

@@ -1,33 +1,109 @@
-import { continueAsNew, proxyActivities, setHandler, sleep, workflowInfo } from '@temporalio/workflow';
-import type { ActivitiesService } from '../activities/activities.service';
-// Can't use `@app/shared` here because for some reason Temporal's Webpack
-// build complains that "node_modules/@app/shared" doesn't exist in Jest.
-import { getExchangeRatesQuery, ExchangeRates } from '../../../../libs/shared/src';
+import {
+  proxyActivities,
+  setHandler,
+  condition,
+  startChild,
+  sleep,
+  WorkflowExecutionAlreadyStartedError,
+  Workflow,
+  ApplicationFailure,
+  log,
+} from '@temporalio/workflow';
+import type { ActivitiesService, UploadImageResponse } from '../activities/activities.service';
+import { defineSignal } from '@temporalio/workflow';
+import { ChildWorkflowHandle } from '@temporalio/workflow/src/workflow-handle';
 
-const { getExchangeRates } = proxyActivities<ActivitiesService>({
-  startToCloseTimeout: '10 seconds',
+const { uploadImage, sendImageAndForget_1, sendImageAndForget_2 } = proxyActivities<ActivitiesService>({
+  startToCloseTimeout: '1 minute',
 });
 
-const maxNumEvents = 10000;
+interface Images {
+  images: Image[];
+}
 
-export async function exchangeRatesWorkflow(storedRates?: ExchangeRates): Promise<void> {
-  let rates = storedRates;
+interface Image {
+  name: string;
+}
 
-  // Register a query handler that allows querying for the current rates
-  setHandler(getExchangeRatesQuery, () => rates);
+export async function processImages(images?: Images): Promise<void> {
+  const childWorkflowHandles: ChildWorkflowHandle<Workflow>[] = [];
 
-  while (workflowInfo().historyLength < maxNumEvents) {
-    // Get the latest rates
-    rates = await getExchangeRates();
+  for (const image of images.images) {
+    const childWorkflowHandle = await startChild(processImage, {
+      //Execution already started will fail the workflow execution if we don't catch the exception
+      workflowId: 'processImage-' + image.name,
+      args: [image],
+    }).catch((e) => {
+      if (e instanceof WorkflowExecutionAlreadyStartedError) {
+        //rethrow if you want to fail the parent workflow
+      } else {
+        throw e;
+      }
+      return null;
+    });
 
-    // Sleep until tomorrow at 12pm server time, and then get the rates again
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setHours(12, 0, 0, 0);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    await sleep(tomorrow.valueOf() - today.valueOf());
+    // child already started won't be added
+    if (childWorkflowHandle) {
+      childWorkflowHandles.push(childWorkflowHandle);
+    }
   }
 
-  await continueAsNew<typeof exchangeRatesWorkflow>(rates);
+  await Promise.all(childWorkflowHandles);
+
+  for (const childWorkflowHandle of childWorkflowHandles) {
+    await childWorkflowHandle.result().catch((e) => {
+      log.info('Error child workflow ' + childWorkflowHandle.workflowId, e);
+      // Child workflow fails, if we don't handle the error it will fail the parent workflow,
+      // with the current policy running child workflows will be terminated
+    });
+  }
+
+  log.info('handles');
+
+  //For activities is different, before continue as new, ensure all activities have completed
+
+  return null;
+}
+
+interface StepCompleted {
+  image: string;
+  stepId: string;
+}
+
+export const stepCompleted = defineSignal<[StepCompleted]>('step1Completed');
+
+export async function processImage(image: Image): Promise<void> {
+  //Failing some child workflows
+  if (image.name.endsWith('2')) {
+    throw ApplicationFailure.create({ nonRetryable: true, message: 'Workflow intentionally failed' });
+  }
+
+  const pending_request: StepCompleted[] = [];
+
+  setHandler(stepCompleted, (step: StepCompleted) => {
+    pending_request.push(step);
+  });
+
+  await uploadImage(image.name).catch((e) => {
+    // This can fail, what to do?
+    log.error(e);
+  });
+
+  let completed = true;
+  while (!completed) {
+    condition(() => pending_request.length > 0);
+
+    const request = pending_request.pop();
+
+    if (request.stepId == 'step1') {
+      continue;
+    }
+
+    if (request.stepId == 'step2') {
+      completed = true;
+
+      continue;
+    }
+  }
+  return;
 }

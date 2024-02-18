@@ -1,8 +1,8 @@
 import { TestWorkflowEnvironment } from '@temporalio/testing';
-import { Runtime, DefaultLogger, Worker } from '@temporalio/worker';
+import { DefaultLogger, Runtime, Worker } from '@temporalio/worker';
 import { Client, WorkflowHandle } from '@temporalio/client';
 import { getExchangeRatesQuery } from '@app/shared';
-import { exchangeRatesWorkflow } from './workflows';
+import { processImages } from './workflows';
 import { setTimeout } from 'timers/promises';
 
 const taskQueue = 'test-exchange-rates';
@@ -16,9 +16,13 @@ describe('example workflow', function () {
 
   beforeAll(async function () {
     const activities = {
-      getExchangeRates: () => Promise.resolve({ AUD: 1.27 }),
+      uploadImage: (image: string) =>
+        Promise.resolve({
+          image: 'image' + image,
+          url: 'url' + image,
+        }),
     };
-    jest.spyOn(activities, 'getExchangeRates');
+    jest.spyOn(activities, 'uploadImage');
 
     // Filter INFO log messages for clearer test output
     Runtime.install({ logger: new DefaultLogger('WARN') });
@@ -41,15 +45,16 @@ describe('example workflow', function () {
     client = env.client;
     /* eslint-disable @typescript-eslint/no-empty-function */
     await client.workflow
-      .getHandle('exchange-rates-workflow')
+      .getHandle('uploadImage-wf')
       .terminate()
       .catch(() => {});
 
     execute = async () => {
-      handle = await client.workflow.start(exchangeRatesWorkflow, {
+      handle = await client.workflow.start(processImages, {
         taskQueue,
+        //only for test propose, so the test does not hang if the workflow execution does not complete
         workflowExecutionTimeout: 10_000,
-        workflowId: 'exchange-rates-workflow',
+        workflowId: 'uploadImage-wf',
       });
       return handle;
     };
@@ -57,7 +62,6 @@ describe('example workflow', function () {
 
   afterAll(async () => {
     await shutdown();
-
     await env.teardown();
   });
 

@@ -1,6 +1,6 @@
 import { defineQuery } from '@temporalio/workflow';
 
-export const taskQueue = 'nest-test';
+export const taskQueue = 'image_processing-taskqueue';
 
 export type ExchangeRates = { [key: string]: number };
 
