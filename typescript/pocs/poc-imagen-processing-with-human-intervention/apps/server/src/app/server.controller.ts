@@ -18,15 +18,18 @@ export class ServerController {
     });
   }
 
-  @Put('processX')
-  async processX(@Body() processRequest: ProcessRequest): Promise<string> {
+  @Put('executeProcess')
+  async executeProcess(@Body() processRequest: ProcessRequest): Promise<string> {
     //Signal back the caller after 10 seconds
     new Promise(() => {
       setTimeout(() => {
         const activityInfo = processRequest.activityInfo;
         this.temporalWorkflowClient.signalWorkflow({
           workflowId: activityInfo.workflowExecution.workflowId,
-          data: { callerActivity: activityInfo.activityType },
+          data: {
+            callerActivity: activityInfo.activityType,
+            processName: processRequest.processName,
+          },
         });
       }, 3000);
     });

@@ -16,10 +16,12 @@ export interface UploadImageDto {
 
 export interface ProcessRequest {
   activityInfo: Info;
+  processName: string;
 }
 
-export interface ProcessSignalResponse {
+export interface ProcessCompletedResponse {
   callerActivity: string;
+  processName: string;
 }
 
 export type ExchangeRates = { [key: string]: number };

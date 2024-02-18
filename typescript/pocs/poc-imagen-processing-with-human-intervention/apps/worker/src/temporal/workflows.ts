@@ -12,6 +12,7 @@ import {
 import type { ActivitiesService, UploadImageResponse } from '../activities/activities.service';
 import { defineSignal } from '@temporalio/workflow';
 import { ChildWorkflowHandle } from '@temporalio/workflow/src/workflow-handle';
+import { ProcessCompletedResponse } from '@app/shared';
 
 const { uploadImage, sendImageToProcess1, sendImageToProcess2 } = proxyActivities<ActivitiesService>({
   startToCloseTimeout: '5 seconds',
@@ -36,10 +37,9 @@ export async function processImages(images?: Images): Promise<void> {
     }).catch((e) => {
       if (e instanceof WorkflowExecutionAlreadyStartedError) {
         //rethrow if you want to fail the parent workflow
-      } else {
-        throw e;
+        return null;
       }
-      return null;
+      throw e;
     });
 
     // child already started won't be added
@@ -63,12 +63,7 @@ export async function processImages(images?: Images): Promise<void> {
   return null;
 }
 
-interface StepCompleted {
-  image: string;
-  stepId: string;
-}
-
-export const stepCompleted = defineSignal<[StepCompleted]>('step1Completed');
+export const processCompleted = defineSignal<[ProcessCompletedResponse]>('processCompleted');
 
 export async function processImage(image: Image): Promise<void> {
   //Failing some child workflows
@@ -77,37 +72,39 @@ export async function processImage(image: Image): Promise<void> {
     throw ApplicationFailure.create({ nonRetryable: true, message: 'Workflow intentionally failed' });
   }
 
-  const pending_request: StepCompleted[] = [];
+  const pending_request: ProcessCompletedResponse[] = [];
 
-  setHandler(stepCompleted, (step: StepCompleted) => {
-    pending_request.push(step);
+  setHandler(processCompleted, (processCompleted: ProcessCompletedResponse) => {
+    console.log('request in sicnal   ' + JSON.stringify(processCompleted));
+
+    pending_request.push(processCompleted);
   });
 
   await uploadImage(imageName).catch((e) => {
-    // This can fail, what to do?
+    // This can fail, rethrow to fail workflow
     log.error(e);
   });
 
-  await Promise.all([sendImageToProcess1(imageName), sendImageToProcess2(imageName)]);
+  await Promise.all([sendImageToProcess1(imageName)]);
 
-  let completed = true;
+  let completed = false;
   while (!completed) {
-    condition(() => pending_request.length > 0);
+    await condition(() => pending_request.length > 0);
 
     const request = pending_request.pop();
 
-    if (request.stepId == 'step1') {
+    console.log('request   ' + JSON.stringify(request));
+
+    if (request.callerActivity == 'sendImageToProcess1') {
+      await Promise.all([sendImageToProcess2(imageName)]);
       continue;
     }
 
-    if (request.stepId == 'step2') {
+    if (request.callerActivity == 'sendImageToProcess2') {
       completed = true;
-
       continue;
     }
   }
-
-  await sleep(5000);
 
   return;
 }

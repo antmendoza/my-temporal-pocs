@@ -18,7 +18,7 @@ async function run() {
     taskQueue: 'image_processing-taskqueue',
     // type inference works! args: [name: string]
     args: [{ images: values }],
-    workflowId: 'workflow-' + Math.random(),
+    workflowId: 'processImages-' + Math.random(),
   });
   console.log(`Started workflow ${handle.workflowId}`);
 

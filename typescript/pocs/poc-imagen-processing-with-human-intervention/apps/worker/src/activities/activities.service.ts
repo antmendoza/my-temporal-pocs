@@ -42,11 +42,12 @@ export class ActivitiesService {
   }
 
   private async sendImageToProcess() {
-    const dto = {
+    const dto: ProcessRequest = {
       activityInfo: activityInfo(),
-    } as ProcessRequest;
+      processName: 'process-' + activityInfo().activityType,
+    };
 
-    const url = 'http://localhost:3000/images/processX';
+    const url = 'http://localhost:3000/images/executeProcess';
 
     await this.put(url, dto);
   }
