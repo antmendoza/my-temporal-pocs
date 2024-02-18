@@ -4,7 +4,7 @@ import { taskQueue } from '@app/shared';
 
 export const processImagesWorkerProviders = [
   {
-    provide: 'EXCHANGE_RATES_WORKER',
+    provide: 'IMAGE_PROCESSOR_WORKER',
     inject: [ActivitiesService],
     useFactory: async (activitiesService: ActivitiesService) => {
       const activities = {
