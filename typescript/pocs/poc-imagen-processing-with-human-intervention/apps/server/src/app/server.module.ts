@@ -6,6 +6,6 @@ import { ExchangeRatesClient } from './workflow.service';
 @Module({
   imports: [],
   controllers: [ServerController],
-  providers: [...serverProviders,  ExchangeRatesClient],
+  providers: [...serverProviders, ExchangeRatesClient],
 })
 export class ServerModule {}

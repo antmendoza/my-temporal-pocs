@@ -1,5 +1,4 @@
-import { Client, WorkflowExecutionAlreadyStartedError, Connection, ConnectionOptions } from '@temporalio/client';
-import { taskQueue } from '@app/shared';
+import { Client, Connection, ConnectionOptions } from '@temporalio/client';
 
 export const serverProviders = [
   {

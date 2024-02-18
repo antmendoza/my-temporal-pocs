@@ -14,7 +14,7 @@ import { defineSignal } from '@temporalio/workflow';
 import { ChildWorkflowHandle } from '@temporalio/workflow/src/workflow-handle';
 
 const { uploadImage, sendImageAndForget_1, sendImageAndForget_2 } = proxyActivities<ActivitiesService>({
-  startToCloseTimeout: '1 minute',
+  startToCloseTimeout: '5 seconds',
 });
 
 interface Images {

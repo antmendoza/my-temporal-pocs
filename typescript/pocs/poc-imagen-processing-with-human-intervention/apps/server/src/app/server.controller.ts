@@ -8,11 +8,15 @@ export class ServerController {
 
   @Put('upload')
   async uploadImage(@Body() uploadImageDto: UploadImageDto): Promise<string> {
+    const activityInfo = uploadImageDto.activityInfo;
+    if (activityInfo.attempt === 1) {
+      await new Promise((resolve) => setTimeout(resolve, activityInfo.startToCloseTimeoutMs + 1000));
+    }
 
-    console.log("uploadImageDto" +  JSON.stringify(uploadImageDto))
-    return await new Promise((resolve) => resolve('' + Math.random()));
+    return await new Promise((resolve) => {
+      resolve('' + Math.random());
+    });
   }
-
 
   @Get('')
   async upload(): Promise<string> {

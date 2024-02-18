@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { UploadImageDto } from '@app/shared';
+import { activityInfo } from '@temporalio/activity';
 
 export interface UploadImageResponse {
   image: string;
@@ -14,13 +15,16 @@ export class ActivitiesService {
 
   async uploadImage(image: string): Promise<UploadImageResponse> {
     const url = 'random-url' + image;
-    const dto = { name: image, url } as UploadImageDto;
-    const data = await this.httpService.axiosRef.put('http://localhost:3000/images/upload', dto, {
-      timeout: 4000,
-    });
+    const dto = {
+      name: image,
+      url,
+      activityInfo: activityInfo(),
+    } as UploadImageDto;
+    const config = {
+      timeout: activityInfo().startToCloseTimeoutMs - activityInfo().startToCloseTimeoutMs * 0.1,
+    };
+    const data = await this.httpService.axiosRef.put('http://localhost:3000/images/upload', dto, config);
 
-    const ms = 4000;
-    await new Promise((resolve) => setTimeout(resolve, ms));
     return {
       image,
       url,
