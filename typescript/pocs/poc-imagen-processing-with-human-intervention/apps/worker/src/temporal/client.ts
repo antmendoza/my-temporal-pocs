@@ -8,16 +8,16 @@ async function run() {
     connection,
   });
 
-  const values = Array.from({ length: 20 }, (x, i) => i).map((r) => {
+  const values = Array.from({ length: 6 }, (x, i) => i).map((r) => {
     return {
-      name: 'img' + r,
+      name: 'img_with_name_img-myImg_' + (r + 1),
     };
   });
 
   const handle = await client.workflow.start(processImages, {
     taskQueue: 'image_processing-taskqueue',
     // type inference works! args: [name: string]
-    args: [{ images: values }],
+    args: [{ images: values, pageSize: 4 }],
     workflowId: 'processImages-' + Math.random(),
   });
   console.log(`Started workflow ${handle.workflowId}`);
