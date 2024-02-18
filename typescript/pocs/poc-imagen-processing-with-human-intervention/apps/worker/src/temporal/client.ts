@@ -8,7 +8,7 @@ async function run() {
     connection,
   });
 
-  const values = Array.from({ length: 20 }, (x, i) => i).map((r) => {
+  const values = Array.from({ length: 1 }, (x, i) => i).map((r) => {
     return {
       name: 'img' + r,
     };

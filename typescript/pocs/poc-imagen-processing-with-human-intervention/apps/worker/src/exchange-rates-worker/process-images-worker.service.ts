@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 
 @Injectable()
-export class ExchangeRatesWorkerService {
+export class ProcessImagesWorkerService {
   constructor(@Inject('EXCHANGE_RATES_WORKER') private worker) {}
 
   async close() {

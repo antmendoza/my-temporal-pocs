@@ -2,7 +2,7 @@ import { ActivitiesService } from '../activities/activities.service';
 import { Worker } from '@temporalio/worker';
 import { taskQueue } from '@app/shared';
 
-export const exchangeRatesWorkerProviders = [
+export const processImagesWorkerProviders = [
   {
     provide: 'EXCHANGE_RATES_WORKER',
     inject: [ActivitiesService],

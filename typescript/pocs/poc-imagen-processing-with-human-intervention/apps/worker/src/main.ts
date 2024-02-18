@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { ExchangeRatesWorkerModule } from './exchange-rates-worker/exchange-rates-worker.module';
+import { ProcessImagesWorkerModule } from './exchange-rates-worker/process-images-worker.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ExchangeRatesWorkerModule);
+  const app = await NestFactory.create(ProcessImagesWorkerModule);
   await app.listen(3001);
 }
 bootstrap();

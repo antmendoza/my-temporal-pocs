@@ -58,8 +58,6 @@ export async function processImages(images?: Images): Promise<void> {
     });
   }
 
-  log.info('handles');
-
   //For activities is different, before continue as new, ensure all activities have completed
 
   return null;
