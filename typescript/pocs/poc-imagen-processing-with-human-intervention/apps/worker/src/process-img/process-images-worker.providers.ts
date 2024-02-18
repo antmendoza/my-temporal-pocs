@@ -1,5 +1,5 @@
 import { ActivitiesService } from '../activities/activities.service';
-import { Worker } from '@temporalio/worker';
+import { Runtime, Worker } from '@temporalio/worker';
 import { taskQueue } from '@app/shared';
 
 export const processImagesWorkerProviders = [
@@ -7,6 +7,14 @@ export const processImagesWorkerProviders = [
     provide: 'IMAGE_PROCESSOR_WORKER',
     inject: [ActivitiesService],
     useFactory: async (activitiesService: ActivitiesService) => {
+      Runtime.install({
+        telemetryOptions: {
+          metrics: {
+            prometheus: { bindAddress: '0.0.0.0:9464' },
+          },
+        },
+      });
+
       const activities = {
         uploadImage: activitiesService.uploadImage.bind(activitiesService),
         sendImageToProcess1: activitiesService.sendImageToProcess1.bind(activitiesService),
