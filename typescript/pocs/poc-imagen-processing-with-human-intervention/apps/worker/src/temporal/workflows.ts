@@ -75,8 +75,6 @@ export async function processImage(image: Image): Promise<void> {
   const pending_request: ProcessCompletedResponse[] = [];
 
   setHandler(processCompleted, (processCompleted: ProcessCompletedResponse) => {
-    console.log('request in sicnal   ' + JSON.stringify(processCompleted));
-
     pending_request.push(processCompleted);
   });
 
@@ -92,8 +90,6 @@ export async function processImage(image: Image): Promise<void> {
     await condition(() => pending_request.length > 0);
 
     const request = pending_request.pop();
-
-    console.log('request   ' + JSON.stringify(request));
 
     if (request.callerActivity == 'sendImageToProcess1') {
       await Promise.all([sendImageToProcess2(imageName)]);
