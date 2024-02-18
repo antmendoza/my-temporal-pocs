@@ -23,9 +23,3 @@ export interface ProcessCompletedResponse {
   callerActivity: string;
   processName: string;
 }
-
-export type ExchangeRates = { [key: string]: number };
-
-export const getExchangeRatesQuery = defineQuery<ExchangeRates | null>('getExchangeRates');
-
-export type exchangeRatesWorkflowType = () => Promise<void>;
