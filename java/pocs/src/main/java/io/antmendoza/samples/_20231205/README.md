@@ -8,7 +8,7 @@ the second and any other incoming requests until the previous one gets processed
 example we will reject requests if `data==null`
 - [x] **Navigate between screens:** The user can navigate between screens and resubmit the data as many times as needed.
 - [x] **Reminders:** Send a reminder to the user if they are inactive for 3 seconds 
-    > For test purpose we set the timer to seconds, but it can be minutes, hours, days...
+    > For test (manual test) purpose we set the timer to seconds, but it can be minutes, hours, days...
 
 
 ## Implementation
