@@ -1,4 +1,4 @@
-package io.antmendoza.samples._20231205;
+package io.antmendoza.samples.ui_wizard;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.failure.ApplicationFailure;
@@ -56,12 +56,11 @@ public interface WizardUIWorkflow {
 
             while (!isLastScreen()) {
 
-                //for test purpose we set the timer to seconds, but it can be minutes, hours, days...
+                //for manual test purpose we set the timer to seconds, but it can be minutes, hours, days...
                 CancellationScope cancellableTimer = createCancellableTimer(Duration.ofSeconds(3));
                 cancellableTimer.run();
 
 
-                //TODO watch eventHistoryLength and CAN if > 1000
                 Workflow.await(() -> !data.isEmpty()); //#1# See README.md
                 cancellableTimer.cancel();
 
@@ -90,6 +89,7 @@ public interface WizardUIWorkflow {
 
                 data.remove(uiRequest);
 
+                //TODO watch eventHistoryLength and CAN if > 1000
             }
         }
 

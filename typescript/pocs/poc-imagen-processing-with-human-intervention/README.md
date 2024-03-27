@@ -17,6 +17,10 @@ $ npm install
 ## Running the app
 
 1. `temporal server start-dev` to start [Temporal Server](https://github.com/temporalio/cli/#installation).
-1. `npm run worker` to start the Worker.
-1. `npm run start` to start the NestJS server.
-1. Visit `http://localhost:3000/exchange-rates/AUD` to see the most recent exchange rate for AUD (Australian Dollar)
+2. `npm run worker` to start the Worker.
+3. `npm run start` to start the NestJS server.
+4. `npm run client` to start start a workflow.
+5. `` start the server to handle activity requests 
+
+6. 
+7. Visit `http://localhost:3000/exchange-rates/AUD` to see the most recent exchange rate for AUD (Australian Dollar)

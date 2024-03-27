@@ -1,11 +1,11 @@
-package io.antmendoza.samples._20231205;
+package io.antmendoza.samples.ui_wizard;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 
-import static io.antmendoza.samples._20231205._Client.TASK_QUEUE;
+import static io.antmendoza.samples.ui_wizard._Client.TASK_QUEUE;
 
 
 public class _Worker {

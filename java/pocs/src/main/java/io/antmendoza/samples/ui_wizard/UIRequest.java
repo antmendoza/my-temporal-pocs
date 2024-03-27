@@ -1,4 +1,4 @@
-package io.antmendoza.samples._20231205;
+package io.antmendoza.samples.ui_wizard;
 
 import java.util.Objects;
 

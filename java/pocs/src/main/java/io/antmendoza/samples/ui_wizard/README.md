@@ -11,6 +11,8 @@ example we will reject requests if `data==null`
     > For test purpose we set the timer to seconds, but it can be minutes, hours, days...
 
 
+Same implementation in dotnet can be found [here](https://github.com/temporalio/samples-dotnet/blob/49c0c06e6996348aa3f2ebb13fdb62b13d8c6c0a/src/WorkflowUpdate/README.md?plain=1#L1)
+
 ## Implementation
 
 We make use of the following Temporal features:

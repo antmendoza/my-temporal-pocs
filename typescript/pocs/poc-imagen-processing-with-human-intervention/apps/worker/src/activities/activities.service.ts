@@ -1,7 +1,7 @@
-import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
-import { ProcessRequest, UploadImageDto } from '@app/shared';
-import { activityInfo } from '@temporalio/activity';
+import { HttpService } from "@nestjs/axios";
+import { Injectable } from "@nestjs/common";
+import { ProcessRequest, UploadImageDto } from "@app/shared";
+import { activityInfo } from "@temporalio/activity";
 
 export interface UploadImageResponse {
   image: string;
@@ -21,7 +21,7 @@ export class ActivitiesService {
       activityInfo: activityInfo(),
     } as UploadImageDto;
 
-    const url = 'http://localhost:3000/images/upload';
+    const url = 'http://localhost:3005/images/upload';
     const data = await this.put(url, dto);
 
     return {
@@ -47,16 +47,16 @@ export class ActivitiesService {
       processName: 'process-' + activityInfo().activityType,
     };
 
-    const url = 'http://localhost:3000/images/executeProcess';
+    const url = 'http://localhost:3005/images/executeProcess';
 
     await this.put(url, dto);
   }
 
   private async put(url: string, dto: any) {
-    const config = {
-      timeout: activityInfo().startToCloseTimeoutMs - activityInfo().startToCloseTimeoutMs * 0.1,
-    };
-    const data = await this.httpService.axiosRef.put(url, dto, config);
+    const timeout = activityInfo().startToCloseTimeoutMs;
+    const data = await this.httpService.axiosRef.put(url, dto, {
+      timeout: timeout,
+    });
     return data;
   }
 }

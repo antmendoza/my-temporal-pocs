@@ -24,6 +24,7 @@ export const processImagesWorkerProviders = [
       const worker = await Worker.create({
         workflowsPath: require.resolve('../temporal/workflows'),
         taskQueue,
+        maxCachedWorkflows
         activities,
       });
 
