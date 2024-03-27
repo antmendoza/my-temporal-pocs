@@ -8,7 +8,7 @@ the second and any other incoming requests until the previous one gets processed
 example we will reject requests if `data==null`
 - [x] **Navigate between screens:** The user can navigate between screens and resubmit the data as many times as needed.
 - [x] **Reminders:** Send a reminder to the user if they are inactive for 3 seconds 
-    > For test purpose we set the timer to seconds, but it can be minutes, hours, days...
+    > For test (manual test) purpose we set the timer to seconds, but it can be minutes, hours, days...
 
 
 Same implementation in dotnet can be found [here](https://github.com/temporalio/samples-dotnet/blob/49c0c06e6996348aa3f2ebb13fdb62b13d8c6c0a/src/WorkflowUpdate/README.md?plain=1#L1)
