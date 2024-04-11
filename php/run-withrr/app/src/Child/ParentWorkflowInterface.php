@@ -22,5 +22,5 @@ interface ParentWorkflowInterface
      * @return []string
      */
     #[WorkflowMethod(name: "Parent.greet")]
-    public function greet();
+    public function greet(int $sleepChild);
 }

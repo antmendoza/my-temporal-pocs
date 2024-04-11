@@ -19,12 +19,12 @@ use Temporal\Workflow;
  */
 class ParentWorkflow implements ParentWorkflowInterface
 {
-    public function greet()
+    public function greet(int $sleepChild)
     {
 
         $name = Workflow::getInfo()->execution->getID();
 
-        yield Workflow::timer(CarbonInterval::seconds(5));
+        yield Workflow::timer(CarbonInterval::seconds($sleepChild));
 
         $child = Workflow::newChildWorkflowStub(ChildWorkflow::class);
 
