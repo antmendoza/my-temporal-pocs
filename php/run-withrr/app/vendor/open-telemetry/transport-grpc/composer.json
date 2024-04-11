@@ -1,0 +1,27 @@
+{
+  "name": "open-telemetry/transport-grpc",
+  "description": "gRPC transport for OpenTelemetry PHP.",
+  "keywords": ["opentelemetry", "otel", "tracing", "contrib", "transport", "otlp", "grpc"],
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "opentelemetry-php contributors",
+      "homepage": "https://github.com/open-telemetry/opentelemetry-php/graphs/contributors"
+    }
+  ],
+  "require": {
+    "php": "^7.4 || ^8.0",
+    "ext-grpc": "*",
+    "grpc/grpc": "*",
+    "open-telemetry/sdk": "self.version"
+  },
+  "autoload": {
+    "psr-4": {
+      "OpenTelemetry\\Contrib\\Grpc\\": "."
+    },
+    "files": [
+      "_register.php"
+    ]
+  }
+}

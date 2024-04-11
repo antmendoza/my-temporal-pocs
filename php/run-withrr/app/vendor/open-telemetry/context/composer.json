@@ -1,0 +1,30 @@
+{
+    "name": "open-telemetry/context",
+    "description": "Context implementation for OpenTelemetry PHP.",
+    "keywords": ["opentelemetry", "otel", "context"],
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "opentelemetry-php contributors",
+            "homepage": "https://github.com/open-telemetry/opentelemetry-php/graphs/contributors"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "symfony/polyfill-php80": "^1.26",
+        "symfony/polyfill-php81": "^1.26",
+        "symfony/polyfill-php82": "^1.26"
+    },
+    "autoload": {
+        "psr-4": {
+            "OpenTelemetry\\Context\\": "."
+        },
+        "files": [
+            "fiber/initialize_fiber_handler.php"
+        ]
+    },
+    "suggest": {
+        "ext-ffi": "To allow context switching in Fibers"
+    }
+}

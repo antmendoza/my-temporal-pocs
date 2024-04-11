@@ -1,0 +1,24 @@
+# IDEA
+.idea/
+*.iml
+
+# Composer
+vendor/
+composer.lock
+composer.phar
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache
+.phpunit.result.cache
+.phpunit.cache/
+.php_cs.cache
+
+# Other
+*.exe
+rr
+.rr.yaml
+temporal-test-server
+build
