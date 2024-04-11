@@ -15,7 +15,6 @@ use Temporal\OpenTelemetry\Interceptor\OpenTelemetryWorkflowOutboundRequestInter
 use Temporal\SampleUtils\DeclarationLocator;
 use Temporal\SampleUtils\TracerFactory;
 use Temporal\WorkerFactory;
-use Temporal\Samples\FileProcessing;
 
 ini_set('display_errors', 'stderr');
 include "vendor/autoload.php";
@@ -45,13 +44,7 @@ foreach ($declarations->getActivityTypes() as $activityType) {
     $worker->registerActivity($activityType);
 }
 
-// We can use task queue for more complex task routing, for example our FileProcessing
-// activity will receive unique, host specific, TaskQueue which can be used to process
-// files locally.
-$hostTaskQueue = gethostname();
 
-$factory->newWorker($hostTaskQueue)
-    ->registerActivityImplementations(new FileProcessing\StoreActivity($hostTaskQueue));
 
 // start primary loop
 $factory->run();

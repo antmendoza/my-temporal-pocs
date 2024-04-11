@@ -1,10 +1,15 @@
 
 # Run example
+
 - start temporal https://docs.temporal.io/cli
+
+From `app` folder:
+- install dependencies, run `composer install` 
 - run roadrunner `./rr serve -c .rr.yaml`
+
+Other terminal:
 - start several (the next command start 100) workflows in parallel
   `for x in {1..100}; do tctl workflow start --tq "default" --wt "Parent.greet"; done`
-
 
 
 ### Other commands
