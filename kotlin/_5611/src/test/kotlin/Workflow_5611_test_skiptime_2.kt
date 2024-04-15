@@ -4,6 +4,8 @@ import Workflow_5611
 import Workflow_5611Impl
 import io.mockk.junit5.MockKExtension
 import io.temporal.client.WorkflowClient
+import io.temporal.client.WorkflowClientOptions
+import io.temporal.common.converter.DefaultDataConverter
 import io.temporal.testing.TestWorkflowEnvironment
 import io.temporal.testing.TestWorkflowExtension
 import org.junit.jupiter.api.Assertions
@@ -23,7 +25,7 @@ class Workflow_5611_test_skiptime_2 {
             .setWorkflowTypes(
                 Workflow_5611Impl::class.java,
             )
-            // .setWorkflowClientOptions(workflowClientOptions)
+            .setWorkflowClientOptions(workflowClientOptions())
             .setUseTimeskipping(true)
             .useInternalService()
             .build()
@@ -53,5 +55,16 @@ class Workflow_5611_test_skiptime_2 {
 
 
     }
+
+
+    fun workflowClientOptions(): WorkflowClientOptions =
+        WorkflowClientOptions.newBuilder()
+            .setDataConverter(
+                DefaultDataConverter
+                    .newDefaultInstance()
+                    // register all the standard converters from the default instance, but customize Jackson for kotlin
+                    //.withPayloadConverterOverrides(CustomJacksonJsonPayloadConverter)
+            )
+            .build()
 
 }
