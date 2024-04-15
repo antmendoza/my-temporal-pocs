@@ -2,17 +2,15 @@ package io.antmendoza.samples.ui_wizard
 
 import Workflow_5611
 import Workflow_5611Impl
-import io.temporal.api.common.v1.WorkflowExecution
 import io.temporal.client.WorkflowClient
 import io.temporal.client.WorkflowOptions
 import io.temporal.testing.TestWorkflowRule
 import io.temporal.worker.WorkerFactoryOptions
 import io.temporal.workflow.Functions
 import org.junit.Assert
-import java.time.Duration
 import java.time.Instant
 
-class Workflow_5611_test_skiptime {
+class Workflow_5611_test_skiptime_ {
     @JvmField
     @org.junit.Rule
     var testWorkflowRule = TestWorkflowRule.newBuilder()
