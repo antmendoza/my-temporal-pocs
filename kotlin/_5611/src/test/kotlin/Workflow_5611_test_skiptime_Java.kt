@@ -3,6 +3,8 @@ package io.antmendoza.samples.ui_wizard
 import Activity_5611Impl
 import Workflow_5611
 import Workflow_5611Impl
+import Workflow_5611ImplJava
+import io.mockk.internalSubstitute
 import io.mockk.junit5.MockKExtension
 import io.temporal.client.WorkflowClient
 import io.temporal.client.WorkflowClientOptions
@@ -17,7 +19,7 @@ import java.time.Duration
 import java.time.Instant
 
 @ExtendWith(MockKExtension::class)
-class Workflow_5611_test_skiptime_2 {
+class Workflow_5611_test_skiptime_Java {
 
 
     @JvmField
@@ -25,7 +27,7 @@ class Workflow_5611_test_skiptime_2 {
     val testWorkflowExtension: TestWorkflowExtension =
         TestWorkflowExtension.newBuilder()
             .setWorkflowTypes(
-                Workflow_5611Impl::class.java,
+                Workflow_5611ImplJava::class.java,
             )
             .setWorkflowClientOptions(workflowClientOptions())
             .setUseTimeskipping(true)
@@ -53,12 +55,12 @@ class Workflow_5611_test_skiptime_2 {
         testWorkflowEnvironment.sleep(Duration.ofSeconds(5))
         println("[AFTER SLEEP ] Workflow time: ${Instant.ofEpochMilli(testWorkflowEnvironment.currentTimeMillis())}, Clock: ${Instant.now()}")
 
-        val result = workflowClient.newUntypedWorkflowStub(execution.workflowId).getResult(String::class.java)
+        val workflowId = execution.workflowId
+        val result = workflowClient.newUntypedWorkflowStub(workflowId).getResult(String::class.java)
         println("[Result ]  ${result}")
 
         Assertions.assertEquals("done", result)
         //}
-
 
     }
 

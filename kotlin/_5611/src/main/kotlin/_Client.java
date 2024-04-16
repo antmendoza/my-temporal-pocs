@@ -14,19 +14,17 @@ public class _Client {
 
     public static void main(String[] args) {
 
-
         final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-        WorkflowClient client = WorkflowClient.newInstance(service);
 
+        WorkflowClient client = WorkflowClient.newInstance(service);
 
         WorkerFactory factory = WorkerFactory.newInstance(client);
 
         Worker worker = factory.newWorker(TASK_QUEUE);
 
-        worker.registerWorkflowImplementationTypes(Workflow_5611Impl.class);
+        worker.registerWorkflowImplementationTypes(Workflow_5611ImplJava.class);
 
         factory.start();
-
 
 
         final String workflowId = "my-kotlin";
@@ -45,6 +43,19 @@ public class _Client {
         System.out.println("Clock: "+ Instant.now());
 
         WorkflowExecution execution = WorkflowClient.start(workflow::run);
+
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
+
+
+
         String result = client.newUntypedWorkflowStub(workflowId).getResult(String.class);
 
         System.out.println("Result : " + result);
