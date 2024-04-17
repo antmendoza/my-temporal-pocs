@@ -62,4 +62,13 @@ We haven't worked out the deploy story yet but eventually we'd love for you to d
 
 
 ## Commands
-- next build && next start 
+
+```bash
+next build && next start
+```
+
+
+https://github.com/vercel/next.js/issues/774#issuecomment-272691895
+
+
+
