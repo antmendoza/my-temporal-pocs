@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 class TestWorkflowTimeSkipping {
@@ -27,12 +28,11 @@ class TestWorkflowTimeSkipping {
     @RegisterExtension
     TestWorkflowExtension testWorkflowExtension =
             TestWorkflowExtension.newBuilder()
-                    .setUseTimeskipping(true)
                     .setDoNotStart(true)
                     .build();
 
 
-    //Time skipping does not work here,
+    // Time skipping does not work here,
     // test execution takes 2 seconds,
     // WorkflowAwait only unblock when the activity returns in one second
     @org.junit.jupiter.api.Test
@@ -41,10 +41,6 @@ class TestWorkflowTimeSkipping {
             WorkflowClient workflowClient,
             Worker worker
     ) {
-
-
-
-
 
         // using Workflow_AwaitBlocking as workflow implementation
         worker.registerWorkflowImplementationTypes(Workflow_AwaitBlocking.class);
@@ -72,22 +68,25 @@ class TestWorkflowTimeSkipping {
                 .build());
         WorkflowExecution execution = WorkflowClient.start(workflow::run);
 
+        //To force await timeout
         testWorkflowEnvironment.sleep(Duration.ofSeconds(5));
 
         TimerFired result = getWorkflowResult(workflowClient, execution);
 
-
+        //The timer didn't fire, I would expect it fired since we are doing
+        //testWorkflowEnvironment.sleep(Duration.ofSeconds(5));
         Assertions.assertEquals(new TimerFired(false), result);
 
         long end = System.currentTimeMillis();
-        Assertions.assertTrue((end - start) / 1000 >= 2 && ((end - start) / 1000 <= 4));
+        final long timeInSeconds = (end - start) / 1000;
+        //This fails, test takes 2 seconds
+        Assertions.assertTrue(timeInSeconds < 2, () -> "Test takes: " + timeInSeconds + " seconds");
 
 
     }
 
-
-    //This test never completes, becase the activity in the await method never completes
-// and the timer in workflow.await doesn't fire
+    // This test never completes, becase the activity in the await method never completes
+    // and the timer in workflow.await doesn't fire
     @org.junit.jupiter.api.Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testNeverCompletes(
@@ -95,7 +94,6 @@ class TestWorkflowTimeSkipping {
             WorkflowClient workflowClient,
             Worker worker
     ) {
-
 
 
         // using Workflow_AwaitBlocking as workflow implementation
@@ -112,7 +110,6 @@ class TestWorkflowTimeSkipping {
         });
 
 
-
         testWorkflowEnvironment.start();
 
         final Workflow_ workflow = testWorkflowEnvironment.getWorkflowClient().newWorkflowStub(Workflow_.class, WorkflowOptions
@@ -121,25 +118,23 @@ class TestWorkflowTimeSkipping {
                 .build());
         WorkflowExecution execution = WorkflowClient.start(workflow::run);
 
+        //To force await timeout
         testWorkflowEnvironment.sleep(Duration.ofSeconds(5));
 
-
+        //It does not mather the time move forward the time, workflow.await never unblock
         TimerFired result = getWorkflowResult(workflowClient, execution);
 
 
     }
 
-
-    //Time skipping work fine here, there is no blocking call in the await method,
+    // Time skipping does not work here,
+    // test execution takes 5 seconds, until real timer fires in workflow.await
     @org.junit.jupiter.api.Test
     public void testNoBlockingActivityInAwait(
             TestWorkflowEnvironment testWorkflowEnvironment,
             WorkflowClient workflowClient,
             Worker worker
     ) {
-
-
-
 
 
         // using Workflow_AwaitNotBlocking as workflow implementation
@@ -168,18 +163,69 @@ class TestWorkflowTimeSkipping {
                 .build());
         WorkflowExecution execution = WorkflowClient.start(workflow::run);
 
+        //To force await timeout
         testWorkflowEnvironment.sleep(Duration.ofSeconds(5));
 
         TimerFired result = getWorkflowResult(workflowClient, execution);
 
+        //The timer fires, but after 5 real seconds
         Assertions.assertEquals(new TimerFired(true), result);
 
         long end = System.currentTimeMillis();
         final long timeInSeconds = (end - start) / 1000;
-
         //This fails, test takes 5 seconds
-        Assertions.assertTrue(timeInSeconds <= 2, ()->  "Test takes: "+timeInSeconds + " seconds");
+        Assertions.assertTrue(timeInSeconds <= 2, () -> "Test takes: " + timeInSeconds + " seconds");
 
+    }
+
+
+
+    // Time skipping works here, with no blocking activity involved
+    @org.junit.jupiter.api.Test
+    public void testNoActivityAtAll(
+            TestWorkflowEnvironment testWorkflowEnvironment,
+            WorkflowClient workflowClient,
+            Worker worker
+    ) {
+
+
+        // using Workflow_AwaitNotBlocking as workflow implementation
+        worker.registerWorkflowImplementationTypes(Workflow_NotActivity.class);
+
+
+        testWorkflowEnvironment.start();
+
+        long start = System.currentTimeMillis();
+
+
+        final Workflow_ workflow = testWorkflowEnvironment.getWorkflowClient().newWorkflowStub(Workflow_.class, WorkflowOptions
+                .newBuilder()
+                .setTaskQueue(worker.getTaskQueue())
+                .build());
+        WorkflowExecution execution = WorkflowClient.start(workflow::run);
+
+        //To force await timeout
+        testWorkflowEnvironment.sleep(Duration.ofSeconds(5));
+
+        TimerFired result = getWorkflowResult(workflowClient, execution);
+
+        //The timer fires, but after 5 real seconds
+        Assertions.assertEquals(new TimerFired(true), result);
+
+        long end = System.currentTimeMillis();
+        final long timeInSeconds = (end - start) / 1000;
+        Assertions.assertTrue(timeInSeconds <= 2, () -> "Test takes: " + timeInSeconds + " seconds");
+
+    }
+
+
+    private TimerFired getWorkflowResult(final WorkflowClient workflowClient, final WorkflowExecution execution) {
+
+
+        String workflowId = execution.getWorkflowId();
+        TimerFired result = workflowClient.newUntypedWorkflowStub(workflowId).getResult(TimerFired.class);
+
+        return result;
     }
 
 
@@ -191,12 +237,12 @@ class TestWorkflowTimeSkipping {
 
     }
 
+
     @WorkflowInterface
     public interface Workflow_ {
         @WorkflowMethod
         TimerFired run();
     }
-
 
     public static class Workflow_AwaitBlocking implements Workflow_ {
 
@@ -212,17 +258,17 @@ class TestWorkflowTimeSkipping {
 
             boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
                 System.out.println("In Workflow.await java");
-                // In test environment, this condition only unblock when
-                // this return
                 activity.doSomething();
                 return true;
             });
+
+
+            System.out.println("activityExecuted: " + activityExecuted);
 
             return new TimerFired(!activityExecuted);
         }
 
     }
-
 
     public static class Workflow_AwaitNotBlocking implements Workflow_ {
 
@@ -236,7 +282,6 @@ class TestWorkflowTimeSkipping {
         @Override
         public TimerFired run() {
 
-
             final AtomicBoolean activityCompleted = new AtomicBoolean(false);
 
             Async.procedure(activity::doSomething).thenApply((r) -> {
@@ -246,8 +291,14 @@ class TestWorkflowTimeSkipping {
 
             boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
                 System.out.println("In Workflow.await java");
-                return activityCompleted.get();
+                final boolean b = activityCompleted.get();
+                System.out.println("In Workflow.await java, completed: " + b);
+                return b;
             });
+
+
+            System.out.println("activityExecuted: " + activityExecuted);
+
 
             return new TimerFired(!activityExecuted);
         }
@@ -255,18 +306,30 @@ class TestWorkflowTimeSkipping {
     }
 
 
-    public record TimerFired(boolean timerFired) {
+
+    public static class Workflow_NotActivity implements Workflow_ {
+
+
+
+        @Override
+        public TimerFired run() {
+
+
+            boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
+                return false;
+            });
+
+
+            System.out.println("activityExecuted: " + activityExecuted);
+
+
+            return new TimerFired(!activityExecuted);
+        }
 
     }
 
+    public record TimerFired(boolean timerFired) {
 
-    private static TimerFired getWorkflowResult(final WorkflowClient workflowClient, final WorkflowExecution execution) {
-
-
-        String workflowId = execution.getWorkflowId();
-        TimerFired result = workflowClient.newUntypedWorkflowStub(workflowId).getResult(TimerFired.class);
-
-        return result;
     }
 
 }
