@@ -34,7 +34,7 @@ class TestWorkflowTimeSkipping {
 
     // Time skipping does not work here,
     // test execution takes 2 seconds,
-    // WorkflowAwait only unblock when the activity returns in one second
+    // WorkflowAwait only unblock when the activity returns
     @org.junit.jupiter.api.Test
     public void testBlockingActivityInAwait(
             TestWorkflowEnvironment testWorkflowEnvironment,
@@ -73,7 +73,8 @@ class TestWorkflowTimeSkipping {
 
         TimerFired result = getWorkflowResult(workflowClient, execution);
 
-        //The timer didn't fire, I would expect it fired since we are doing
+        //The timer does not fire, this should be "assert.. new TimerFired(true)"
+        // I would expect it fired since we are doing
         //testWorkflowEnvironment.sleep(Duration.ofSeconds(5));
         Assertions.assertEquals(new TimerFired(false), result);
 
@@ -180,7 +181,7 @@ class TestWorkflowTimeSkipping {
 
 
 
-    // Time skipping works here, with no blocking activity involved
+    // Time skipping works here, with no "blocking" activity involved
     @org.junit.jupiter.api.Test
     public void testNoActivityAtAll(
             TestWorkflowEnvironment testWorkflowEnvironment,
@@ -262,9 +263,7 @@ class TestWorkflowTimeSkipping {
                 return true;
             });
 
-
             System.out.println("activityExecuted: " + activityExecuted);
-
             return new TimerFired(!activityExecuted);
         }
 
@@ -296,10 +295,7 @@ class TestWorkflowTimeSkipping {
                 return b;
             });
 
-
             System.out.println("activityExecuted: " + activityExecuted);
-
-
             return new TimerFired(!activityExecuted);
         }
 
@@ -309,20 +305,14 @@ class TestWorkflowTimeSkipping {
 
     public static class Workflow_NotActivity implements Workflow_ {
 
-
-
         @Override
         public TimerFired run() {
-
 
             boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
                 return false;
             });
 
-
             System.out.println("activityExecuted: " + activityExecuted);
-
-
             return new TimerFired(!activityExecuted);
         }
 
