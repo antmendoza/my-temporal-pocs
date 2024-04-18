@@ -6,7 +6,7 @@ module.exports = {
         webpack5: true,
     },
     webpack: function (config, options) {
-        Object.assign(config.optimization, {
+        var dontStripNamesConfig = {
             //entry: [
             //    './index.js',
             //    '../temporal/lib/worker.js'
@@ -19,9 +19,9 @@ module.exports = {
                     },
                 })
             ],
-        });
+        };
 
-
+        Object.assign(config.optimization, {});
         Object.assign(config, {
             //entry: ['./index.js','../temporal/lib/worker.js'],
         });
