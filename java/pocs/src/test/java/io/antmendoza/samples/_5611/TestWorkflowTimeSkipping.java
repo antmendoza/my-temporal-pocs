@@ -1,4 +1,4 @@
-package io.antmendoza.samples;
+package io.antmendoza.samples._5611;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
