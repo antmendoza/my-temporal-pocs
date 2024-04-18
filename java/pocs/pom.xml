@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <temporal-sdk.version>1.21.0</temporal-sdk.version>
+        <temporal-sdk.version>1.23.1</temporal-sdk.version>
     </properties>
 
     <dependencies>
@@ -103,8 +103,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>16</source>
+                    <target>16</target>
                 </configuration>
             </plugin>
             <plugin>

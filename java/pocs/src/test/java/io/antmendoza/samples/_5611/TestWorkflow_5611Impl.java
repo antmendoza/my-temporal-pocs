@@ -10,18 +10,17 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Duration;
 
-class Workflow_5611_test_skiptime_Java {
+class TestWorkflow_5611Impl {
 
 
     @RegisterExtension
     TestWorkflowExtension testWorkflowExtension =
             TestWorkflowExtension.newBuilder()
                     .setWorkflowTypes(
-                            Workflow_5611ImplJava.class
+                            Workflow_5611Impl.class
                     )
                     .setUseTimeskipping(true)
                     .setActivityImplementations(new Activity_5611Impl())
-                    .useInternalService()
                     .build();
 
 

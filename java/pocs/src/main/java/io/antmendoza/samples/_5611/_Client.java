@@ -24,7 +24,7 @@ public class _Client {
 
         Worker worker = factory.newWorker(TASK_QUEUE);
 
-        worker.registerWorkflowImplementationTypes(Workflow_5611ImplJava.class);
+        worker.registerWorkflowImplementationTypes(Workflow_5611Impl.class);
 
         factory.start();
 

@@ -5,7 +5,7 @@ import io.temporal.workflow.Workflow;
 
 import java.time.Duration;
 
-public class Workflow_5611ImplJava implements Workflow_5611 {
+public class Workflow_5611Impl implements Workflow_5611 {
 
     private final Activity_5611 activity = Workflow.newActivityStub(Activity_5611.class,
             ActivityOptions.newBuilder().
