@@ -74,8 +74,6 @@ class TestWorkflowTimeSkipping {
         TimerFired result = getWorkflowResult(workflowClient, execution);
 
         //The timer does not fire, this should be "assert.. new TimerFired(true)"
-        // I would expect it fired since we are doing
-        //testWorkflowEnvironment.sleep(Duration.ofSeconds(5));
         Assertions.assertEquals(new TimerFired(false), result);
 
         long end = System.currentTimeMillis();
@@ -86,7 +84,7 @@ class TestWorkflowTimeSkipping {
 
     }
 
-    // This test never completes, becase the activity in the await method never completes
+    // This test never completes, becase the activity, in the await method, never completes.(keep retrying)
     // and the timer in workflow.await doesn't fire
     @org.junit.jupiter.api.Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
@@ -210,7 +208,6 @@ class TestWorkflowTimeSkipping {
 
         TimerFired result = getWorkflowResult(workflowClient, execution);
 
-        //The timer fires, but after 5 real seconds
         Assertions.assertEquals(new TimerFired(true), result);
 
         long end = System.currentTimeMillis();
