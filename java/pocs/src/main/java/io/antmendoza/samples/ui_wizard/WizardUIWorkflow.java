@@ -15,7 +15,7 @@ public interface WizardUIWorkflow {
     @WorkflowMethod
     void run();
 
-    @UpdateMethod
+    //@UpdateMethod
     String navigateTo(ScreenID screenID);
 
 
@@ -23,7 +23,7 @@ public interface WizardUIWorkflow {
     ScreenID getCurrentScreen();
 
 
-    @UpdateMethod
+    //@UpdateMethod
     String submitScreen(UIRequest uiRequest);
 
 
