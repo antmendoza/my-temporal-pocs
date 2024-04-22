@@ -9,20 +9,16 @@ import io.temporal.client.WorkflowOptions;
 import io.temporal.testing.TestWorkflowEnvironment;
 import io.temporal.testing.TestWorkflowExtension;
 import io.temporal.worker.Worker;
-import io.temporal.workflow.Async;
-import io.temporal.workflow.Workflow;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.workflow.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class TestWorkflowTimeSkipping {
+class TestWorkflowTimeSkipping_cancellationscope {
 
 
     @RegisterExtension
@@ -96,7 +92,7 @@ class TestWorkflowTimeSkipping {
 
 
         // using Workflow_AwaitBlocking as workflow implementation
-        worker.registerWorkflowImplementationTypes(Workflow_AwaitBlocking.class);
+        worker.registerWorkflowImplementationTypes(Workflow_AwaitNotBlocking.class);
 
         worker.registerActivitiesImplementations(new Activity() {
             @Override
@@ -254,6 +250,9 @@ class TestWorkflowTimeSkipping {
         @Override
         public TimerFired run() {
 
+
+
+
             boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
                 System.out.println("In Workflow.await java");
                 activity.doSomething();
@@ -285,12 +284,15 @@ class TestWorkflowTimeSkipping {
                 return r;
             });
 
+
             boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
                 System.out.println("In Workflow.await java");
                 final boolean b = activityCompleted.get();
                 System.out.println("In Workflow.await java, completed: " + b);
                 return b;
             });
+
+
 
             System.out.println("activityExecuted: " + activityExecuted);
             return new TimerFired(!activityExecuted);
@@ -304,6 +306,9 @@ class TestWorkflowTimeSkipping {
 
         @Override
         public TimerFired run() {
+
+
+
 
             boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
                 return false;

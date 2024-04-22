@@ -18,14 +18,15 @@ public class Workflow_5611Impl implements Workflow_5611 {
     public String run() {
 
 
-        boolean awaitSignal = Workflow.await(Duration.ofSeconds(5), () -> {
+        boolean activityCompleted = Workflow.await(Duration.ofSeconds(5), () -> {
             System.out.println("In Workflow.await java");
-            //activity.doSomething();
-            return false;
+            activity.doSomething();
+            return true;
         });
 
+        System.out.println("Completed " + !activityCompleted );
 
-        if (!awaitSignal) {
+        if (!activityCompleted) {
             System.out.println(">>>>>>>>>  timer fired");
         }
 

@@ -1,11 +1,13 @@
 package io.antmendoza.samples._5611;
 
 import io.temporal.activity.ActivityOptions;
+import io.temporal.workflow.Async;
 import io.temporal.workflow.Workflow;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Workflow_5611Impl implements Workflow_5611 {
+public class Workflow_5611Impl_ implements Workflow_5611 {
 
     private final Activity_5611 activity = Workflow.newActivityStub(Activity_5611.class,
             ActivityOptions.newBuilder().
@@ -17,15 +19,19 @@ public class Workflow_5611Impl implements Workflow_5611 {
     @Override
     public String run() {
 
-
-        boolean activityCompleted = Workflow.await(Duration.ofSeconds(5), () -> {
-            System.out.println("In Workflow.await java");
-            activity.doSomething();
-            return false;
+        final AtomicBoolean activityCompleted = new AtomicBoolean(false);
+        Async.procedure(activity::doSomething).thenApply((r) -> {
+            activityCompleted.set(true);
+            return r;
         });
 
+        boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
+            final boolean b = activityCompleted.get();
+            activity.doSomething();
+            return b;
+        });
 
-        if (!activityCompleted) {
+        if (!activityExecuted) {
             System.out.println(">>>>>>>>>  timer fired");
         }
 

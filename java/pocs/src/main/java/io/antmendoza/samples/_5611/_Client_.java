@@ -9,7 +9,7 @@ import io.temporal.worker.WorkerFactory;
 
 import java.time.Instant;
 
-public class _Client {
+public class _Client_ {
 
     public static String TASK_QUEUE = "my-task-queue";
 

@@ -87,7 +87,7 @@ class TestWorkflowTimeSkipping {
     // This test never completes, becase the activity, in the await method, never completes.(keep retrying)
     // and the timer in workflow.await doesn't fire
     @org.junit.jupiter.api.Test
-    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     public void testNeverCompletes(
             TestWorkflowEnvironment testWorkflowEnvironment,
             WorkflowClient workflowClient,
@@ -120,7 +120,7 @@ class TestWorkflowTimeSkipping {
         //To force await timeout
         testWorkflowEnvironment.sleep(Duration.ofSeconds(5));
 
-        //It does not mather the time move forward the time, workflow.await never unblock
+        //It does not mather if we move forward the time, workflow.await never unblocks
         TimerFired result = getWorkflowResult(workflowClient, execution);
 
 
@@ -255,7 +255,6 @@ class TestWorkflowTimeSkipping {
         public TimerFired run() {
 
             boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
-                System.out.println("In Workflow.await java");
                 activity.doSomething();
                 return true;
             });
@@ -278,17 +277,14 @@ class TestWorkflowTimeSkipping {
         @Override
         public TimerFired run() {
 
-            final AtomicBoolean activityCompleted = new AtomicBoolean(false);
 
+            final AtomicBoolean activityCompleted = new AtomicBoolean(false);
             Async.procedure(activity::doSomething).thenApply((r) -> {
                 activityCompleted.set(true);
                 return r;
             });
-
             boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
-                System.out.println("In Workflow.await java");
                 final boolean b = activityCompleted.get();
-                System.out.println("In Workflow.await java, completed: " + b);
                 return b;
             });
 

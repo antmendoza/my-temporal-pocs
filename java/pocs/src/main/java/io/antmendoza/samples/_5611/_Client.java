@@ -25,6 +25,7 @@ public class _Client {
         Worker worker = factory.newWorker(TASK_QUEUE);
 
         worker.registerWorkflowImplementationTypes(Workflow_5611Impl.class);
+        worker.registerActivitiesImplementations(new Activity_5611Impl());
 
         factory.start();
 
@@ -33,7 +34,7 @@ public class _Client {
         final WorkflowOptions build = WorkflowOptions
                 .newBuilder()
                 .setTaskQueue(TASK_QUEUE)
-                .setWorkflowId(workflowId)
+                .setWorkflowId(workflowId +  Math.random())
                 .build();
 
 
@@ -45,17 +46,6 @@ public class _Client {
         System.out.println("Clock: "+ Instant.now());
 
         WorkflowExecution execution = WorkflowClient.start(workflow::run);
-
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-        client.newUntypedWorkflowStub(workflowId).signal("triggerAwait", "value");
-
 
 
         String result = client.newUntypedWorkflowStub(workflowId).getResult(String.class);
