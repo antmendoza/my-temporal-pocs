@@ -39,7 +39,7 @@ func ParentWorkflow_V3(ctx workflow.Context, elements []int, childWFPerBatch int
 
 	}
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < childWFPerBatch; i++ {
 		pendingTests.Select(ctx)
 	}
 
