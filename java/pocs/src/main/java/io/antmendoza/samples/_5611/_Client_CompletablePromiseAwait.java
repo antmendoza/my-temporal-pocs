@@ -9,7 +9,7 @@ import io.temporal.worker.WorkerFactory;
 
 import java.time.Instant;
 
-public class _Client_ {
+public class _Client_CompletablePromiseAwait {
 
     public static String TASK_QUEUE = "my-task-queue";
 
@@ -24,17 +24,17 @@ public class _Client_ {
 
         Worker worker = factory.newWorker(TASK_QUEUE);
 
-        worker.registerWorkflowImplementationTypes(Workflow_5611Impl_.class);
+        worker.registerWorkflowImplementationTypes(Workflow_5611Impl_CompletablePromiseAwait.class);
         worker.registerActivitiesImplementations(new Activity_5611Impl());
 
         factory.start();
 
 
-        final String workflowId = "my-kotlin";
+        final String workflowId = "my-kotlin"+Math.random();
         final WorkflowOptions build = WorkflowOptions
                 .newBuilder()
                 .setTaskQueue(TASK_QUEUE)
-                .setWorkflowId(workflowId +  Math.random())
+                .setWorkflowId(workflowId)
                 .build();
 
 

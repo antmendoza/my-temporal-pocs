@@ -1,13 +1,12 @@
 package io.antmendoza.samples._5611;
 
 import io.temporal.activity.ActivityOptions;
-import io.temporal.workflow.Async;
+import io.temporal.workflow.CompletablePromise;
 import io.temporal.workflow.Workflow;
 
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Workflow_5611Impl_ implements Workflow_5611 {
+public class Workflow_5611Impl_CompletablePromiseAwait implements Workflow_5611 {
 
     private final Activity_5611 activity = Workflow.newActivityStub(Activity_5611.class,
             ActivityOptions.newBuilder().
@@ -15,20 +14,13 @@ public class Workflow_5611Impl_ implements Workflow_5611 {
                     .build()
     );
 
-
     @Override
     public String run() {
 
-        final AtomicBoolean activityCompleted = new AtomicBoolean(false);
-        Async.procedure(activity::doSomething).thenApply((r) -> {
-            activityCompleted.set(true);
-            return r;
-        });
+        CompletablePromise<Boolean> checkUpdate = Workflow.newPromise();
 
         boolean activityExecuted = Workflow.await(Duration.ofSeconds(5), () -> {
-            final boolean b = activityCompleted.get();
-            activity.doSomething();
-            return b;
+            return checkUpdate.get();
         });
 
         if (!activityExecuted) {
