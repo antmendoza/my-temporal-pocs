@@ -5,11 +5,10 @@ import (
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"math/rand"
 	"time"
 )
 
-func ParentWorkflow_V3(ctx workflow.Context, elements []int, childWFPerBatch int) error {
+func ParentWorkflow_V4(ctx workflow.Context, elements []int, childWFPerBatch int) error {
 
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Parent workflow START", "WorkflowExecution.id", workflow.GetInfo(ctx).WorkflowExecution.ID, "OriginalRunID", workflow.GetInfo(ctx).OriginalRunID)
@@ -39,9 +38,15 @@ func ParentWorkflow_V3(ctx workflow.Context, elements []int, childWFPerBatch int
 
 	}
 
-	for i := 0; i < childWFPerBatch+200; i++ {
+	remainingWorkflows := childWFPerBatch + 100
+	for remainingWorkflows > 0 {
 		pendingTests.Select(ctx)
+		remainingWorkflows -= 1
 	}
+
+	//	for i := 0; i < childWFPerBatch+200; i++ {
+	//		pendingTests.Select(ctx)
+	//	}
 
 	pendingBatch := len(elements) - childWFPerBatch
 
@@ -58,18 +63,4 @@ func ParentWorkflow_V3(ctx workflow.Context, elements []int, childWFPerBatch int
 	}
 
 	return nil
-}
-
-func ChildWorkflow_V2(ctx workflow.Context) error {
-
-	encodedRandom := workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
-		return rand.Intn(1000)
-	})
-	var random int
-	_ = encodedRandom.Get(&random)
-	//adjust this to force unhandledCommand
-	_ = workflow.Sleep(ctx, (9000+time.Duration(random))*time.Millisecond)
-
-	return nil
-
 }
