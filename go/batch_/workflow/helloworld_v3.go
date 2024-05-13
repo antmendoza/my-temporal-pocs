@@ -68,7 +68,7 @@ func ChildWorkflow_V2(ctx workflow.Context) error {
 	var random int
 	_ = encodedRandom.Get(&random)
 	//adjust this to force unhandledCommand
-	_ = workflow.Sleep(ctx, (9000+time.Duration(random))*time.Millisecond)
+	//_ = workflow.Sleep(ctx, (9000+time.Duration(random))*time.Millisecond)
 
 	return nil
 
