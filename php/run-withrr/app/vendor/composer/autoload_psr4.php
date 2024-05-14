@@ -12,7 +12,7 @@ return array(
     'Temporal\\SampleUtils\\' => array($baseDir . '/util-src'),
     'Temporal\\OpenTelemetry\\' => array($vendorDir . '/temporal/open-telemetry-interceptors/src'),
     'Temporal\\Api\\Testservice\\' => array($vendorDir . '/temporal/sdk/testing/api/testservice/Temporal/Api/Testservice'),
-    'Temporal\\' => array($vendorDir . '/temporal/sdk/src', $vendorDir . '/roadrunner-php/roadrunner-api-dto/generated/Temporal'),
+    'Temporal\\' => array($vendorDir . '/roadrunner-php/roadrunner-api-dto/generated/Temporal', $vendorDir . '/temporal/sdk/src'),
     'Symfony\\Polyfill\\Php83\\' => array($vendorDir . '/symfony/polyfill-php83'),
     'Symfony\\Polyfill\\Php82\\' => array($vendorDir . '/symfony/polyfill-php82'),
     'Symfony\\Polyfill\\Php81\\' => array($vendorDir . '/symfony/polyfill-php81'),

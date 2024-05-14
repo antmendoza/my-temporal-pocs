@@ -180,8 +180,8 @@ class ComposerStaticInitaaf00f7ab3d77fc331b4765be6606cd5
         ),
         'Temporal\\' => 
         array (
-            0 => __DIR__ . '/..' . '/temporal/sdk/src',
-            1 => __DIR__ . '/..' . '/roadrunner-php/roadrunner-api-dto/generated/Temporal',
+            0 => __DIR__ . '/..' . '/roadrunner-php/roadrunner-api-dto/generated/Temporal',
+            1 => __DIR__ . '/..' . '/temporal/sdk/src',
         ),
         'Symfony\\Polyfill\\Php83\\' => 
         array (
