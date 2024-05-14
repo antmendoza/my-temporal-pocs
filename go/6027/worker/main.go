@@ -18,7 +18,7 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "hello-world", worker.Options{
-		WorkerStopTimeout: 10,
+		//	WorkerStopTimeout: 10,
 	})
 
 	w.RegisterWorkflow(helloworld.Workflow)

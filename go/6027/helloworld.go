@@ -2,7 +2,6 @@ package helloworld
 
 import (
 	"context"
-	"go.temporal.io/sdk/temporal"
 	"time"
 
 	"go.temporal.io/sdk/activity"
@@ -36,6 +35,7 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 
 func Activity(ctx context.Context, name string) (string, error) {
 
+	ctx.Done()
 	logger := activity.GetLogger(ctx)
 	go func() {
 		for i := 0; i < 10; i++ {
@@ -49,14 +49,12 @@ func Activity(ctx context.Context, name string) (string, error) {
 	for {
 		select {
 		case <-ticker.C:
-			activity.RecordHeartbeat(ctx)
-		case <-activity.GetWorkerStopChannel(ctx):
-			logger.Info("Activity clean up")
+			//activity.RecordHeartbeat(ctx)
 
-			time.Sleep(2 * time.Second)
-			logger.Info("Activity clean up")
+		case <-ctx.Done():
+			// We have been cancelled.
+			logger.Info("context cancelled ")
 
-			return "", temporal.NewApplicationError("some retryable error", "SomeType")
 		}
 	}
 
