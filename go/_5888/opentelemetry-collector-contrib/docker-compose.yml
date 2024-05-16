@@ -1,16 +1,16 @@
 version: "3.5"
 services:
-  jaeger-all-in-one:
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - "16686:16686"
-      - "14268"
-      - "14250"
+#  jaeger-all-in-one:
+#    image: jaegertracing/all-in-one:latest
+#    ports:
+#      - "16686:16686"
+#      - "14268"
+#      - "14250"
     # Collector
   otel-collector:
     image: otel/opentelemetry-collector-contrib
-#    volumes:
-#      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
     ports:
       - 1888:1888 # pprof extension
       - 8888:8888 # Prometheus metrics exposed by the Collector
@@ -19,3 +19,5 @@ services:
       - 4317:4317 # OTLP gRPC receiver
       - 4318:4318 # OTLP http receiver
       - 55679:55679 # zpages extension
+#    depends_on:
+#      - jaeger-all-in-one
