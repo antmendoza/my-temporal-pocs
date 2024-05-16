@@ -27,11 +27,11 @@ func main() {
 			ID:        "ParentWorkflow_" + strconv.Itoa(i) + "_" + strconv.Itoa(rand.Intn(10000)),
 			TaskQueue: "hello-parent",
 		}
-		childWFPerBatch := 10000000
+		numberOfChildWFPerBatch := 100
 
-		childWorkflowIDs := workflow.MakeRange(1, 20000000)
+		childWorkflowIDs := workflow.MakeRange(1, 100)
 		we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, workflow.ParentWorkflow_V3,
-			childWorkflowIDs, childWFPerBatch)
+			childWorkflowIDs, numberOfChildWFPerBatch)
 		if err != nil {
 			log.Fatalln("Unable to execute workflow", err)
 		}
