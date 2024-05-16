@@ -3,14 +3,9 @@ package main
 import (
 	metrics "_5888"
 	"context"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
 	"go.temporal.io/sdk/contrib/opentelemetry"
-	"go.temporal.io/sdk/interceptor"
 	"log"
 	"time"
 
@@ -21,40 +16,34 @@ import (
 	sdktally "go.temporal.io/sdk/contrib/tally"
 	"go.temporal.io/sdk/worker"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/resource"
+
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 )
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
-	tp, err := InitializeGlobalTracerProvider()
+	ctx := context.Background()
+	exp, err := otlpmetrichttp.New(ctx, otlpmetrichttp.WithEndpointURL("http://localhost:4318"))
 	if err != nil {
-		log.Fatalln("Unable to create a global trace provider", err)
+		panic(err)
 	}
-
-	defer func() {
-		if err := tp.Shutdown(ctx); err != nil {
-			log.Println("Error shutting down trace provider:", err)
-		}
-	}()
-
-	tracingInterceptor, err := opentelemetry.NewTracingInterceptor(opentelemetry.TracerOptions{})
-	if err != nil {
-		log.Fatalln("Unable to create interceptor", err)
-	}
-
-	// The client and worker are heavyweight objects that should be created once per process.
+	meterProvider := metric.NewMeterProvider(metric.WithReader(
+		metric.NewPeriodicReader(exp, metric.WithInterval(10*time.Second)),
+	))
 	c, err := client.Dial(client.Options{
-		Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
-		MetricsHandler: sdktally.NewMetricsHandler(newPrometheusScope(prometheus.Configuration{
-			ListenAddress: "0.0.0.0:9090",
-			TimerType:     "histogram",
-		})),
+		MetricsHandler: opentelemetry.NewMetricsHandler(
+			opentelemetry.MetricsHandlerOptions{
+				Meter: meterProvider.Meter("temporal-sdk-go"),
+			},
+		),
 	})
-	if err != nil {
-		log.Fatalln("Unable to create client", err)
-	}
+
 	defer c.Close()
 
 	w := worker.New(c, "metrics", worker.Options{})
