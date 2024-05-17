@@ -36,12 +36,14 @@ func main() {
 	meterProvider := metric.NewMeterProvider(metric.WithReader(
 		metric.NewPeriodicReader(exp, metric.WithInterval(10*time.Second)),
 	))
+	handler := opentelemetry.NewMetricsHandler(
+		opentelemetry.MetricsHandlerOptions{
+			Meter: meterProvider.Meter("temporal-sdk-go"),
+		},
+	)
+
 	c, err := client.Dial(client.Options{
-		MetricsHandler: opentelemetry.NewMetricsHandler(
-			opentelemetry.MetricsHandlerOptions{
-				Meter: meterProvider.Meter("temporal-sdk-go"),
-			},
-		),
+		MetricsHandler: handler,
 	})
 
 	defer c.Close()

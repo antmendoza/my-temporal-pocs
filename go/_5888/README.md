@@ -17,9 +17,12 @@ go run starter/main.go
 4) Check metrics at http://localhost:9090/metrics (this is where the Prometheus agent scrapes it from).
 
 
+```bash
+cd opentelemetry-collector-contrib
+docker-compose up 
+```
 
 ```bash
-git clone -b main https://github.com/SigNoz/signoz.git
-cd signoz/deploy/
-./install.sh
+cd opentelemetry-collector-contrib
+docker-compose down -v
 ```
