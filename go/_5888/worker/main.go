@@ -34,7 +34,7 @@ func main() {
 		panic(err)
 	}
 	meterProvider := metric.NewMeterProvider(metric.WithReader(
-		metric.NewPeriodicReader(exp, metric.WithInterval(10*time.Second)),
+		metric.NewPeriodicReader(exp, metric.WithInterval(1*time.Second)),
 	))
 	handler := opentelemetry.NewMetricsHandler(
 		opentelemetry.MetricsHandlerOptions{
