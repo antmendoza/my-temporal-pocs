@@ -1,5 +1,6 @@
 package com.antmendoza.micrometer;
 
+import com.antmendoza.EnvVariables;
 import io.micrometer.dynatrace.DynatraceApiVersion;
 import io.micrometer.dynatrace.DynatraceConfig;
 
@@ -19,14 +20,13 @@ public class DynatraceMeterRegistry {
             @Override
             public String uri() {
                 // The Dynatrace environment URI without any path. For example:
-                // https://{your-environment-id}.live.dynatrace.com
-                return "https://{id}.live.dynatrace.com/api/v2/metrics/ingest";
+                return EnvVariables.getDynatraceEndpoint();
             }
 
             @Override
             public String apiToken() {
                 // Should be read from a secure source
-                return "token";
+                return EnvVariables.getDynatraceApiToken();
             }
 
             @Override

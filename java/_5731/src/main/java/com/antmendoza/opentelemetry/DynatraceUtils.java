@@ -1,5 +1,6 @@
 package com.antmendoza.opentelemetry;
 
+import com.antmendoza.EnvVariables;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -38,14 +39,13 @@ public class DynatraceUtils {
                     //TODO: Replace this with name of service variable from Kyma?
                     Attributes.of(ResourceAttributes.SERVICE_NAME, "temporal-sample-opentelemetry"));
 
-    final String value = "token";
 
 
     OtlpGrpcSpanExporter dynatraceExporter =
             OtlpGrpcSpanExporter.builder()
                     //TODO: Replace with general endpoint and DT Access Token
-                    .setEndpoint("https://{id}.live.dynatrace.com/api/v2/metrics/ingest")
-                    .addHeader("Authorization", value)
+                    .setEndpoint(EnvVariables.getDynatraceEndpoint())
+                    .addHeader("Authorization", EnvVariables.getDynatraceApiToken())
                     .setTimeout(1, TimeUnit.SECONDS)
                     .build();
 
