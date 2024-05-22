@@ -17,12 +17,12 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.micrometer;
+package com.antmendoza.micrometer;
 
+import com.antmendoza.micrometer.workflow.MetricsWorkflow;
 import com.uber.m3.tally.RootScopeBuilder;
 import com.uber.m3.tally.Scope;
 import com.uber.m3.util.ImmutableMap;
-import io.antmendoza.samples._5731.micrometer.workflow.MetricsWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.common.reporter.MicrometerClientStatsReporter;

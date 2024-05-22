@@ -17,13 +17,11 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.micrometer.activities;
+package com.antmendoza.opentelemetry.workflow;
 
 import io.temporal.activity.ActivityInterface;
 
 @ActivityInterface
-public interface MetricsActivities {
-  String performA(String input);
-
-  String performB(String input);
+public interface TracingActivities {
+  String greet(String name, String language);
 }

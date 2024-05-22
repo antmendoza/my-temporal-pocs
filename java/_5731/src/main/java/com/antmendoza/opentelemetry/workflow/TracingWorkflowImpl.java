@@ -17,22 +17,34 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.opentelemetry.workflow;
+package com.antmendoza.opentelemetry.workflow;
 
-import io.temporal.activity.ActivityOptions;
+import io.temporal.workflow.ChildWorkflowOptions;
 import io.temporal.workflow.Workflow;
 
-import java.time.Duration;
+public class TracingWorkflowImpl implements TracingWorkflow {
 
-public class TracingChildWorkflowImpl implements TracingChildWorkflow {
+  private String language = "English";
+
   @Override
-  public String greet(String name, String language) {
+  public String greet(String name) {
+    ChildWorkflowOptions options =
+        ChildWorkflowOptions.newBuilder().setWorkflowId("tracingChildWorkflow").build();
 
-    ActivityOptions activityOptions =
-        ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build();
-    TracingActivities activities =
-        Workflow.newActivityStub(TracingActivities.class, activityOptions);
+    // Get the child workflow stub
+    TracingChildWorkflow child = Workflow.newChildWorkflowStub(TracingChildWorkflow.class, options);
 
-    return activities.greet(name, language);
+    // Invoke child sync and return its result
+    return child.greet(name, language);
+  }
+
+  @Override
+  public void setLanguage(String language) {
+    this.language = language;
+  }
+
+  @Override
+  public String getLanguage() {
+    return language;
   }
 }

@@ -17,22 +17,22 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.opentelemetry.workflow;
+package com.antmendoza.opentelemetry.workflow;
 
-import io.temporal.workflow.QueryMethod;
-import io.temporal.workflow.SignalMethod;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.activity.ActivityOptions;
+import io.temporal.workflow.Workflow;
 
-@WorkflowInterface
-public interface TracingWorkflow {
+import java.time.Duration;
 
-  @WorkflowMethod
-  String greet(String name);
+public class TracingChildWorkflowImpl implements TracingChildWorkflow {
+  @Override
+  public String greet(String name, String language) {
 
-  @SignalMethod
-  void setLanguage(String language);
+    ActivityOptions activityOptions =
+        ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build();
+    TracingActivities activities =
+        Workflow.newActivityStub(TracingActivities.class, activityOptions);
 
-  @QueryMethod
-  String getLanguage();
+    return activities.greet(name, language);
+  }
 }

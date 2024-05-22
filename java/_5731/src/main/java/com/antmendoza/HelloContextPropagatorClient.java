@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731;
+package com.antmendoza;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;

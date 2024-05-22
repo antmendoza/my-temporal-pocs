@@ -17,10 +17,10 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.micrometer.workflow;
+package com.antmendoza.micrometer.workflow;
 
+import com.antmendoza.micrometer.activities.MetricsActivities;
 import com.uber.m3.tally.Scope;
-import io.antmendoza.samples._5731.micrometer.activities.MetricsActivities;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Workflow;
 

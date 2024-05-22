@@ -1,4 +1,4 @@
-package io.antmendoza.samples._5731.micrometer;
+package com.antmendoza.micrometer;
 
 import io.micrometer.dynatrace.DynatraceApiVersion;
 import io.micrometer.dynatrace.DynatraceConfig;

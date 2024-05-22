@@ -1,4 +1,4 @@
-package io.antmendoza.samples._5731;
+package com.antmendoza;
 
 import io.temporal.api.common.v1.Payload;
 import io.temporal.common.context.ContextPropagator;

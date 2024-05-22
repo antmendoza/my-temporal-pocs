@@ -1,4 +1,4 @@
-package io.antmendoza.samples;
+package com.antmendoza;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;

@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.micrometer.activities;
+package com.antmendoza.micrometer.activities;
 
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;

@@ -17,24 +17,13 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.opentelemetry.workflow;
+package com.antmendoza.micrometer.workflow;
 
-public class TracingActivitiesImpl implements TracingActivities {
-  @Override
-  public String greet(String name, String language) {
-    String greeting;
+import io.temporal.workflow.WorkflowInterface;
+import io.temporal.workflow.WorkflowMethod;
 
-    switch (language) {
-      case "Spanish":
-        greeting = "Hola " + name;
-        break;
-      case "French":
-        greeting = "Bonjour " + name;
-        break;
-      default:
-        greeting = "Hello " + name;
-    }
-
-    return greeting;
-  }
+@WorkflowInterface
+public interface MetricsWorkflow {
+  @WorkflowMethod
+  String exec(String input);
 }

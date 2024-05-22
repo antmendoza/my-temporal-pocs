@@ -1,4 +1,4 @@
-package io.antmendoza.samples._5731.opentelemetry;
+package com.antmendoza.opentelemetry;
 
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
