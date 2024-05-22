@@ -141,6 +141,22 @@
             <version>1.38.0</version>
         </dependency>
 
+
+        <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-dynatrace -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-dynatrace</artifactId>
+            <version>1.13.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-core -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.13.0</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>

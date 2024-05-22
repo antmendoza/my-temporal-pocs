@@ -17,11 +17,11 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.dynatrace;
+package io.antmendoza.samples._5731.opentelemetry;
 
-import io.antmendoza.samples._5731.dynatrace.workflow.TracingActivitiesImpl;
-import io.antmendoza.samples._5731.dynatrace.workflow.TracingChildWorkflowImpl;
-import io.antmendoza.samples._5731.dynatrace.workflow.TracingWorkflowImpl;
+import io.antmendoza.samples._5731.opentelemetry.workflow.TracingActivitiesImpl;
+import io.antmendoza.samples._5731.opentelemetry.workflow.TracingChildWorkflowImpl;
+import io.antmendoza.samples._5731.opentelemetry.workflow.TracingWorkflowImpl;
 import io.temporal.client.WorkflowClient;
 import io.temporal.opentracing.OpenTracingWorkerInterceptor;
 import io.temporal.serviceclient.WorkflowServiceStubs;

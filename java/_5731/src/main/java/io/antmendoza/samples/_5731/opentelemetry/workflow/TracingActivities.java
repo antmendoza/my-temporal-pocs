@@ -17,13 +17,11 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.dynatrace.workflow;
+package io.antmendoza.samples._5731.opentelemetry.workflow;
 
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.activity.ActivityInterface;
 
-@WorkflowInterface
-public interface TracingChildWorkflow {
-  @WorkflowMethod
+@ActivityInterface
+public interface TracingActivities {
   String greet(String name, String language);
 }

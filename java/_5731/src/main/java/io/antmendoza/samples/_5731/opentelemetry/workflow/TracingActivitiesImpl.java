@@ -17,11 +17,24 @@
  *  permissions and limitations under the License.
  */
 
-package io.antmendoza.samples._5731.dynatrace.workflow;
+package io.antmendoza.samples._5731.opentelemetry.workflow;
 
-import io.temporal.activity.ActivityInterface;
+public class TracingActivitiesImpl implements TracingActivities {
+  @Override
+  public String greet(String name, String language) {
+    String greeting;
 
-@ActivityInterface
-public interface TracingActivities {
-  String greet(String name, String language);
+    switch (language) {
+      case "Spanish":
+        greeting = "Hola " + name;
+        break;
+      case "French":
+        greeting = "Bonjour " + name;
+        break;
+      default:
+        greeting = "Hello " + name;
+    }
+
+    return greeting;
+  }
 }
