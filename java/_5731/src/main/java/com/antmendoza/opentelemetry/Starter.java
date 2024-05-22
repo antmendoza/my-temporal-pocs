@@ -20,6 +20,7 @@
 package com.antmendoza.opentelemetry;
 
 import com.antmendoza.opentelemetry.workflow.TracingWorkflow;
+import io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap;
 import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;

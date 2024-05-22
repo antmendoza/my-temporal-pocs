@@ -28,6 +28,7 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
+import io.temporal.worker.WorkerOptions;
 
 public class TracingWorker {
   private static final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
@@ -48,7 +49,12 @@ public class TracingWorker {
             .build();
     WorkerFactory factory = WorkerFactory.newInstance(client, factoryOptions);
 
-    Worker worker = factory.newWorker(TASK_QUEUE_NAME);
+    final int executors = 100;
+    Worker worker = factory.newWorker(TASK_QUEUE_NAME, WorkerOptions.newBuilder()
+            .setMaxConcurrentWorkflowTaskExecutionSize(executors)
+                    .setMaxConcurrentActivityExecutionSize(executors)
+                    .setMaxConcurrentLocalActivityExecutionSize(executors)
+            .build());
     worker.registerWorkflowImplementationTypes(
         TracingWorkflowImpl.class, TracingChildWorkflowImpl.class);
     worker.registerActivitiesImplementations(new TracingActivitiesImpl());
