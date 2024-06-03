@@ -39,6 +39,12 @@ public class Starter {
       type = args[0];
     }
 
+    type = "OpenTracing";
+
+    while(true){
+
+
+
     // Set the OpenTracing client interceptor
     WorkflowClientOptions clientOptions =
         WorkflowClientOptions.newBuilder()
@@ -63,6 +69,14 @@ public class Starter {
     String greeting = untyped.getResult(String.class);
 
     System.out.println("Greeting: " + greeting);
+
+      try {
+        Thread.sleep(2000);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+
+    }
 
     //System.exit(0);
   }

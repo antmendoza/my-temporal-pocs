@@ -13,14 +13,14 @@ public class DynatraceMeterRegistry {
 
             @Override
             public DynatraceApiVersion apiVersion() {
-                return DynatraceApiVersion.V2;
+                return DynatraceApiVersion.V1;
 
             }
 
             @Override
             public String uri() {
                 // The Dynatrace environment URI without any path. For example:
-                return EnvVariables.getDynatraceEndpoint();
+                return EnvVariables.getOtelEndpoint();
             }
 
             @Override

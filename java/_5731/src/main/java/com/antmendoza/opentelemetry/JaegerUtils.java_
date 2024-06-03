@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.samples.tracing;
+package com.antmendoza.opentelemetry;
 
 import io.jaegertracing.internal.JaegerTracer;
 import io.jaegertracing.internal.reporters.RemoteReporter;
@@ -39,8 +39,9 @@ import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import io.opentracing.Tracer;
 import io.temporal.opentracing.OpenTracingOptions;
 import io.temporal.opentracing.OpenTracingSpanContextCodec;
-import java.util.concurrent.TimeUnit;
 import org.apache.thrift.transport.TTransportException;
+
+import java.util.concurrent.TimeUnit;
 
 public class JaegerUtils {
 

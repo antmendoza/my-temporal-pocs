@@ -41,6 +41,8 @@ public class TracingWorker {
       type = args[0];
     }
 
+    type = "OpenTracing";
+
     // Set the OpenTracing client interceptor
     WorkerFactoryOptions factoryOptions =
         WorkerFactoryOptions.newBuilder()
