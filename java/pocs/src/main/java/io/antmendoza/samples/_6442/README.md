@@ -22,13 +22,13 @@ MetricsStarter.java
 
 http://localhost:9090/graph?g0.expr=temporal_activity_succeed_endtoend_latency_seconds_count&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h
 
-![](Screenshot 2024-06-04 at 15.48.44.png)
+![](img_1.png)
 
 
 - activity_execution_latency is reported as expected 
 http://localhost:9090/graph?g0.expr=temporal_activity_execution_latency_seconds_count&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h
 
-![](Screenshot 2024-06-04 at 15.48.18.png)
+![](img_2.png)
 
 
 
