@@ -21,29 +21,67 @@ package io.antmendoza.samples._6442.activities;
 
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
+import io.temporal.client.ActivityCompletionClient;
+
+import java.util.concurrent.ForkJoinPool;
 
 public class MetricsActivitiesImpl implements MetricsActivities {
 
+  private final ActivityCompletionClient completionClient;
+
+  public MetricsActivitiesImpl(final ActivityCompletionClient completionClient) {
+    this.completionClient = completionClient;
+  }
+
   @Override
   public String performSync(String input) {
-    // simulate some failures to trigger retries
-    if (Activity.getExecutionContext().getInfo().getAttempt() < 3) {
-      incRetriesCustomMetric(Activity.getExecutionContext());
-      throw Activity.wrap(new NullPointerException("simulated"));
-    }
     return "Performed activity A with input " + input + "\n";
   }
 
   @Override
   public String performAsync(String input) {
-    // simulate some failures to trigger retries
-    if (Activity.getExecutionContext().getInfo().getAttempt() < 5) {
-      incRetriesCustomMetric(Activity.getExecutionContext());
-      throw Activity.wrap(new NullPointerException("simulated"));
-    }
     return "Performed activity B with input " + input + "\n";
   }
 
+
+
+
+  @Override
+  public String completeWithCompletionClient(String greeting, String name) {
+
+    // Get the activity execution context
+    ActivityExecutionContext context = Activity.getExecutionContext();
+
+    // Set a correlation token that can be used to complete the activity asynchronously
+    byte[] taskToken = context.getTaskToken();
+
+    /*
+     * For the example we will use a {@link java.util.concurrent.ForkJoinPool} to execute our
+     * activity. In real-life applications this could be any service. The composeGreetingAsync
+     * method is the one that will actually complete workflow action execution.
+     */
+    ForkJoinPool.commonPool().execute(() -> composeGreetingAsync(taskToken, greeting, name));
+    context.doNotCompleteOnReturn();
+
+    // Since we have set doNotCompleteOnReturn(), the workflow action method return value is
+    // ignored.
+    return "ignored";
+  }
+
+  // Method that will complete action execution using the defined ActivityCompletionClient
+  private void composeGreetingAsync(byte[] taskToken, String greeting, String name) {
+    String result = greeting + " " + name + "!";
+
+    try {
+      Thread.sleep(10000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+
+    System.out.println("Completing");
+    // Complete our workflow activity using ActivityCompletionClient
+    completionClient.complete(taskToken, result);
+  }
   private void incRetriesCustomMetric(ActivityExecutionContext context) {
     // We can create a child scope and add extra tags
     //    Scope scope =

@@ -70,7 +70,7 @@ public class MetricsWorker {
 
     Worker worker = factory.newWorker(DEFAULT_TASK_QUEUE_NAME);
     worker.registerWorkflowImplementationTypes(MetricsWorkflowImpl.class);
-    worker.registerActivitiesImplementations(new MetricsActivitiesImpl());
+    worker.registerActivitiesImplementations(new MetricsActivitiesImpl(client.newActivityCompletionClient()));
 
     factory.start();
 

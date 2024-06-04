@@ -34,7 +34,7 @@ public class MetricsWorkflowImpl implements MetricsWorkflow {
   private final MetricsActivities activities =
       Workflow.newActivityStub(
           MetricsActivities.class,
-          ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
+          ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(20)).build());
 
   @Override
   public String exec(String input) {
@@ -48,15 +48,19 @@ public class MetricsWorkflowImpl implements MetricsWorkflow {
     scope.counter("custom_metric").inc(1);
 
     String result = activities.performSync(input);
-    Workflow.sleep(Duration.ofSeconds(5));
+  //  Workflow.sleep(Duration.ofSeconds(5));
 
 
     Promise<String> resultAsync = Async.function(activities::performAsync, input);
 
-    Workflow.sleep(Duration.ofSeconds(2));
+    //Workflow.sleep(Duration.ofSeconds(2));
 
     result += resultAsync.get();
 
-    return result;
+    String completeWithCompletionClientResult = activities.completeWithCompletionClient("test", "2");
+
+    System.out.println(completeWithCompletionClientResult);
+
+    return "result";
   }
 }

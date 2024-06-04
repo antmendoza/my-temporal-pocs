@@ -26,4 +26,6 @@ public interface MetricsActivities {
   String performSync(String input);
 
   String performAsync(String input);
+
+    String completeWithCompletionClient(String greeting, String name);
 }
