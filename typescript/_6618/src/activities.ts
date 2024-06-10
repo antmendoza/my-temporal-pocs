@@ -1,7 +1,7 @@
 // @@@SNIPSTART typescript-hello-activity
-export async function greet(callback: () => void): Promise<string> {
+export async function greet(a: string): Promise<string> {
 
-  callback();
+  //callback();
   return `Hello!`;
 }
 // @@@SNIPEND

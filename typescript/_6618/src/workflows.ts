@@ -20,20 +20,20 @@ export async function example(name: string): Promise<string> {
     const responses = await Promise.allSettled(
         strategies.map(async ({name, fn}) => {
             console.log(`Trying fix strategy ${name}`);
-            const result = await fn(arg);
+            const result = await fn("arg");
             console.log(`Fix strategy ${name} returned`, {result});
             return result;
         }),
     );
 
-    return await greet(arg);
+    return await greet("arg");
 }
 
 // @@@SNIPEND
 
 
-export async function ab(callback: () => void) {
-    callback();
+export async function ab(a: string) {
+   // callback();
     return "";
 }
 
