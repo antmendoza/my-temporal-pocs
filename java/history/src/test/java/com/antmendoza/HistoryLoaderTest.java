@@ -8,7 +8,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 
-public class MyHistoryLoaderTest {
+public class HistoryLoaderTest {
 
 
     @Test
@@ -16,7 +16,7 @@ public class MyHistoryLoaderTest {
 
         final Path path = Path.of("src/test/resources", "");
 
-        final List<WorkflowExecutionHistory> list = new HistoryLoader(path).read();
+        final List<WorkflowExecutionHistory> list = new HistoryLoaderFromDir(path).read();
 
         assertEquals(10,list.size());
 
