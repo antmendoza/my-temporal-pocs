@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class MyHistoryLoader {
+public class HistoryLoader {
 
         private final Path path;
 
-    public MyHistoryLoader(final Path path) {
+    public HistoryLoader(final Path path) {
         this.path = path;
     }
 
@@ -23,7 +23,6 @@ public class MyHistoryLoader {
         return  loadFiles().stream().map(f -> {
             try {
                 final Path of = Path.of(path.toString(), f);
-                System.out.println(of);
                 String json = Files.readString(of);
             return WorkflowExecutionHistory.fromJson(json);
             } catch (IOException e) {
