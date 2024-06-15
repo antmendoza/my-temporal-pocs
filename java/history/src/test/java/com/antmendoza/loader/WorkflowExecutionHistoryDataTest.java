@@ -1,5 +1,7 @@
-package com.antmendoza;
+package com.antmendoza.loader;
 
+import com.antmendoza.loader.HistoryLoaderFromFile;
+import com.antmendoza.loader.WorkflowExecutionHistoryData;
 import io.temporal.common.WorkflowExecutionHistory;
 import org.junit.jupiter.api.Test;
 

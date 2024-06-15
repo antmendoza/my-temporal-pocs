@@ -1,4 +1,4 @@
-package com.antmendoza;
+package com.antmendoza.loader;
 
 import com.google.protobuf.Timestamp;
 import io.temporal.api.history.v1.ActivityTaskCompletedEventAttributes;
@@ -46,6 +46,6 @@ public class ActivityDataTest {
         activityData.addActivityTaskFinalEvent(activityTaskCompletedEvent);
 
 
-        assertEquals(5, activityData.scheduleToCloseLatency());
+        assertEquals(5, activityData.startToCloseLatency());
     }
 }

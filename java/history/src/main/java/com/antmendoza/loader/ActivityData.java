@@ -1,6 +1,8 @@
-package com.antmendoza;
+package com.antmendoza.loader;
 
 import io.temporal.api.history.v1.HistoryEvent;
+
+import java.time.Duration;
 
 public class ActivityData {
 
@@ -34,9 +36,20 @@ public class ActivityData {
 
     }
 
-    public long scheduleToCloseLatency() {
-        return activityTaskFinalEvent.getEventTime().getSeconds() -
-                activityTaskStarted.getEventTime().getSeconds();
+    public Duration startToCloseLatency() {
+
+        final long nanoseconds = activityTaskFinalEvent.getEventTime().getNanos() -
+                activityTaskStarted.getEventTime().getNanos();
+        return Duration.ofMillis(nanoseconds / 1_000_000);
+
+    }
+
+
+    public Duration startToCloseConfigValue() {
+
+        return Duration.ofSeconds( activityTaskScheduled
+                .getActivityTaskScheduledEventAttributes().getStartToCloseTimeout().getSeconds());
+
 
     }
 }

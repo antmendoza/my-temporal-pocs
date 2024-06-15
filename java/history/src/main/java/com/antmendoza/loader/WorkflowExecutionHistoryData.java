@@ -1,4 +1,4 @@
-package com.antmendoza;
+package com.antmendoza.loader;
 
 import io.temporal.common.WorkflowExecutionHistory;
 
@@ -46,11 +46,9 @@ public class WorkflowExecutionHistoryData {
             }
 
 
-            if (e.hasActivityTaskStartedEventAttributes()
-            ) {
+            if (e.hasActivityTaskStartedEventAttributes()) {
                 Optional<ActivityData> activityData = this.activityDataList.stream().filter(ad ->
-                        ad.hasActivityTaskScheduledEvent(e.getEventId())).findFirst();
-
+                        ad.hasActivityTaskScheduledEvent(e.getActivityTaskStartedEventAttributes().getScheduledEventId())).findFirst();
                 if (activityData.isPresent()) {
                     activityData.get().addActivityTaskStartedEvent(e);
                 }
@@ -58,19 +56,22 @@ public class WorkflowExecutionHistoryData {
             }
 
 
-            if (e.hasActivityTaskCanceledEventAttributes()
-                            || e.hasActivityTaskCompletedEventAttributes()
-                            || e.hasActivityTaskFailedEventAttributes()
-                            || e.hasActivityTaskTimedOutEventAttributes()
-            ) {
+            if (e.hasActivityTaskCompletedEventAttributes()) {
                 Optional<ActivityData> activityData = this.activityDataList.stream().filter(ad ->
-                        ad.hasActivityTaskScheduledEvent(e.getEventId())).findFirst();
+                        ad.hasActivityTaskScheduledEvent(e.getActivityTaskCompletedEventAttributes().getScheduledEventId())).findFirst();
 
                 if (activityData.isPresent()) {
                     activityData.get().addActivityTaskFinalEvent(e);
                 }
-
             }
+
+            //TODO
+            // if (e.hasActivityTaskCanceledEventAttributes()
+            //        || e.hasActivityTaskCompletedEventAttributes()
+            //        || e.hasActivityTaskFailedEventAttributes()
+            //        || e.hasActivityTaskTimedOutEventAttributes()
+
+
         });
 
     }
