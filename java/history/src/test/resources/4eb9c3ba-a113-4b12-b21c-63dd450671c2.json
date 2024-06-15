@@ -116,7 +116,20 @@
         },
         "header": {},
         "input": {
-          "payloads": []
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg\u003d\u003d"
+              },
+              "data": "IkpvaG4i"
+            },
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg\u003d\u003d"
+              },
+              "data": "IlNwYW5pc2gi"
+            }
+          ]
         },
         "scheduleToCloseTimeout": "0s",
         "scheduleToStartTimeout": "0s",
