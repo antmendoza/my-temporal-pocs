@@ -34,4 +34,14 @@ after applying the list of inspectors (provided by the factory) to the WorkflowE
 mvn compile exec:java -Dexec.mainClass="com.antmendoza.Main"
 ``` 
 
+**Expected output:** 
+
+```
+Result:
+ConfigurationInspectorResult{tips=
+ Tip{description=[ActivityData{workflowId='workflow_id_in_replay', activityId='a490efe7-fd1f-38fc-a914-7caa325a2422'}]; configurationProperty=[ActivityStartToClose]; actionSuggested=[activityStartToClose configured valued is too high. Set the value to the maximum time the activity execution can take]; configuredValue=[PT2M]; currentValue=[PT0.003S]}
+}
+
+```
+
 
