@@ -5,13 +5,13 @@ import java.util.List;
 
 public class WorkflowConfigurationInspector {
 
-  private final List<ConfigurationInspector> advisorList;
+  private final List<ConfigurationInspector> inspectorList;
   private WorkflowExecutionHistoryData workflowExecutionHistoryData;
 
   public WorkflowConfigurationInspector(
       final WorkflowExecutionHistoryData workflowExecutionHistoryData) {
 
-    this.advisorList = new ConfigurationInspectorFactory().getConfigurationAdvisorList();
+    this.inspectorList = new ConfigurationInspectorFactory().getConfigurationInspectors();
     this.workflowExecutionHistoryData = workflowExecutionHistoryData;
   }
 
@@ -19,7 +19,7 @@ public class WorkflowConfigurationInspector {
 
     ConfigurationInspectorResult configurationInspectorResult = new ConfigurationInspectorResult();
 
-    this.advisorList.forEach(
+    this.inspectorList.forEach(
         ad -> {
           configurationInspectorResult.addTip(
               ad.inspectActivities(this.workflowExecutionHistoryData.getActivityDataList()));

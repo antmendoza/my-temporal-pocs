@@ -6,13 +6,13 @@ import java.util.List;
 
 public class ConfigurationInspectorFactory {
 
-  private final List<ConfigurationInspector> configurationInspectorList = new ArrayList<>();
+  private final List<ConfigurationInspector> configurationInspectors = new ArrayList<>();
 
   public ConfigurationInspectorFactory() {
-    this.configurationInspectorList.add(new StartToCloseLatencyConfInspector());
+    this.configurationInspectors.add(new StartToCloseLatencyConfInspector());
   }
 
-  public List<ConfigurationInspector> getConfigurationAdvisorList() {
-    return configurationInspectorList;
+  public List<ConfigurationInspector> getConfigurationInspectors() {
+    return configurationInspectors;
   }
 }

@@ -61,4 +61,10 @@ public class Tip {
         + "]"
         + '}';
   }
+
+
+
+  public enum ConfigurationProperty {
+    ActivityStartToClose
+  }
 }

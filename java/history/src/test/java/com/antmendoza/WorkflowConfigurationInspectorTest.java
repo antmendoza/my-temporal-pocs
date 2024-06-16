@@ -25,7 +25,7 @@ public class WorkflowConfigurationInspectorTest {
     assertEquals(
         new Tip(
             "ActivityData{workflowId='workflow_id_in_replay', activityId='a490efe7-fd1f-38fc-a914-7caa325a2422'}",
-            ConfigurationProperty.ActivityStartToClose,
+            Tip.ConfigurationProperty.ActivityStartToClose,
             "activityStartToClose configured valued is too high."
                 + " Set the value to the maximum time the activity execution can take",
             Duration.ofMinutes(2),
