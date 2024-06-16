@@ -28,40 +28,36 @@ import io.temporal.client.WorkflowStub;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
 public class MyStarter {
-    public static final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-    public static final String TASK_QUEUE_NAME = "tracingTaskQueue";
+  public static final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+  public static final String TASK_QUEUE_NAME = "tracingTaskQueue";
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
+    start();
 
-        start();
+    // System.exit(0);
+  }
 
-        //System.exit(0);
-    }
+  public static void start() {
+    // Set the OpenTracing client interceptor
+    WorkflowClientOptions clientOptions = WorkflowClientOptions.newBuilder().build();
+    WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
 
-    public static void start() {
-        // Set the OpenTracing client interceptor
-        WorkflowClientOptions clientOptions =
-                WorkflowClientOptions.newBuilder()
-                        .build();
-        WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
+    WorkflowOptions workflowOptions =
+        WorkflowOptions.newBuilder()
+            .setWorkflowId("hello-translator")
+            .setTaskQueue(TASK_QUEUE_NAME)
+            .setWorkflowIdReusePolicy(
+                WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
+            .build();
 
-        WorkflowOptions workflowOptions =
-                WorkflowOptions.newBuilder()
-                        .setWorkflowId("hello-translator")
-                        .setTaskQueue(TASK_QUEUE_NAME)
-                        .setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
-                        .build();
+    // Create typed workflow stub
+    MyWorkflow workflow = client.newWorkflowStub(MyWorkflow.class, workflowOptions);
 
-        // Create typed workflow stub
-        MyWorkflow workflow = client.newWorkflowStub(MyWorkflow.class, workflowOptions);
+    // Convert to untyped and start it with signalWithStart
+    WorkflowStub untyped = WorkflowStub.fromTyped(workflow);
+    untyped.signalWithStart("setLanguage", new Object[] {"Spanish"}, new Object[] {"John"});
 
-        // Convert to untyped and start it with signalWithStart
-        WorkflowStub untyped = WorkflowStub.fromTyped(workflow);
-        untyped.signalWithStart("setLanguage", new Object[]{"Spanish"}, new Object[]{"John"});
-
-        String greeting = untyped.getResult(String.class);
-    }
-
-
+    String greeting = untyped.getResult(String.class);
+  }
 }

@@ -40,15 +40,11 @@ public class MyWorker {
 
   public static void runWorker() {
     // Set the OpenTracing client interceptor
-    WorkerFactoryOptions factoryOptions =
-        WorkerFactoryOptions.newBuilder()
-            .build();
+    WorkerFactoryOptions factoryOptions = WorkerFactoryOptions.newBuilder().build();
     WorkerFactory factory = WorkerFactory.newInstance(client, factoryOptions);
 
-    Worker worker = factory.newWorker(TASK_QUEUE_NAME, WorkerOptions.newBuilder()
-            .build());
-    worker.registerWorkflowImplementationTypes(
-        MyWorkflowImpl.class);
+    Worker worker = factory.newWorker(TASK_QUEUE_NAME, WorkerOptions.newBuilder().build());
+    worker.registerWorkflowImplementationTypes(MyWorkflowImpl.class);
     worker.registerActivitiesImplementations(new ActivitiesImpl());
 
     factory.start();

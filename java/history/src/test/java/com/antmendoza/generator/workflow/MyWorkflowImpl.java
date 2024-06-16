@@ -21,7 +21,6 @@ package com.antmendoza.generator.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Workflow;
-
 import java.time.Duration;
 
 public class MyWorkflowImpl implements MyWorkflow {
@@ -31,14 +30,11 @@ public class MyWorkflowImpl implements MyWorkflow {
   @Override
   public String greet(String name) {
 
-
     final ActivityOptions activityOptions =
-            ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofMinutes(2)).build();
-    final Activities activities =
-            Workflow.newActivityStub(Activities.class, activityOptions);
+        ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofMinutes(2)).build();
+    final Activities activities = Workflow.newActivityStub(Activities.class, activityOptions);
 
     return activities.greet(name, language);
-
   }
 
   @Override
