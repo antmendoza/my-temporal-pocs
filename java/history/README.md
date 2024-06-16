@@ -25,5 +25,10 @@ Engine to inspect WorkflowExecutionHistoryData objects and apply set of rules to
 the WorkflowExecutionHistoryData.
 
 
+## Execute
+
+```bash
+mvn compile exec:java -Dexec.mainClass="com.antmendoza.Main"
+``` 
 
 
