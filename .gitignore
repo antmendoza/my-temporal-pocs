@@ -15,3 +15,5 @@ target
 .project
 .settings/
 bin/
+**/.gradle
+**/build
