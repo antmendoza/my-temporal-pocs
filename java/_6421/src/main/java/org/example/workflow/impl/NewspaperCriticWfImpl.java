@@ -78,7 +78,7 @@ public class NewspaperCriticWfImpl implements NewspaperCriticWf {
                 var workflowOptions = ChildWorkflowOptions.newBuilder()
                         .setWorkflowId("secretary-" + i)
                         //.setTaskQueue("some-queue")
-                        .setTaskQueue(Workflow.getInfo().getTaskQueue())
+                        //.setTaskQueue(Workflow.getInfo().getTaskQueue())
                         .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
                         .build();
                 var secretaryWf = Workflow.newChildWorkflowStub(NewspaperSecretaryWf.class, workflowOptions);

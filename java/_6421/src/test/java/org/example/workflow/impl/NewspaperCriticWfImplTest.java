@@ -2,6 +2,7 @@ package org.example.workflow.impl;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
+import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
 import io.temporal.common.converter.DefaultDataConverter;
 import io.temporal.common.converter.JacksonJsonPayloadConverter;
@@ -17,7 +18,6 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 
 import java.time.Duration;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,11 +47,21 @@ public class NewspaperCriticWfImplTest {
             .build();
 
     @Test
-    void testCritic(TestWorkflowEnvironment testEnv, Worker worker, NewspaperCriticWf workflow) {
+    void testCritic(TestWorkflowEnvironment testEnv) {
         ReviewActivity reviewActivity = Mockito.mock(ReviewActivity.class);
         doNothing().when(reviewActivity).submitReview(anyString(), anyString());
-        worker.registerActivitiesImplementations(reviewActivity);
+
+        Worker worker1 = testEnv.newWorker("some-queue");
+        worker1.registerWorkflowImplementationTypes(NewspaperCriticWfImpl.class);
+        worker1.registerActivitiesImplementations(reviewActivity);
+
         testEnv.start();
+
+        NewspaperCriticWf workflow = testEnv.getWorkflowClient().newWorkflowStub(NewspaperCriticWf.class,
+                WorkflowOptions.newBuilder()
+                        .setTaskQueue("some-queue")
+                        .build());
+
         WorkflowClient.start(workflow::startCriticWf, 1L);
 
         workflow.receiveNewspaper("title-one");
