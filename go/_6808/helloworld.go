@@ -24,7 +24,10 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 
 	queryResult := 0
 	err := workflow.SetQueryHandler(ctx, "state", func(input []byte) (string, error) {
-		return fmt.Sprintf("num of iterations %d", queryResult), nil
+		sprintf := fmt.Sprintf("num of iterations %d", queryResult)
+		fmt.Println("Executing query method with result  " + sprintf)
+
+		return sprintf, nil
 	})
 	if err != nil {
 		logger.Info("SetQueryHandler failed: " + err.Error())
