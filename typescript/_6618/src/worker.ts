@@ -1,4 +1,4 @@
-// @@@SNIPSTART typescript-hello-worker
+
 import { NativeConnection, Worker } from '@temporalio/worker';
 import * as activities from './activities';
 
@@ -36,6 +36,6 @@ run().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-// @@@SNIPEND
+
 
 

@@ -1,4 +1,4 @@
-// @@@SNIPSTART typescript-hello-workflow
+
 import {proxyActivities} from '@temporalio/workflow';
 // Only import the activity types
 import type * as activities from './activities';
@@ -29,7 +29,7 @@ export async function example(name: string): Promise<string> {
     return await greet("arg");
 }
 
-// @@@SNIPEND
+
 
 
 export async function ab(a: string) {

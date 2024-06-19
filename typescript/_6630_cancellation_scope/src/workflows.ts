@@ -1,4 +1,4 @@
-// @@@SNIPSTART typescript-hello-workflow
+
 import {CancellationScope, proxyActivities, sleep} from '@temporalio/workflow';
 // Only import the activity types
 import type * as activities from './activities';
@@ -26,4 +26,4 @@ export async function example(name: string): Promise<string> {
 
   return await greet(name);
 }
-// @@@SNIPEND
+

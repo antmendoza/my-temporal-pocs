@@ -1,4 +1,4 @@
-// @@@SNIPSTART typescript-hello-activity
+
 import {SimpleWithDate} from "./types/simple_with_timestamp";
 
 export async function greet(val: SimpleWithDate, date: Date): Promise<SimpleWithDate> {
@@ -10,4 +10,4 @@ export async function greet(val: SimpleWithDate, date: Date): Promise<SimpleWith
   return val;
 
 }
-// @@@SNIPEND
+

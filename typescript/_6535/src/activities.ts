@@ -1,4 +1,4 @@
-// @@@SNIPSTART typescript-hello-activity
+
 import * as fs from 'fs';
 import {Context} from "@temporalio/activity";
 
@@ -30,4 +30,4 @@ export async function greet(name: string): Promise<string> {
 
 }
 
-// @@@SNIPEND
+
