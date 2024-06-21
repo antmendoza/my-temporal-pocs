@@ -1,4 +1,4 @@
-import { proxyActivities, defineSignal, sleep, Trigger, setHandler } from '@temporalio/workflow';
+import {proxyActivities, defineSignal, sleep, Trigger, setHandler, condition} from '@temporalio/workflow';
 
 import type * as activities from './activities';
 
