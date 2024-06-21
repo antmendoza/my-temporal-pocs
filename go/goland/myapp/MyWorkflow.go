@@ -1,6 +1,7 @@
 package myapp
 
 import (
+	"errors"
 	"fmt"
 	"go.temporal.io/sdk/workflow"
 	"time"
@@ -24,22 +25,72 @@ func (w WorkflowRequest) toString() string {
 
 func MyWorkflow(ctx workflow.Context, input WorkflowRequest) (WorkflowRequest, error) {
 
-	// Set the options for the Activity Execution.
-	// Either StartToClose Timeout OR ScheduleToClose is required.
-	// Not specifying a Task Queue will default to the parent Workflow Task Queue.
-	activityOptions := workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
+	childCtx, cancelHandler := workflow.WithCancel(ctx)
+
+	var signal string
+	signalChan := workflow.GetSignalChannel(ctx, "my-signal")
+	workflow.Go(ctx, func(ctx workflow.Context) {
+		for {
+			selector := workflow.NewSelector(ctx)
+			selector.AddReceive(signalChan, func(c workflow.ReceiveChannel, more bool) {
+				c.Receive(ctx, &signal)
+			})
+			selector.Select(ctx)
+		}
+	})
+
+	ao := workflow.ActivityOptions{
+		StartToCloseTimeout: 2 * time.Minute,
+		HeartbeatTimeout:    4 * time.Second,
+		WaitForCancellation: true, // Wait for cancellation to complete.
 	}
-	ctx = workflow.WithActivityOptions(ctx, activityOptions)
-	activityParam := YourActivityParam{}
+	childCtx = workflow.WithActivityOptions(childCtx, ao)
+
 	// Use a nil struct pointer to call Activities that are part of a struct.
 	var a *YourActivityObject
 	// Execute the Activity and wait for the result.
-	var activityResult YourActivityResultObject
-	err := workflow.ExecuteActivity(ctx, a.YourActivityDefinition, activityParam).Get(ctx, &activityResult)
+	var activityResult string
+	err := workflow.ExecuteActivity(childCtx, a.YourActivityDefinition, YourActivityParam{ActivityParamX: "1"}).Get(ctx, &activityResult)
 	if err != nil {
+		errors.Unwrap(err)
 		return WorkflowRequest{}, err
 	}
+
+	selector := workflow.NewSelector(childCtx)
+
+	result1 := workflow.ExecuteActivity(childCtx, a.YourActivityDefinition, YourActivityParam{ActivityParamX: "2", Time: 10 * time.Second})
+	result2 := workflow.ExecuteActivity(childCtx, a.YourActivityDefinition, YourActivityParam{ActivityParamX: "3", Time: 2 * time.Second})
+
+	pendingFutures := []workflow.Future{result1, result2}
+
+	selector.AddFuture(result1, func(f workflow.Future) {
+		var activityResult1 string
+		result1.Get(childCtx, &activityResult1)
+		fmt.Println(activityResult1)
+
+	}).AddFuture(result2, func(f workflow.Future) {
+
+		var activityResult1 string
+		result2.Get(childCtx, &activityResult1)
+		fmt.Println(activityResult1)
+
+	})
+
+	fmt.Println("before selector.select")
+
+	selector.Select(ctx)
+	//	selector.Select(ctx)
+
+	cancelHandler()
+
+	workflow.Sleep(ctx, 1*time.Second)
+
+	//Wait for pending futures to complete
+	for _, f := range pendingFutures {
+		_ = f.Get(ctx, nil)
+	}
+
+	fmt.Println("after selector.select")
 
 	return input, nil
 }
