@@ -27,6 +27,7 @@ async function run() {
     taskQueue: 'hello-world',
     workflowsPath: require.resolve('./workflows'),
     activities: createActivities(endpoint)
+    maxConcurrentWorkflowTaskExecutions
   });
 
   await worker.run();

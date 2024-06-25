@@ -48,8 +48,10 @@ describe('waitForConnectionCompletionWorkflow', () => {
             const { client, nativeConnection } = testEnv as TestWorkflowEnvironment;
             const worker = await Worker.create(
                 workflowCoverage.augmentWorkerOptions({
-                ...
-                activities: createActivities(myMock),
+                    connection: nativeConnection,
+                    taskQueue: 'test',
+                    workflowsPath: require.resolve('./workflows'),
+                    activities: createActivities(myMock),
                 })
             );
 
