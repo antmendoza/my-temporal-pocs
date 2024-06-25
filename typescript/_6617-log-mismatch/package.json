@@ -6,7 +6,10 @@
     "build": "tsc --build",
     "build.watch": "tsc --build --watch",
     "lint": "eslint .",
-    "start": "ts-node src/worker.ts",
+    "start1": "ts-node src/worker1.ts",
+    "start2": "ts-node src/worker2.ts",
+    "start3": "ts-node src/worker3.ts",
+    "start4": "ts-node src/worker4.ts",
     "start.watch": "nodemon src/worker.ts",
     "workflow": "ts-node src/client.ts",
     "format": "prettier --config .prettierrc 'src/**/*.ts' --write"

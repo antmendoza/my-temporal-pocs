@@ -11,14 +11,21 @@ async function run() {
     connection,
   });
 
-  const handle = await client.workflow.start(example, {
-    taskQueue: 'hello-world',
-    args: ['Temporal'],
-    workflowId: 'workflow-' + nanoid(),
-  });
-  console.log(`Started workflow ${handle.workflowId}`);
+  for (let i = 0; i < 50000; i++) {
+    const handle = await client.workflow.start(example, {
+      taskQueue: 'hello-world',
+      args: ['Temporal'],
+      workflowId: 'workflow-' + nanoid(),
+    });
+    console.log(`Started workflow ${handle.workflowId}`);
 
-  console.log(await handle.result());
+//    await new Promise(r => setTimeout(r, 10));
+
+
+//    console.log(await handle.result());
+
+  }
+
 }
 
 run().catch((err) => {
