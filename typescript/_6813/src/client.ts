@@ -1,6 +1,6 @@
 // @@@SNIPSTART typescript-hello-client
 import { Connection, Client } from '@temporalio/client';
-import { example } from './workflows';
+import { waitForConnectionCompletion } from './workflows';
 import { nanoid } from 'nanoid';
 
 async function run() {
@@ -17,7 +17,7 @@ async function run() {
     // namespace: 'foo.bar', // connects to 'default' namespace if not specified
   });
 
-  const handle = await client.workflow.start(example, {
+  const handle = await client.workflow.start(waitForConnectionCompletion, {
     taskQueue: 'hello-world',
     // type inference works! args: [name: string]
     args: ['Temporal'],
