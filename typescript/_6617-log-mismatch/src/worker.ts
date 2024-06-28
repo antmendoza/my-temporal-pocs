@@ -18,6 +18,7 @@ function getLogger(param: { ddSource: string; prettyPrint: boolean; logLevel: st
 
     transports: [
       new winston.transports.Console(),
+      new winston.transports.File({ filename: 'combined_.log' }),
     ]
 
   });

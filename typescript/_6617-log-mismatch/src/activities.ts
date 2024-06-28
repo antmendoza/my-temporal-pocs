@@ -17,8 +17,11 @@ export async function greet(a: string): Promise<string> {
 
     const log = Context.current().log;
     const activityInfo = Context.current().info;
-    console.log("activity_workflow_id  [" + activityInfo.workflowExecution.workflowId + "] ;  "
-        +"activityType  [" + activityInfo.activityType+"]")
+    console.log(
+        "activity_workflow_id  [" + activityInfo.workflowExecution.workflowId + "] ;  "
+        +
+        "activity_run_id  [" + activityInfo.workflowExecution.runId + "] ;  "
+        + "activityType  [" + activityInfo.activityType + "] + input [" + a + "]")
     return `Hello!`;
 }
 
