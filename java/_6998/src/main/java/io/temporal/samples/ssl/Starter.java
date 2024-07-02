@@ -10,6 +10,7 @@ import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
 public class Starter {
@@ -89,7 +90,7 @@ public class Starter {
 
             String greeting = workflow.execute();
 
-            System.out.println("output " + greeting);
+            System.out.println(new Date() + ": output " + greeting);
 
             try {
               Thread.sleep(2000);
