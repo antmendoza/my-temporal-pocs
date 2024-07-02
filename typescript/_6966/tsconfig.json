@@ -6,7 +6,13 @@
     "declarationMap": true,
     "sourceMap": true,
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2018.asynciterable"
+    ]
   },
   "include": ["src/**/*.ts"]
 }
