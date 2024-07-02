@@ -1,6 +1,8 @@
 import fs from "fs";
 
-const allFileContents = fs.readFileSync('./test.log', 'utf-8');
+//const allFileContents = fs.readFileSync('./test.log', 'utf-8');
+
+const allFileContents = fs.readFileSync('./combined_.log', 'utf-8');
 
 function checkInputAgainstWorkflowId(line: string) {
 
@@ -11,35 +13,39 @@ function checkInputAgainstWorkflowId(line: string) {
         lineFromInput.indexOf("]"))
 
 
-    const searchString = "workflowId\":\"";
-    const workflowIdFromConsoleLogPosition = line.indexOf(searchString)+searchString.length;
-    const lineSearchWorkflowId = line.substring(workflowIdFromConsoleLogPosition)
-    const workflowId = lineSearchWorkflowId.substring(
+    const searchString = "workflowRunId\":\"";
+    const workflowRunIdFromConsoleLogPosition = line.indexOf(searchString)+searchString.length;
+    const lineSearchWorkflowRunId = line.substring(workflowRunIdFromConsoleLogPosition)
+    const workflowRunId = lineSearchWorkflowRunId.substring(
         0,
-        lineSearchWorkflowId.indexOf("\""))
+        lineSearchWorkflowRunId.indexOf("\""))
 
 
-    return inputAsWorkflowId != workflowId;
+    return inputAsWorkflowId != workflowRunId;
 
 }
 
-allFileContents.split(/\r?\n/).filter((l) =>
-    {
-        return l.includes("activity_workflow_id")
-    }
-).forEach(line =>  {
 
-    if(checkInputAgainstWorkflowId(line)){
+function run(){
 
-        console.log(`log mismatch: `);
-        console.log(`       ${line}`);
+    const lines = allFileContents.split(/\r?\n/);
+    console.log("lines.length " + lines.length)
+    const activityLogs = lines.filter((l) =>
+        {
+            return l.includes("activity_workflow_id")
+        }
+    );
+    console.log("activityLogs.length " + activityLogs.length)
+    activityLogs.forEach(line =>  {
+
+        if(checkInputAgainstWorkflowId(line)){
+            console.log(`log mismatch: `);
+            console.log(`       ${line}`);
+        }
+    });
 
 
-    }
+}
 
-});
-
-
-
-
+run();
 
