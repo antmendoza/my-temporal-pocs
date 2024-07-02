@@ -12,10 +12,21 @@ export function initActivityLogger() {
     console.trace = (...args) => log.debug(...args);
 }
 
-export async function greet(a: string): Promise<string> {
+export async function secondFunction(a: string): Promise<string> {
     initActivityLogger();
 
-    const log = Context.current().log;
+    const activityInfo = Context.current().info;
+    console.log(
+        "activity_workflow_id  [" + activityInfo.workflowExecution.workflowId + "] ;  "
+        +
+        "activity_run_id  [" + activityInfo.workflowExecution.runId + "] ;  "
+        + "activityType  [" + activityInfo.activityType + "] + input [" + a + "]")
+    return await firstFunction(a);
+}
+
+export async function firstFunction(a: string): Promise<string> {
+    initActivityLogger();
+
     const activityInfo = Context.current().info;
     console.log(
         "activity_workflow_id  [" + activityInfo.workflowExecution.workflowId + "] ;  "
