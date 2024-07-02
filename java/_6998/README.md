@@ -8,15 +8,15 @@ This is required to connect with Temporal Cloud or any production Temporal deplo
 
 Before running the example you need to export the following env variables:
 
-- TEMPORAL_ENDPOINT: grpc endpoint, for Temporal Cloud would like `${namespace}.tmprl.cloud:7233`.
-- TEMPORAL_NAMESPACE: Namespace.
+- TEMPORAL_ENDPOINT: grpc endpoint, for Temporal Cloud would like `${namespace.accountId}.tmprl.cloud:7233`.
+- TEMPORAL_NAMESPACE: `${namespace.accountId}`
 - TEMPORAL_CLIENT_CERT: For Temporal Cloud see requirements [here](https://docs.temporal.io/cloud/how-to-manage-certificates-in-temporal-cloud#end-entity-certificates).
 - TEMPORAL_CLIENT_KEY: For Temporal Cloud see requirements [here](https://docs.temporal.io/cloud/how-to-manage-certificates-in-temporal-cloud#end-entity-certificates).
 
 ## Running this sample
 
 ```bash
-./gradlew -q execute -PmainClass=io.temporal.samples.ssl.Starter
+./mvnw compile exec:java -Dexec.mainClass="io.temporal.samples.ssl.Starter"
 ```
 
 
