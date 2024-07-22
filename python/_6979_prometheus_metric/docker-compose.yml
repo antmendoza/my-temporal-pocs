@@ -1,0 +1,11 @@
+version: "3.5"
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.37.0
+    ports:
+      - 9090:9090
+    volumes:
+      - type: bind
+        source: ./prometheus/config.yml
+        target: /etc/prometheus/prometheus.yml
