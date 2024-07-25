@@ -18,13 +18,13 @@
  */
 package com.antmendoza;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
 import io.temporal.client.WorkflowOptions;
 import io.temporal.testing.TestWorkflowRule;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 
 /** Unit test for {@link HelloActivity}. Doesn't use an external Temporal service. */
 public class HelloActivityTest {
@@ -39,7 +39,9 @@ public class HelloActivityTest {
   @Test
   public void testActivityImpl() {
 
-    testWorkflowRule.getWorker().registerActivitiesImplementations(new HelloActivity.GreetingActivitiesImpl());
+    testWorkflowRule
+        .getWorker()
+        .registerActivitiesImplementations(new HelloActivity.GreetingActivitiesImpl());
     testWorkflowRule.getTestEnvironment().start();
 
     // Get a workflow stub using the same task queue the worker uses.
@@ -55,5 +57,4 @@ public class HelloActivityTest {
 
     testWorkflowRule.getTestEnvironment().shutdown();
   }
-
 }

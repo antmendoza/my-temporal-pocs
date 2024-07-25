@@ -40,15 +40,12 @@ public class HelloActivity {
 
   static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
-
   @WorkflowInterface
   public interface GreetingWorkflow {
-
 
     @WorkflowMethod
     String getGreeting(String name);
   }
-
 
   @ActivityInterface
   public interface GreetingActivities {
@@ -58,7 +55,6 @@ public class HelloActivity {
   }
 
   public static class GreetingWorkflowImpl implements GreetingWorkflow {
-
 
     private final GreetingActivities activities =
         Workflow.newActivityStub(
@@ -81,7 +77,6 @@ public class HelloActivity {
     @Override
     public String composeGreeting(String greeting, String name) {
       log.info("Composing greeting...");
-
 
       return greeting + " " + name + "!";
     }
