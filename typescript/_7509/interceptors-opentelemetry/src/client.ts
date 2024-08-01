@@ -28,7 +28,7 @@ async function run() {
   try {
     const result = await client.workflow.execute(example, {
       taskQueue: 'interceptors-opentelemetry-example',
-      workflowId: 'otel-example-0',
+      workflowId: 'otel-example-0' + Math.random(),
       args: ['Temporal'],
     });
     console.log(result); // Hello, Temporal!

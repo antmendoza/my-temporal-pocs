@@ -1,9 +1,11 @@
 # OpenTelemetry Interceptors
 
-This sample features `@temporalio/interceptors-opentelemetry`, which uses [Interceptors](https://docs.temporal.io/typescript/interceptors) to add tracing of Workflows and Activities with [opentelemetry](https://opentelemetry.io/).
-
+This sample features `@temporalio/interceptors-opentelemetry`, which
+uses [Interceptors](https://docs.temporal.io/typescript/interceptors) to add tracing of Workflows and Activities
+with [opentelemetry](https://opentelemetry.io/).
 
 ### Start jaeger
+
    ```sh
    # from this directory
 docker run --rm --name jaeger \
@@ -22,6 +24,13 @@ docker run --rm --name jaeger \
 
    ```
 
+### Start Mongo
+
+   ```sh
+   # from this directory
+  docker run -e MONGODB_DB=opentelemetry-tests -e MONGODB_PORT=27017 -e MONGODB_HOST=127.0.0.1 -p 27017:27017 --rm mongo
+
+   ```
 
 ### Running this sample
 
@@ -29,7 +38,6 @@ docker run --rm --name jaeger \
 1. `npm install` to install dependencies.
 1. `npm run start.watch` to start the Worker.
 1. In another shell, `npm run workflow` to run the Workflow.
-
 
 Navigate to http://localhost:16686/trace and select the service `interceptors-sample-worker`
 

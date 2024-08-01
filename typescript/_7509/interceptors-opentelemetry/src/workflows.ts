@@ -3,30 +3,12 @@ import {
   OpenTelemetryInboundInterceptor,
   OpenTelemetryOutboundInterceptor,
 } from '@temporalio/interceptors-opentelemetry/lib/workflow';
-import type * as activities from './activities';
+// @@@SNIPSTART typescript-activity-deps-workflow
+import type { createActivities } from './activities';
 
-
-import { propagation } from '@opentelemetry/api';
-import {
-  CompositePropagator,
-  W3CBaggagePropagator,
-  W3CTraceContextPropagator,
-} from '@opentelemetry/core';
-import { JaegerPropagator } from '@opentelemetry/propagator-jaeger';
-
-propagation.setGlobalPropagator(
-    new CompositePropagator({
-      propagators: [
-        new W3CTraceContextPropagator(),
-        new W3CBaggagePropagator(),
-        new JaegerPropagator(),
-      ],
-    }),
-);
-
-
-const { greet } = proxyActivities<typeof activities>({
-  startToCloseTimeout: '1 minute',
+// Note usage of ReturnType<> generic since createActivities is a factory function
+const { greet} = proxyActivities<ReturnType<typeof createActivities>>({
+  startToCloseTimeout: '30 seconds',
 });
 
 // A workflow that simply calls an activity
