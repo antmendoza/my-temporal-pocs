@@ -24,6 +24,8 @@ docker run --rm --name jaeger \
 
    ```
 
+UI in [http://localhost:16686/search](http://localhost:16686/search)
+
 ### Start Mongo
 
    ```sh
