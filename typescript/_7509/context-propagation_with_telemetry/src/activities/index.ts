@@ -3,7 +3,8 @@ import { getContext } from '../context/context-injection';
 
 export async function greet(name: string): Promise<string> {
   const propagatedContext = getContext();
-  log.info(`Log from activity with customer ${propagatedContext.customer ?? 'unknown'}`);
-  log.info(`Log from activity with customer ${JSON.stringify(propagatedContext)}`);
+  log.info(`1 ----------`);
+  log.info(`${JSON.stringify(propagatedContext)}`);
+  log.info(`2 ----------`);
   return `Hello, ${name}!`;
 }

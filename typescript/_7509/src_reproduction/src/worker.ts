@@ -35,7 +35,7 @@ async function main() {
     const jaegerExporter = new JaegerExporter();
 
 
-  const otel = new NodeSDK({ traceExporter: jaegerExporter, resource });
+    const otel = new NodeSDK({traceExporter: jaegerExporter, resource});
     await otel.start();
 
 //    provider.addSpanProcessor(new SimpleSpanProcessor(new JaegerExporter()));
