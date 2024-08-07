@@ -1,38 +1,6 @@
 # OpenTelemetry Interceptors
 
-This sample features `@temporalio/interceptors-opentelemetry`, which
-uses [Interceptors](https://docs.temporal.io/typescript/interceptors) to add tracing of Workflows and Activities
-with [opentelemetry](https://opentelemetry.io/).
-
-### Start jaeger
-
-   ```sh
-   # from this directory
-docker run --rm --name jaeger \
-  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
-  -p 6831:6831/udp \
-  -p 6832:6832/udp \
-  -p 5778:5778 \
-  -p 16686:16686 \
-  -p 4317:4317 \
-  -p 4318:4318 \
-  -p 14250:14250 \
-  -p 14268:14268 \
-  -p 14269:14269 \
-  -p 9411:9411 \
-  jaegertracing/all-in-one:1.59
-
-   ```
-
-UI in [http://localhost:16686/search](http://localhost:16686/search)
-
-### Start Mongo
-
-   ```sh
-   # from this directory
-  docker run -e MONGODB_DB=opentelemetry-tests -e MONGODB_PORT=27017 -e MONGODB_HOST=127.0.0.1 -p 27017:27017 --rm mongo
-
-   ```
+This sample features `@temporalio/interceptors-opentelemetry`, which uses [Interceptors](https://docs.temporal.io/typescript/interceptors) to add tracing of Workflows and Activities with [opentelemetry](https://opentelemetry.io/).
 
 ### Running this sample
 
@@ -41,5 +9,20 @@ UI in [http://localhost:16686/search](http://localhost:16686/search)
 1. `npm run start.watch` to start the Worker.
 1. In another shell, `npm run workflow` to run the Workflow.
 
-Navigate to http://localhost:16686/trace and select the service `interceptors-sample-worker`
+Example output:
 
+```
+Hello, Temporal!
+{
+  traceId: '74bf8e700df7dd3d8e140feebe70927b',
+  parentId: undefined,
+  name: 'StartWorkflow:example',
+  id: 'ab6e93cce7ed7a15',
+  kind: 0,
+  timestamp: 1641749671800859,
+  duration: 515453,
+  attributes: { run_id: '00cf070e-b691-4943-a8e9-9696c1baef4a' },
+  status: { code: 1 },
+  events: []
+}
+```

@@ -3,10 +3,12 @@ import {
   OpenTelemetryInboundInterceptor,
   OpenTelemetryOutboundInterceptor,
 } from '@temporalio/interceptors-opentelemetry/lib/workflow';
-import type * as activities from './activities';
+// @@@SNIPSTART typescript-activity-deps-workflow
+import type { createActivities } from './activities';
 
-const { greet } = proxyActivities<typeof activities>({
-  startToCloseTimeout: '1 minute',
+// Note usage of ReturnType<> generic since createActivities is a factory function
+const { greet} = proxyActivities<ReturnType<typeof createActivities>>({
+  startToCloseTimeout: '30 seconds',
 });
 
 // A workflow that simply calls an activity

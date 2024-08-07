@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@opentelemetry/core": "^1.8.0",
+    "@opentelemetry/exporter-jaeger": "^1.25.1",
     "@opentelemetry/resources": "^1.8.0",
     "@opentelemetry/sdk-node": "^0.33.0",
     "@opentelemetry/sdk-trace-base": "^1.8.0",
@@ -28,7 +29,9 @@
     "@temporalio/client": "^1.10.3",
     "@temporalio/interceptors-opentelemetry": "^1.10.3",
     "@temporalio/worker": "^1.10.3",
-    "@temporalio/workflow": "^1.10.3"
+    "@temporalio/workflow": "^1.10.3",
+    "mongodb": "^3.6.11",
+    "@opentelemetry/instrumentation-mongodb": "^0.32.0"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.0",
@@ -41,6 +44,7 @@
     "nodemon": "^2.0.12",
     "prettier": "^2.8.8",
     "ts-node": "^10.2.1",
-    "typescript": "^4.2.2"
+    "typescript": "^4.2.2",
+    "@types/mongodb": "^4.0.7"
   }
 }
