@@ -14,9 +14,6 @@ import {JaegerExporter} from '@opentelemetry/exporter-jaeger';
 import * as mongodb from 'mongodb';
 import {createActivities} from "./activities";
 
-import * as api from "@opentelemetry/api";
-import {NodeTracerProvider} from "@opentelemetry/sdk-trace-node";
-import {registerInstrumentations} from "@opentelemetry/instrumentation";
 import {MongoDBInstrumentation} from "@opentelemetry/instrumentation-mongodb";
 
 const DB_NAME = 'mydb'
@@ -35,13 +32,20 @@ async function main() {
     const jaegerExporter = new JaegerExporter();
 
 
-    const otel = new NodeSDK({traceExporter: jaegerExporter, resource});
+    const otel = new NodeSDK({
+        traceExporter: jaegerExporter, resource,
+        instrumentations: [
+            new MongoDBInstrumentation({
+                enhancedDatabaseReporting: true,
+            }),
+        ],
+    });
     await otel.start();
 
-//    provider.addSpanProcessor(new SimpleSpanProcessor(new JaegerExporter()));
-
     // Silence the Worker logs to better see the span output in this sample
-    Runtime.install({logger: new DefaultLogger('WARN')});
+    Runtime.install({
+        logger: new DefaultLogger('WARN')
+    });
 
     console.log("creating db connection ..  ");
 
