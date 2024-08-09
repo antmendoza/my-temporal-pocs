@@ -3,10 +3,10 @@ package main
 import (
 	encryption "_6715"
 	"context"
+	"go.temporal.io/sdk/converter"
 	"log"
 
 	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -53,7 +53,7 @@ func main() {
 	ctx := context.Background()
 	// If you are using a ContextPropagator and varying keys per workflow you need to set
 	// the KeyID to use for this workflow in the context:
-	ctx = context.WithValue(ctx, encryption.PropagateKey, encryption.CryptContext{KeyID: "test"})
+	ctx = context.WithValue(ctx, encryption.PropagateKey, encryption.CryptContext{KeyID: "test_33"})
 
 	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal
 	we, err := c.ExecuteWorkflow(

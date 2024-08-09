@@ -3,13 +3,12 @@ package main
 import (
 	encryption "_6715"
 	"flag"
+	"go.temporal.io/sdk/converter"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
-
-	"go.temporal.io/sdk/converter"
 )
 
 var portFlag int

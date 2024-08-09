@@ -3,7 +3,6 @@ package src
 import (
 	"context"
 	"fmt"
-
 	commonpb "go.temporal.io/api/common/v1"
 
 	"go.temporal.io/sdk/converter"

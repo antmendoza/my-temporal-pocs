@@ -2,9 +2,9 @@
   "events": [
     {
       "eventId": "1",
-      "eventTime": "2024-06-25T17:44:19.396411503Z",
+      "eventTime": "2024-08-09T10:06:29.034695Z",
       "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED",
-      "taskId": "2581938",
+      "taskId": "1048587",
       "workflowExecutionStartedEventAttributes": {
         "workflowType": {
           "name": "Workflow"
@@ -18,18 +18,19 @@
             {
               "metadata": {
                 "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-                "encryption-key-id": "dGVzdA=="
+                "encryption-key-id": "dGVzdF8zMw==",
+                "encodingDecoded": "binary/encrypted"
               },
-              "data": "TlhrOTEQRc04bFxhOSuel17eolAKe5/Q6fE73KmI7VYYsorO+sR9hH0s6sjODEyMG3FhEWreMB+oNAtFC76I4I9n9WXaURC2o5GDTRPSDcE9jwzo4dSyozJ0mA12StkjCEO4p95DxSbdDFTFUdgO"
+              "data": "IksXAk5Ru9k3CVlrXLz3PDfvc6zhfWjEHrI8ZVvqeoV0DsDu2GCFkpQ/t1nLVuRjJyqVKEKHJuZivW2EdItCJbeejHckGFD8PNNBsK88+qpXhFyICXokBGmKuXAeHthUCtxcQ4U1aLEKXdigieDQ"
             }
           ]
         },
         "workflowExecutionTimeout": "0s",
         "workflowRunTimeout": "0s",
         "workflowTaskTimeout": "10s",
-        "originalExecutionRunId": "14d803eb-e233-4970-9c06-739358323810",
-        "identity": "56164@antmendozas-MacBookPro.local@",
-        "firstExecutionRunId": "14d803eb-e233-4970-9c06-739358323810",
+        "originalExecutionRunId": "56ec2aab-4a95-45a5-8321-fdde40c0fdf1",
+        "identity": "25243@antmendozas-MacBookPro.local@",
+        "firstExecutionRunId": "56ec2aab-4a95-45a5-8321-fdde40c0fdf1",
         "attempt": 1,
         "firstWorkflowTaskBackoff": "0s",
         "header": {
@@ -38,7 +39,7 @@
               "metadata": {
                 "encoding": "anNvbi9wbGFpbg=="
               },
-              "data": "eyJrZXlJZCI6InRlc3QifQ=="
+              "data": "eyJrZXlJZCI6InRlc3RfMzMifQ=="
             }
           }
         },
@@ -47,9 +48,9 @@
     },
     {
       "eventId": "2",
-      "eventTime": "2024-06-25T17:44:19.396664461Z",
+      "eventTime": "2024-08-09T10:06:29.034782Z",
       "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
-      "taskId": "2581939",
+      "taskId": "1048588",
       "workflowTaskScheduledEventAttributes": {
         "taskQueue": {
           "name": "encryption",
@@ -61,27 +62,30 @@
     },
     {
       "eventId": "3",
-      "eventTime": "2024-06-25T17:44:21.921657837Z",
+      "eventTime": "2024-08-09T10:06:39.058871Z",
       "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
-      "taskId": "2581946",
+      "taskId": "1048598",
       "workflowTaskStartedEventAttributes": {
         "scheduledEventId": "2",
-        "identity": "56208@antmendozas-MacBookPro.local@",
-        "requestId": "b740dfd8-0e87-4039-938d-ddae9a8bf8f1",
-        "historySizeBytes": "990"
+        "identity": "25295@antmendozas-MacBookPro.local@",
+        "requestId": "6d809410-0585-419b-be28-b9945cfe33fa",
+        "historySizeBytes": "497",
+        "workerVersion": {
+          "buildId": "a451af0434c6a59421fa61d6c170c8a3"
+        }
       }
     },
     {
       "eventId": "4",
-      "eventTime": "2024-06-25T17:44:21.929336629Z",
+      "eventTime": "2024-08-09T10:06:39.079885Z",
       "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
-      "taskId": "2581950",
+      "taskId": "1048602",
       "workflowTaskCompletedEventAttributes": {
         "scheduledEventId": "2",
         "startedEventId": "3",
-        "identity": "56208@antmendozas-MacBookPro.local@",
+        "identity": "25295@antmendozas-MacBookPro.local@",
         "workerVersion": {
-          "buildId": "be7d0b790248b1fa480615b4322ef1cb"
+          "buildId": "a451af0434c6a59421fa61d6c170c8a3"
         },
         "sdkMetadata": {
           "langUsedFlags": [
@@ -95,9 +99,9 @@
     },
     {
       "eventId": "5",
-      "eventTime": "2024-06-25T17:44:21.929390046Z",
+      "eventTime": "2024-08-09T10:06:39.080070Z",
       "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
-      "taskId": "2581951",
+      "taskId": "1048603",
       "activityTaskScheduledEventAttributes": {
         "activityId": "5",
         "activityType": {
@@ -113,7 +117,7 @@
               "metadata": {
                 "encoding": "anNvbi9wbGFpbg=="
               },
-              "data": "eyJrZXlJZCI6InRlc3QifQ=="
+              "data": "eyJrZXlJZCI6InRlc3RfMzMifQ=="
             }
           }
         },
@@ -122,9 +126,10 @@
             {
               "metadata": {
                 "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-                "encryption-key-id": "dGVzdA=="
+                "encryption-key-id": "dGVzdF8zMw==",
+                "encodingDecoded": "binary/encrypted"
               },
-              "data": "Jc47uEt0d+YyvUJ/49gS05Tw4ujWQYdZ2NkV40UsPZU1350RSh07VM5xDlRyj/pwSwUy9yqLoQsa2CDXl3Jsm9DDJRBX4YLosVV1xx70dsj+yBVkr2Wlyg6ASARVgssTYE9GJQlxZIjcr93dbZysw8CxL2Oj161x"
+              "data": "jNI7zlmpmQCvzfQh1Y/qX7j9GMdwQyTtJKurPO9IplcNPNIEELiTJc1zJ+08G96E8Guo32aW4jMTHvLRUwFE+Pwfs+HESga/Qk+Cti/BF+SY6EAK0/nnq0dPMESylspQOFMG2byDk+ouKUf6i/ikq4QdbSqH2LTQ"
             }
           ]
         },
@@ -138,26 +143,29 @@
           "backoffCoefficient": 2,
           "maximumInterval": "100s"
         },
-        "useCompatibleVersion": true
+        "useWorkflowBuildId": true
       }
     },
     {
       "eventId": "6",
-      "eventTime": "2024-06-25T17:44:21.934050337Z",
+      "eventTime": "2024-08-09T10:06:39.082408Z",
       "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
-      "taskId": "2581957",
+      "taskId": "1048609",
       "activityTaskStartedEventAttributes": {
         "scheduledEventId": "5",
-        "identity": "56208@antmendozas-MacBookPro.local@",
-        "requestId": "ce42d0b9-77b6-4d11-b1cc-e5e6e3793fcf",
-        "attempt": 1
+        "identity": "25295@antmendozas-MacBookPro.local@",
+        "requestId": "208a5557-8a8b-4c73-a310-9e13f6ba7115",
+        "attempt": 1,
+        "workerVersion": {
+          "buildId": "a451af0434c6a59421fa61d6c170c8a3"
+        }
       }
     },
     {
       "eventId": "7",
-      "eventTime": "2024-06-25T17:44:21.938732212Z",
+      "eventTime": "2024-08-09T10:06:39.086082Z",
       "eventType": "EVENT_TYPE_ACTIVITY_TASK_FAILED",
-      "taskId": "2581958",
+      "taskId": "1048610",
       "activityTaskFailedEventAttributes": {
         "failure": {
           "message": "Encoded failure",
@@ -165,9 +173,10 @@
           "encodedAttributes": {
             "metadata": {
               "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-              "encryption-key-id": "dGVzdA=="
+              "encryption-key-id": "",
+              "encodingDecoded": "binary/encrypted"
             },
-            "data": "xRmRuObhf9QYAxf4PKQX8WvEWML1vs7tJnGSce126a9f3h+0WcRwphghzJz2FU+BkApuBAZ6DY1/tyhl9M3yR8i/dPJAHQcn/J0za/vt+bgKW5UEI6gcbTE5emVbOz/QsyGptMGlEvWN6uQqLhr1itlHDxW8lh+B1hY/X2Ge4yUO89g3cwGLONFOiOitIw=="
+            "data": "j/6354GRUpCaqFUVbpt00t87MWeKw/9GVigJAIV7IzlPqDM0YighYK14DG3CIoR6cjS0/5kAeXWqleU5Ba7PuFtEaX66OsKKFqTwzoXmOwl1Vll+6/RhpF7ewxwiQkrppkVSnpq5ia+FvhsDYCRjyMNHDmaIK3zsw6FbMiGudCEU3RDtl0vPTIhZcG4+5w=="
           },
           "cause": {
             "message": "Encoded failure",
@@ -175,9 +184,10 @@
             "encodedAttributes": {
               "metadata": {
                 "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-                "encryption-key-id": "dGVzdA=="
+                "encryption-key-id": "",
+                "encodingDecoded": "binary/encrypted"
               },
-              "data": "4HYyKlft2/V5bRqHfTjMrKuYYVghxjenEtOlUNIrs3LU/Mw5QqagAiXKL6wr5XX/CWy8l76VT3VZZe/vtcrg3mfvCjN+yMz8DG4DJhLHIChjmm4SOE0fjcdsHU6bDvuY06kNX2eLsImOnnoeZAPHAvP2l+pPpbmDe+Q2A04cFfyEiJav9tg6sdKAPmM3N6w3LyWV4qK/V5q6mTw="
+              "data": "ziy0TshRgKQJWQZOwav12lT284Pz7xvc/PpEtV1Pw3pr2rQE9RXMIMEPwbJQgJSjYXC+ev6JO3W4nvFmj9/tF4PGCIIiISl9eryoZWtzvklUFywLvr/jtsUCj/SF7OKVty/50Z/XMIHxxV5mzTjWDemLeoOhP0JJMAShdsHAAhBqXuv8QBZ5HdTEmE75WwRgV2xs6wNO8IUa/Vk="
             },
             "applicationFailureInfo": {}
           },
@@ -189,9 +199,10 @@
                 {
                   "metadata": {
                     "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-                    "encryption-key-id": "dGVzdA=="
+                    "encryption-key-id": "",
+                    "encodingDecoded": "binary/encrypted"
                   },
-                  "data": "dxCQmnqeImiy3xxy5Lhhys5T6P93+XG2A1mVhWWD3Heiflx5X5uEINVHAebyHZMBC+T0/RvG2QhHnoY7HnYHfll3gwwv4rvSgHIlQWW84Vzcrc6Aw7qnK3jtrvY="
+                  "data": "nuYsFhxK1eLFPgtch6RkPZpTVqZh3kyAMKFXvzAJdyEymcq+Ho7VixVwIeSpXESiQc+SmX6sxn04b85DRyrPThSKaPZ3wi4BBu20E+7v64xbzx0B/atMwzsvBUI="
                 }
               ]
             }
@@ -199,18 +210,18 @@
         },
         "scheduledEventId": "5",
         "startedEventId": "6",
-        "identity": "56208@antmendozas-MacBookPro.local@",
+        "identity": "25295@antmendozas-MacBookPro.local@",
         "retryState": "RETRY_STATE_NON_RETRYABLE_FAILURE"
       }
     },
     {
       "eventId": "8",
-      "eventTime": "2024-06-25T17:44:21.938739462Z",
+      "eventTime": "2024-08-09T10:06:39.086086Z",
       "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
-      "taskId": "2581959",
+      "taskId": "1048611",
       "workflowTaskScheduledEventAttributes": {
         "taskQueue": {
-          "name": "antmendozas-MacBookPro.local:6811efb3-8c8f-4f61-86c3-f20be180a015",
+          "name": "antmendozas-MacBookPro.local:8a7e4901-080b-4e8c-b049-3b320e712b7e",
           "kind": "TASK_QUEUE_KIND_STICKY",
           "normalName": "encryption"
         },
@@ -220,27 +231,30 @@
     },
     {
       "eventId": "9",
-      "eventTime": "2024-06-25T17:44:21.942260087Z",
+      "eventTime": "2024-08-09T10:06:39.087161Z",
       "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
-      "taskId": "2581963",
+      "taskId": "1048615",
       "workflowTaskStartedEventAttributes": {
         "scheduledEventId": "8",
-        "identity": "56208@antmendozas-MacBookPro.local@",
-        "requestId": "e71c1157-da89-4158-938c-a68536c2fbb9",
-        "historySizeBytes": "2591"
+        "identity": "25295@antmendozas-MacBookPro.local@",
+        "requestId": "8b89f326-5ccf-4056-9681-5761447f0dcd",
+        "historySizeBytes": "2080",
+        "workerVersion": {
+          "buildId": "a451af0434c6a59421fa61d6c170c8a3"
+        }
       }
     },
     {
       "eventId": "10",
-      "eventTime": "2024-06-25T17:44:21.945974046Z",
+      "eventTime": "2024-08-09T10:06:39.088905Z",
       "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
-      "taskId": "2581967",
+      "taskId": "1048619",
       "workflowTaskCompletedEventAttributes": {
         "scheduledEventId": "8",
         "startedEventId": "9",
-        "identity": "56208@antmendozas-MacBookPro.local@",
+        "identity": "25295@antmendozas-MacBookPro.local@",
         "workerVersion": {
-          "buildId": "be7d0b790248b1fa480615b4322ef1cb"
+          "buildId": "a451af0434c6a59421fa61d6c170c8a3"
         },
         "sdkMetadata": {},
         "meteringMetadata": {}
@@ -248,9 +262,9 @@
     },
     {
       "eventId": "11",
-      "eventTime": "2024-06-25T17:44:21.946011337Z",
+      "eventTime": "2024-08-09T10:06:39.088972Z",
       "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_FAILED",
-      "taskId": "2581968",
+      "taskId": "1048620",
       "workflowExecutionFailedEventAttributes": {
         "failure": {
           "message": "Encoded failure",
@@ -258,9 +272,10 @@
           "encodedAttributes": {
             "metadata": {
               "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-              "encryption-key-id": "dGVzdA=="
+              "encryption-key-id": "",
+              "encodingDecoded": "binary/encrypted"
             },
-            "data": "SyHv+brRqRmY3PLA0z9/js3BoZM8lDrMz/d1MoRW3+OKK37QyBSsBGWp2HFpwMMa+8Lq7zq50QjvT9FLtLdEw6PhpTXyUgD3RpAZYi4UmQ5rAeb0KTyw9kVzoYYVuA7S7gLe4x2CFldkV/56moCXcqIK8iShOikO+AXgopeA9CvpktZvQOKXEA=="
+            "data": "EfZVyGcRwn+B7biIRNxsIGb1tJsuSw+JAlXaVtLN40CNoBdVDwCiNGiH1uGn7TzoJv2550UuzFzVEEHwE614lgJ7P2JZ6cHj+MFtuXDEuKt7l8kghB1WY3eu8Rtx82lOfOcP+e3V64Ku5c9NOK///LGF44kFW0wxaptNKB0q/f9FLe0eo3Z+Yg=="
           },
           "cause": {
             "message": "Encoded failure",
@@ -268,9 +283,10 @@
             "encodedAttributes": {
               "metadata": {
                 "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-                "encryption-key-id": "dGVzdA=="
+                "encryption-key-id": "",
+                "encodingDecoded": "binary/encrypted"
               },
-              "data": "xRmRuObhf9QYAxf4PKQX8WvEWML1vs7tJnGSce126a9f3h+0WcRwphghzJz2FU+BkApuBAZ6DY1/tyhl9M3yR8i/dPJAHQcn/J0za/vt+bgKW5UEI6gcbTE5emVbOz/QsyGptMGlEvWN6uQqLhr1itlHDxW8lh+B1hY/X2Ge4yUO89g3cwGLONFOiOitIw=="
+              "data": "j/6354GRUpCaqFUVbpt00t87MWeKw/9GVigJAIV7IzlPqDM0YighYK14DG3CIoR6cjS0/5kAeXWqleU5Ba7PuFtEaX66OsKKFqTwzoXmOwl1Vll+6/RhpF7ewxwiQkrppkVSnpq5ia+FvhsDYCRjyMNHDmaIK3zsw6FbMiGudCEU3RDtl0vPTIhZcG4+5w=="
             },
             "cause": {
               "message": "Encoded failure",
@@ -278,9 +294,10 @@
               "encodedAttributes": {
                 "metadata": {
                   "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-                  "encryption-key-id": "dGVzdA=="
+                  "encryption-key-id": "",
+                  "encodingDecoded": "binary/encrypted"
                 },
-                "data": "4HYyKlft2/V5bRqHfTjMrKuYYVghxjenEtOlUNIrs3LU/Mw5QqagAiXKL6wr5XX/CWy8l76VT3VZZe/vtcrg3mfvCjN+yMz8DG4DJhLHIChjmm4SOE0fjcdsHU6bDvuY06kNX2eLsImOnnoeZAPHAvP2l+pPpbmDe+Q2A04cFfyEiJav9tg6sdKAPmM3N6w3LyWV4qK/V5q6mTw="
+                "data": "ziy0TshRgKQJWQZOwav12lT284Pz7xvc/PpEtV1Pw3pr2rQE9RXMIMEPwbJQgJSjYXC+ev6JO3W4nvFmj9/tF4PGCIIiISl9eryoZWtzvklUFywLvr/jtsUCj/SF7OKVty/50Z/XMIHxxV5mzTjWDemLeoOhP0JJMAShdsHAAhBqXuv8QBZ5HdTEmE75WwRgV2xs6wNO8IUa/Vk="
               },
               "applicationFailureInfo": {}
             },
@@ -292,9 +309,10 @@
                   {
                     "metadata": {
                       "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
-                      "encryption-key-id": "dGVzdA=="
+                      "encryption-key-id": "",
+                      "encodingDecoded": "binary/encrypted"
                     },
-                    "data": "dxCQmnqeImiy3xxy5Lhhys5T6P93+XG2A1mVhWWD3Heiflx5X5uEINVHAebyHZMBC+T0/RvG2QhHnoY7HnYHfll3gwwv4rvSgHIlQWW84Vzcrc6Aw7qnK3jtrvY="
+                    "data": "nuYsFhxK1eLFPgtch6RkPZpTVqZh3kyAMKFXvzAJdyEymcq+Ho7VixVwIeSpXESiQc+SmX6sxn04b85DRyrPThSKaPZ3wi4BBu20E+7v64xbzx0B/atMwzsvBUI="
                   }
                 ]
               }
@@ -303,7 +321,7 @@
           "activityFailureInfo": {
             "scheduledEventId": "5",
             "startedEventId": "6",
-            "identity": "56208@antmendozas-MacBookPro.local@",
+            "identity": "25295@antmendozas-MacBookPro.local@",
             "activityType": {
               "name": "Activity"
             },
