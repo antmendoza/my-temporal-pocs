@@ -15,7 +15,9 @@ func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	dataConverter := encryption.NewEncryptionDataConverter(
 		converter.GetDefaultDataConverter(),
-		encryption.DataConverterOptions{Compress: true},
+		encryption.DataConverterOptions{
+			//	Compress: true
+		},
 	)
 	c, err := client.Dial(client.Options{
 		// If you intend to let the dataConverter to decide encryption key for all workflows
