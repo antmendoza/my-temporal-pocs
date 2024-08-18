@@ -1,4 +1,4 @@
-package io.temporal.samples.hello;
+package com.antmendoza;
 
 public interface GetAttempt {
   int get();
