@@ -34,7 +34,8 @@ public class HelloActivityTest {
                         .newWorkflowStub(
                                 HelloActivity.GreetingWorkflow.class,
                                 WorkflowOptions.newBuilder()
-                                        .setWorkflowId(workflowId).setTaskQueue(testWorkflowRule.getTaskQueue()).build());
+                                        .setWorkflowId(workflowId)
+                                        .setTaskQueue(testWorkflowRule.getTaskQueue()).build());
 
         WorkflowClient.start(workflow::start);
 
@@ -46,6 +47,11 @@ public class HelloActivityTest {
                 .getWorkflowClient()
                 .newUntypedWorkflowStub(workflowId).getResult(String.class);
         assertEquals("[SIGNAL_1],[SIGNAL_2]", result);
+
+
+        });
+
+
 
         testWorkflowRule.getTestEnvironment().shutdown();
     }

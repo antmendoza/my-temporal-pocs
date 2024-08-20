@@ -27,7 +27,7 @@ public class HelloActivity {
     @ActivityInterface
     public interface GreetingActivities {
 
-        String activity1( String name);
+        String activity1(String name);
 
     }
 
@@ -40,7 +40,8 @@ public class HelloActivity {
                         ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
 
 
-        private final List<String> updates = new ArrayList<>();
+        private final List<String> pendingUpdates = new ArrayList<>();
+        private final List<String> completedUpdates = new ArrayList<>();
         private final List<String> result = new ArrayList<>();
 
 
@@ -51,10 +52,14 @@ public class HelloActivity {
 
             while (!exitWhile) {
 
-                Workflow.await(() -> !updates.isEmpty());
+                Workflow.await(() -> !pendingUpdates.isEmpty());
 
 
-                final String hello = activities.activity1(updates.remove(0));
+                final String updateData = pendingUpdates.remove(0);
+                final String hello = activities.activity1(updateData);
+
+                completedUpdates.add(updateData);
+
 
                 result.add(hello);
 
@@ -69,7 +74,10 @@ public class HelloActivity {
         @Override
         public void update(final String signal) {
 
-            updates.add(signal);
+            pendingUpdates.add(signal);
+
+            Workflow.await(() -> completedUpdates.contains(signal));
+
         }
     }
 
@@ -78,7 +86,7 @@ public class HelloActivity {
         }
 
         @Override
-        public String activity1( String name) {
+        public String activity1(String name) {
             return "[" + name + "]";
         }
 
