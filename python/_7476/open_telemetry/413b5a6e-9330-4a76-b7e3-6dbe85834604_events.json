@@ -1,0 +1,296 @@
+{
+  "events": [
+    {
+      "eventId": "1",
+      "eventTime": "2024-08-21T13:43:58.062414Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED",
+      "taskId": "1048628",
+      "workflowExecutionStartedEventAttributes": {
+        "workflowType": {
+          "name": "GreetingWorkflow"
+        },
+        "taskQueue": {
+          "name": "open_telemetry-task-queue",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg==",
+                "encodingDecoded": "json/plain"
+              },
+              "data": "Temporal"
+            }
+          ]
+        },
+        "workflowTaskTimeout": "10s",
+        "originalExecutionRunId": "413b5a6e-9330-4a76-b7e3-6dbe85834604",
+        "identity": "68543@antmendozas-MacBookPro.local",
+        "firstExecutionRunId": "413b5a6e-9330-4a76-b7e3-6dbe85834604",
+        "attempt": 1,
+        "firstWorkflowTaskBackoff": "0s",
+        "header": {
+          "fields": {
+            "_tracer-data": {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0cmFjZXBhcmVudCI6IjAwLWE4OGQ5Zjc0ZjI5YjY4MDZmNDZiYzU2ODQzNmRlOGNhLTA5ODFmMjdkOWVhZjg4NzQtMDEifQ=="
+            }
+          }
+        },
+        "workflowId": "open_telemetry-workflow-id"
+      }
+    },
+    {
+      "eventId": "2",
+      "eventTime": "2024-08-21T13:43:58.062478Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "taskId": "1048629",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "open_telemetry-task-queue",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "3",
+      "eventTime": "2024-08-21T13:43:58.066408Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "taskId": "1048636",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "2",
+        "identity": "64015@antmendozas-MacBookPro.local",
+        "requestId": "18ff7cf2-625e-478b-a4ba-8548daa99798",
+        "historySizeBytes": "904",
+        "workerVersion": {
+          "buildId": "9ea13738604608050bc9c90f53959309"
+        }
+      }
+    },
+    {
+      "eventId": "4",
+      "eventTime": "2024-08-21T13:43:58.097795Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_FAILED",
+      "taskId": "1048640",
+      "workflowTaskFailedEventAttributes": {
+        "scheduledEventId": "2",
+        "startedEventId": "3",
+        "failure": {
+          "message": "No module named 'opentelemetry'",
+          "stackTrace": "  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/_workflow.py\", line 232, in _handle_activation\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/_workflow.py\", line 405, in _create_workflow_instance\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/workflow_sandbox/_runner.py\", line 93, in create_instance\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/workflow_sandbox/_runner.py\", line 119, in __init__\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/workflow_sandbox/_runner.py\", line 130, in _create_instance\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/workflow_sandbox/_runner.py\", line 172, in _run_code\n\n  File \"<string>\", line 2, in <module>\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/workflow_sandbox/_importer.py\", line 441, in __call__\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/workflow_sandbox/_importer.py\", line 232, in _import\n\n  File \"<frozen importlib._bootstrap_external>\", line 940, in exec_module\n\n  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/worker.py\", line 4, in <module>\n    import opentelemetry.context\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/workflow_sandbox/_importer.py\", line 441, in __call__\n\n  File \"/Users/antmendoza/dev/temporal/my-temporal-pocs/python/_7476/open_telemetry/.venv/lib/python3.11/site-packages/temporalio/worker/workflow_sandbox/_importer.py\", line 234, in _import\n\n  File \"<frozen importlib._bootstrap>\", line 1285, in __import__\n\n  File \"<frozen importlib._bootstrap>\", line 1206, in _gcd_import\n\n  File \"<frozen importlib._bootstrap>\", line 1178, in _find_and_load\n\n  File \"<frozen importlib._bootstrap>\", line 1128, in _find_and_load_unlocked\n\n  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n\n  File \"<frozen importlib._bootstrap>\", line 1206, in _gcd_import\n\n  File \"<frozen importlib._bootstrap>\", line 1178, in _find_and_load\n\n  File \"<frozen importlib._bootstrap>\", line 1142, in _find_and_load_unlocked\n",
+          "applicationFailureInfo": {
+            "type": "ModuleNotFoundError"
+          }
+        },
+        "identity": "64015@antmendozas-MacBookPro.local"
+      }
+    },
+    {
+      "eventId": "5",
+      "eventTime": "2024-08-21T13:44:18.112679Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "taskId": "1048651",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "open_telemetry-task-queue",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": "14.046480675s",
+        "attempt": 4
+      }
+    },
+    {
+      "eventId": "6",
+      "eventTime": "2024-08-21T13:44:18.116249Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "taskId": "1048652",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "5",
+        "identity": "68568@antmendozas-MacBookPro.local",
+        "requestId": "177ef9d0-ea6b-49e8-9b5c-566bb240a496",
+        "historySizeBytes": "4014",
+        "workerVersion": {
+          "buildId": "9ea13738604608050bc9c90f53959309"
+        }
+      }
+    },
+    {
+      "eventId": "7",
+      "eventTime": "2024-08-21T13:44:18.182118Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "taskId": "1048653",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "5",
+        "startedEventId": "6",
+        "identity": "68568@antmendozas-MacBookPro.local",
+        "workerVersion": {
+          "buildId": "9ea13738604608050bc9c90f53959309"
+        },
+        "sdkMetadata": {
+          "coreUsedFlags": [
+            3,
+            1,
+            2
+          ]
+        },
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "8",
+      "eventTime": "2024-08-21T13:44:18.182199Z",
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "taskId": "1048654",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "1",
+        "activityType": {
+          "name": "compose_greeting"
+        },
+        "taskQueue": {
+          "name": "open_telemetry-task-queue",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {
+          "fields": {
+            "_tracer-data": {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0cmFjZXBhcmVudCI6IjAwLWE4OGQ5Zjc0ZjI5YjY4MDZmNDZiYzU2ODQzNmRlOGNhLTc4NDA0YzgyMThiYWExMDQtMDEifQ=="
+            }
+          }
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg==",
+                "encodingDecoded": "json/plain"
+              },
+              "data": "Temporal"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": "0s",
+        "scheduleToStartTimeout": "0s",
+        "startToCloseTimeout": "10s",
+        "heartbeatTimeout": "0s",
+        "workflowTaskCompletedEventId": "7",
+        "retryPolicy": {
+          "initialInterval": "1s",
+          "backoffCoefficient": 2,
+          "maximumInterval": "100s"
+        },
+        "useWorkflowBuildId": true
+      }
+    },
+    {
+      "eventId": "9",
+      "eventTime": "2024-08-21T13:44:18.197813Z",
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "taskId": "1048661",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "8",
+        "identity": "64015@antmendozas-MacBookPro.local",
+        "requestId": "5f1fd11c-7a20-47a1-8e1d-8effab0eb5ae",
+        "attempt": 1,
+        "workerVersion": {
+          "buildId": "9ea13738604608050bc9c90f53959309"
+        }
+      }
+    },
+    {
+      "eventId": "10",
+      "eventTime": "2024-08-21T13:44:18.201376Z",
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "taskId": "1048662",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg==",
+                "encodingDecoded": "json/plain"
+              },
+              "data": "Hello, Temporal!"
+            }
+          ]
+        },
+        "scheduledEventId": "8",
+        "startedEventId": "9",
+        "identity": "64015@antmendozas-MacBookPro.local"
+      }
+    },
+    {
+      "eventId": "11",
+      "eventTime": "2024-08-21T13:44:18.201381Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "taskId": "1048663",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "68568@antmendozas-MacBookPro.local-1b8f507a76b44eb3ab0de5e0376bcbcb",
+          "kind": "TASK_QUEUE_KIND_STICKY",
+          "normalName": "open_telemetry-task-queue"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "12",
+      "eventTime": "2024-08-21T13:44:18.202468Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "taskId": "1048667",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "11",
+        "identity": "68568@antmendozas-MacBookPro.local",
+        "requestId": "415c0149-77cb-4695-8bc3-bc8360116b97",
+        "historySizeBytes": "4992",
+        "workerVersion": {
+          "buildId": "9ea13738604608050bc9c90f53959309"
+        }
+      }
+    },
+    {
+      "eventId": "13",
+      "eventTime": "2024-08-21T13:44:18.204562Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "taskId": "1048671",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "11",
+        "startedEventId": "12",
+        "identity": "68568@antmendozas-MacBookPro.local",
+        "workerVersion": {
+          "buildId": "9ea13738604608050bc9c90f53959309"
+        },
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "14",
+      "eventTime": "2024-08-21T13:44:18.204580Z",
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_COMPLETED",
+      "taskId": "1048672",
+      "workflowExecutionCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg==",
+                "encodingDecoded": "json/plain"
+              },
+              "data": "Hello, Temporal!"
+            }
+          ]
+        },
+        "workflowTaskCompletedEventId": "13"
+      }
+    }
+  ]
+}
