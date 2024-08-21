@@ -29,7 +29,7 @@ async def main():
         "localhost:7233",
         # Use OpenTelemetry interceptor
         interceptors=[
-            #TracingInterceptor(),
+            TracingInterceptor(),
             interceptor.ContextPropagationInterceptor(),
         ],
         runtime=runtime,
