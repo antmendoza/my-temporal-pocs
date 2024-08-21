@@ -58,7 +58,6 @@ tqdm = "^4.62.0"
 uvicorn = { version = "^0.24.0.post1", extras = ["standard"]}
 
 [tool.poetry.group.open_telemetry]
-optional = true
 [tool.poetry.group.open_telemetry.dependencies]
 temporalio = { version = "*", extras = ["opentelemetry"] }
 opentelemetry-exporter-otlp-proto-grpc = "1.18.0"

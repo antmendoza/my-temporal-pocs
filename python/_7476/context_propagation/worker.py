@@ -6,7 +6,6 @@ from temporalio.worker import Worker
 
 import activities
 import interceptor
-import shared
 import workflows
 
 
