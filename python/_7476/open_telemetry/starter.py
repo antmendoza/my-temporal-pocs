@@ -3,7 +3,8 @@ import asyncio
 from temporalio.client import Client
 from temporalio.contrib.opentelemetry import TracingInterceptor
 
-from open_telemetry.worker import GreetingWorkflow, init_runtime_with_telemetry
+from open_telemetry.worker import init_runtime_with_telemetry
+from open_telemetry.workflow import GreetingWorkflow
 
 
 async def main():

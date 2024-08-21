@@ -1,5 +1,4 @@
 import asyncio
-from datetime import timedelta
 
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -12,21 +11,9 @@ from temporalio.contrib.opentelemetry import TracingInterceptor
 from temporalio.runtime import OpenTelemetryConfig, Runtime, TelemetryConfig
 from temporalio.worker import Worker
 
+from open_telemetry.workflow import GreetingWorkflow
 
-with workflow.unsafe.imports_passed_through():
-    from open_telemetry.activity import compose_greeting
-
-
-@workflow.defn
-class GreetingWorkflow:
-    @workflow.run
-    async def run(self, name: str) -> str:
-        return await workflow.execute_activity(
-            compose_greeting,
-            name,
-            start_to_close_timeout=timedelta(seconds=10),
-        )
-
+from open_telemetry.activity import compose_greeting
 
 interrupt_event = asyncio.Event()
 
