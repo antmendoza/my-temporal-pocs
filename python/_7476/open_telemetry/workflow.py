@@ -18,7 +18,7 @@ class GreetingWorkflow:
 
 
         span = trace.get_current_span()
-        span.set_attribute("doctor", 47)
+        span.set_attribute("from_workflow", 47)
 
 
         return await workflow.execute_activity(
