@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.temporal</groupId>
-  <artifactId>temporal_java_workflow_update_test_7759</artifactId>
+  <artifactId>temporal_java_workflow_update_test_7763</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>

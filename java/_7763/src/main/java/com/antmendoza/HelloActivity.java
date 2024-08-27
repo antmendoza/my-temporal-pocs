@@ -1,10 +1,7 @@
 package com.antmendoza;
 
 import io.temporal.activity.*;
-import io.temporal.workflow.UpdateMethod;
-import io.temporal.workflow.Workflow;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.workflow.*;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -22,6 +19,9 @@ public class HelloActivity {
 
         @UpdateMethod
         void update(String signal_1);
+
+        @QueryMethod
+        List<String> processedSignals();
     }
 
     @ActivityInterface
@@ -37,7 +37,8 @@ public class HelloActivity {
         private final GreetingActivities activities =
                 Workflow.newActivityStub(
                         GreetingActivities.class,
-                        ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
+                        ActivityOptions.newBuilder()
+                                .setStartToCloseTimeout(Duration.ofSeconds(5)).build());
 
 
         private final List<String> pendingUpdates = new ArrayList<>();
@@ -54,12 +55,10 @@ public class HelloActivity {
 
                 Workflow.await(() -> !pendingUpdates.isEmpty());
 
-
                 final String updateData = pendingUpdates.remove(0);
                 final String hello = activities.activity1(updateData);
 
                 completedUpdates.add(updateData);
-
 
                 result.add(hello);
 
@@ -74,10 +73,23 @@ public class HelloActivity {
         @Override
         public void update(final String signal) {
 
+
+            if(signal.equals("SIGNAL_2") &&
+                    //SIGNAL 1 NOT PROCESSED YET
+                    !completedUpdates.contains("SIGNAL_1")){
+                return;
+            }
+
+
             pendingUpdates.add(signal);
 
             Workflow.await(() -> completedUpdates.contains(signal));
 
+        }
+
+        @Override
+        public List<String> processedSignals() {
+            return completedUpdates;
         }
     }
 

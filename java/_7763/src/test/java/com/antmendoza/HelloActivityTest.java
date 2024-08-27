@@ -8,6 +8,9 @@ import io.temporal.testing.*;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 public class HelloActivityTest {
 
     @Rule
@@ -17,13 +20,30 @@ public class HelloActivityTest {
                     .setDoNotStart(true)
                     .build();
 
+    private static void sleep(final int sleepInMillis) {
+        try {
+            Thread.sleep(sleepInMillis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     public void testExecuteTwoUpdates() {
 
         testWorkflowRule
                 .getWorker()
                 .registerActivitiesImplementations(
-                        new HelloActivity.GreetingActivitiesImpl());
+                        new HelloActivity.GreetingActivities() {
+                            @Override
+                            public String activity1(final String name) {
+                                // simulate real world delay
+                                sleep(2000);
+                                return "[" + name + "]";
+                            }
+                        });
+
+
         testWorkflowRule.getTestEnvironment().start();
 
         // Get a workflow stub using the same task queue the worker uses.
@@ -39,21 +59,28 @@ public class HelloActivityTest {
 
         WorkflowClient.start(workflow::start);
 
+
+        CompletableFuture.runAsync(() -> {
+            sleep(1000);
+            //This update will be sent after SIGNAL_1 and while SIGNAL_1 is running
+            workflow.update("SIGNAL_2");
+        });
+
         workflow.update("SIGNAL_1");
 
+        assertEquals(List.of("SIGNAL_1"), workflow.processedSignals());
+
         workflow.update("SIGNAL_2");
+
 
         String result = testWorkflowRule.getTestEnvironment()
                 .getWorkflowClient()
                 .newUntypedWorkflowStub(workflowId).getResult(String.class);
         assertEquals("[SIGNAL_1],[SIGNAL_2]", result);
 
-
-        });
-
-
-
         testWorkflowRule.getTestEnvironment().shutdown();
+
+
     }
 
 
