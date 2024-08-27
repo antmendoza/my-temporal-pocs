@@ -12,6 +12,6 @@ async def compose_greeting(name: str) -> str:
 
 
     activity.logger.info(f"Activity called by user {shared.user_id.get()}")
-
+    activity.logger.info(f"Activity span.is_recording() {span.is_recording()}")
 
     return f"Hello, {name}!"
