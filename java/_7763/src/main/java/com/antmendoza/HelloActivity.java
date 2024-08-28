@@ -74,9 +74,9 @@ public class HelloActivity {
         public void update(final String signal) {
 
 
-            if(signal.equals("SIGNAL_2") &&
+            if (signal.equals("SIGNAL_2") &&
                     //SIGNAL 1 NOT PROCESSED YET
-                    !completedUpdates.contains("SIGNAL_1")){
+                    !completedUpdates.contains("SIGNAL_1")) {
                 return;
             }
 

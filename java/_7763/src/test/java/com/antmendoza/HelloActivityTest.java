@@ -2,6 +2,7 @@ package com.antmendoza;
 
 import static org.junit.Assert.assertEquals;
 
+import io.temporal.activity.Activity;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.testing.*;
@@ -38,8 +39,21 @@ public class HelloActivityTest {
                             @Override
                             public String activity1(final String name) {
                                 // simulate real world delay
+                                recordSomething();
+
+                                final int attempt = Activity.getExecutionContext().getInfo().getAttempt();
+                                if(attempt == 1){
+                                    throw new RuntimeException("exception from activity attempt=" + attempt);
+                                }
                                 sleep(2000);
                                 return "[" + name + "]";
+                            }
+
+                            private void recordSomething() {
+                                final int attempt = Activity.getExecutionContext().getInfo().getAttempt();
+                                if (attempt == 1) {
+                                    System.out.println("recording something... ");
+                                }
                             }
                         });
 
