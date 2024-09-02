@@ -4,10 +4,7 @@ import io.temporal.activity.*;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.worker.Worker;
-import io.temporal.worker.WorkerFactory;
-import io.temporal.worker.WorkerFactoryOptions;
-import io.temporal.worker.WorkerOptions;
+import io.temporal.worker.*;
 import io.temporal.workflow.*;
 import org.slf4j.Logger;
 
@@ -41,7 +38,11 @@ public class HelloActivityParent {
                         .build());
 
 
-        worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class,
+        worker.registerWorkflowImplementationTypes(
+                WorkflowImplementationOptions.newBuilder()
+                        .setFailWorkflowExceptionTypes(AsyncChildException.class)
+                        .build(),
+                GreetingWorkflowImpl.class,
                 HelloActivityChild.GreetingWorkflowChildImpl.class);
 
         worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
@@ -123,8 +124,9 @@ public class HelloActivityParent {
                         logger.info("Response from child workflow " + asyncChildResult.getId() + " = " + asyncChildResult.getChildPromise());
                     } else {
 
-                        String id = ((AsyncChildException)promise.getFailure()).getId();
+                        String id = ((AsyncChildException)failure).getId();
                         logger.info("Error from child workflow   "+id+" = " + failure.getMessage());
+                        throw failure; // TODO need to add
                         //throw ApplicationFailure.newFailure(failure.getMessage(), failure.getClass().getName());
 
                     }
