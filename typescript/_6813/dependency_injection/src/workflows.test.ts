@@ -1,5 +1,4 @@
 import {Runtime, DefaultLogger, Worker, LogEntry} from '@temporalio/worker';
-import {WorkflowCoverage} from '@temporalio/nyc-test-coverage';
 import {TestWorkflowEnvironment} from '@temporalio/testing';
 import {v4 as uuid} from 'uuid';
 import {waitForConnectionCompletion} from "./workflows";

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1719414247817" clover="3.2.0">
-  <project timestamp="1719414247817" name="All files">
+<coverage generated="1725293507853" clover="3.2.0">
+  <project timestamp="1725293507853" name="All files">
     <metrics statements="11" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="3" elements="15" coveredelements="12" complexity="0" loc="11" ncloc="11" packages="1" files="2" classes="2"/>
-    <file name="activities.ts" path="/Users/antmendoza/dev/temporal/my-temporal-pocs/typescript/_6813/src/activities.ts">
+    <file name="activities.ts" path="/Users/antmendoza/dev/temporal/my-temporal-pocs/typescript/_6813/dependency_injection/src/activities.ts">
       <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
       <line num="1" count="1" type="stmt"/>
       <line num="11" count="1" type="stmt"/>
@@ -11,7 +11,7 @@
       <line num="19" count="1" type="stmt"/>
       <line num="21" count="1" type="stmt"/>
     </file>
-    <file name="workflows.ts" path="/Users/antmendoza/dev/temporal/my-temporal-pocs/typescript/_6813/src/workflows.ts">
+    <file name="workflows.ts" path="/Users/antmendoza/dev/temporal/my-temporal-pocs/typescript/_6813/dependency_injection/src/workflows.ts">
       <metrics statements="5" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
       <line num="1" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>

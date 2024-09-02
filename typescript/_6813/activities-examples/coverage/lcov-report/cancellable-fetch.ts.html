@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for activities.ts</title>
+    <title>Code coverage report for cancellable-fetch.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="prettify.css" />
     <link rel="stylesheet" href="base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> activities.ts</h1>
+        <h1><a href="index.html">All files</a> cancellable-fetch.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">17.64% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>3/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">17.64% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/6</span>
+                <span class='fraction'>3/17</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -87,54 +87,60 @@
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a>
 <a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import axios from "axios";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// @@@SNIPSTART typescript-activity-cancellable-fetch
+import fetch from 'node-fetch';
+import { cancellationSignal, heartbeat } from '@temporalio/activity';
+import type { AbortSignal as FetchAbortSignal } from 'node-fetch/externals';
 &nbsp;
-export interface Endpoint {
-  get(key: string): Promise&lt;string&gt;;
+export async function <span class="fstat-no" title="function not covered" >cancellableFetch(</span>url: string): Promise&lt;Uint8Array&gt; {
+  const response = <span class="cstat-no" title="statement not covered" >await fetch(url, { signal: cancellationSignal() as FetchAbortSignal });</span>
+  const contentLengthHeader = <span class="cstat-no" title="statement not covered" >response.headers.get('Content-Length');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (contentLengthHeader === null) {</span>
+<span class="cstat-no" title="statement not covered" >    throw new Error('expected Content-Length header to be set');</span>
+  }
+  const contentLength = <span class="cstat-no" title="statement not covered" >parseInt(contentLengthHeader);</span>
+  let bytesRead = <span class="cstat-no" title="statement not covered" >0;</span>
+  const chunks: Buffer[] = <span class="cstat-no" title="statement not covered" >[];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  for await (const chunk of response.body) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(chunk instanceof Buffer)) {</span>
+<span class="cstat-no" title="statement not covered" >      throw new TypeError('Expected Buffer');</span>
+    }
+<span class="cstat-no" title="statement not covered" >    bytesRead += chunk.length;</span>
+<span class="cstat-no" title="statement not covered" >    chunks.push(chunk);</span>
+<span class="cstat-no" title="statement not covered" >    heartbeat(bytesRead / contentLength);</span>
+  }
+<span class="cstat-no" title="statement not covered" >  return Buffer.concat(chunks);</span>
 }
-&nbsp;
-export interface Data {
-  field1:string
-}
-&nbsp;
-export const createActivities = (endpoint: Endpoint) =&gt; ({
-  async myActivity(msg: string): Promise&lt;string&gt; {
-    const name = await endpoint.get('name');
-    return `${msg}: ${name}`;
-  },
-&nbsp;
-  async myAxiosActivity(): Promise&lt;Data&gt; {
-&nbsp;
-    const res = await axios.get('http://httpbin.org/get?answer=42');
-&nbsp;
-    return res.data;
-    },
-});
-&nbsp;
+// @@@SNIPEND
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -142,7 +148,7 @@ export const createActivities = (endpoint: Endpoint) =&gt; ({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-06-26T15:04:07.810Z
+                at 2024-09-02T16:16:01.946Z
             </div>
         <script src="prettify.js"></script>
         <script>
