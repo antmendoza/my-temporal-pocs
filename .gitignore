@@ -19,3 +19,4 @@ bin/
 **/build
 /python/**/path/
 **/node_modules
+**/coverage
