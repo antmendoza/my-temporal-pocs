@@ -1,18 +1,21 @@
 package com.antmendoza;
 
 import io.temporal.activity.*;
-import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.api.enums.v1.ParentClosePolicy;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.failure.ChildWorkflowFailure;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
+import io.temporal.worker.WorkerFactoryOptions;
+import io.temporal.worker.WorkerOptions;
 import io.temporal.workflow.*;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
-public class HelloActivityWithChild {
+public class HelloActivityParent {
 
     static final String TASK_QUEUE = "HelloActivityWithChildTaskQueue";
 
@@ -29,12 +32,17 @@ public class HelloActivityWithChild {
          */
         WorkflowClient client = WorkflowClient.newInstance(service);
 
-        WorkerFactory factory = WorkerFactory.newInstance(client);
+        WorkerFactory factory = WorkerFactory.newInstance(client,
+                WorkerFactoryOptions.newBuilder()
+                        .build());
 
-        Worker worker = factory.newWorker(TASK_QUEUE);
+        Worker worker = factory.newWorker(TASK_QUEUE,
+                WorkerOptions.newBuilder()
+                        .build());
 
 
-        worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
+        worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class,
+                HelloActivityChild.GreetingWorkflowChildImpl.class);
 
         worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
 
@@ -48,10 +56,12 @@ public class HelloActivityWithChild {
                         WorkflowOptions.newBuilder()
                                 .setWorkflowId(WORKFLOW_ID)
                                 .setTaskQueue(TASK_QUEUE)
+//                                .setRetryOptions(RetryOptions.newBuilder()
+//                                        .setDoNotRetry(NullPointerException.class.getName()).build())
                                 .build());
 
 
-        String greeting = workflow.getGreeting(new WorkflowInput(true));
+        String greeting = workflow.start(new WorkflowInput(true, false));
 
         // Display workflow execution results
         System.out.println(greeting);
@@ -67,7 +77,7 @@ public class HelloActivityWithChild {
          * Execution completes when this method finishes execution.
          */
         @WorkflowMethod
-        String getGreeting(final WorkflowInput workflowInput);
+        String start(final WorkflowInput workflowInput);
     }
 
     @ActivityInterface
@@ -83,39 +93,33 @@ public class HelloActivityWithChild {
         private final GreetingActivities activities =
                 Workflow.newActivityStub(
                         GreetingActivities.class,
-                        ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
+                        ActivityOptions.newBuilder()
+                                .setStartToCloseTimeout(Duration.ofSeconds(2)).build());
+
+
+        private final List<Promise<AsyncChildResult>> promises = new ArrayList();
 
         @Override
-        public String getGreeting(final WorkflowInput workflowInput) {
+        public String start(final WorkflowInput workflowInput) {
 
             //Simulate some work
             Workflow.sleep(Duration.ofSeconds(3));
 
-            if (workflowInput.startChildWorkflowAsync()){
-
-
-                GreetingWorkflow child = Workflow.newChildWorkflowStub(GreetingWorkflow.class,
-                        ChildWorkflowOptions.newBuilder()
-                                .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
-                                .build());
-
-
-                Promise<String> childPromise = Async.function(child::getGreeting, new WorkflowInput(false));
-                Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(child);
-                // Wait for child to start
-                childExecution.get();
-
-
-                try{
-                    childPromise.get();
-                }catch (Exception e){
-
-                }
-
-            }
+            promises.add(new AsyncChild("1").start());
+            promises.add(new AsyncChild("2").start());
 
             // This is a blocking call that returns only after the activity has completed.
-            return activities.composeGreeting("Hello");
+            final String hello = activities.composeGreeting("Hello");
+
+            try {
+                Promise.allOf(promises);
+            } finally {
+                for (Promise<AsyncChildResult> promise : promises) {
+                    System.out.println(promise.get());
+                }
+            }
+
+            return hello;
         }
     }
 
@@ -131,7 +135,6 @@ public class HelloActivityWithChild {
 
         @Override
         public String composeGreeting(String greeting) {
-
             return greeting;
         }
 
