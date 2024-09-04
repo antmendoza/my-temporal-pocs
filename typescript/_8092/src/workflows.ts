@@ -18,7 +18,6 @@ const {greet} = proxyLocalActivities<typeof activities>({
 export async function example(name: string): Promise<string> {
 
 
-    //await greet(name);
 
     //      we convert this error to an Application error to fail the workflow,
     //      see the interceptor implementation
@@ -27,6 +26,7 @@ export async function example(name: string): Promise<string> {
     //}
 
     // but for NDE with local activities the error is not propagated
+    //await greet(name);
 
 
     console.log("before sleep")
