@@ -34,8 +34,8 @@ fail for executions run by this worker.
 ![](docs/img_reset.png)
 
 #### Expected behaviour
-- The workflow continue after the reset point, scheduling the activities `failWithNonRetryableAfter3Seconds` and `completeAfter6Seconds` and 
-waiting them to complete (and completes successfully).
+- The workflow continues after the reset point, scheduling the activities `failWithNonRetryableAfter3Seconds` and `completeAfter6Seconds` and 
+waiting for them to complete (and completes successfully).
 
 - Note that activity `completeAfter1Second` is not scheduled since the event ActivityTaskCompleted for this activity 
 is recorded in the new (after reset) event history. 
