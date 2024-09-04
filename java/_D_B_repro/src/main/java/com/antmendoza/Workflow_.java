@@ -108,7 +108,8 @@ public class Workflow_ {
 
             final boolean failActivity = Boolean.getBoolean("failBranch2");
             if (failActivity) {
-                throw ApplicationFailure.newNonRetryableFailure("Myerror", "Myerror");
+                throw ApplicationFailure.newNonRetryableFailure(
+                        "Myerror", "Myerror");
             }
 
             return null;
