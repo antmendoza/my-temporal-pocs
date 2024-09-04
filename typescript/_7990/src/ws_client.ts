@@ -4,7 +4,7 @@ async function run(): Promise<void> {
 
   const wss = new WebSocket.Server({ port: 8085 });
 
-  const myPromise: Promise<string> =  new Promise(() => {
+  const myPromise: Promise<string> =  new Promise((resolve) => {
 
     wss.on('connection', (ws: WebSocket) => {
 
@@ -17,7 +17,9 @@ async function run(): Promise<void> {
 
       ws.on('close', () => {
         console.log('Client disconnected');
+        resolve("done");
       });
+
     });
 
   });

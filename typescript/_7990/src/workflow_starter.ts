@@ -9,8 +9,6 @@ async function run(): Promise<void> {
         workflowId: 'dependency-injection',
     });
 
-
-
     console.log(await result.result());
 }
 
