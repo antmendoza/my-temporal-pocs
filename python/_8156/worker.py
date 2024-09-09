@@ -12,6 +12,7 @@ from temporalio.client import Client
 from temporalio.service import TLSConfig
 from temporalio.worker import Worker
 
+from failure_converter import FailureConverterWithDecodedAttributes
 from codec import EncryptionCodec
 
 
@@ -70,7 +71,9 @@ async def main():
             client_private_key=client_key,
         ),
         data_converter=dataclasses.replace(
-            temporalio.converter.default(), payload_codec=EncryptionCodec()
+            temporalio.converter.default(),
+            payload_codec=EncryptionCodec(),
+            failure_converter_class=FailureConverterWithDecodedAttributes,
         ),
 
     )
