@@ -5,8 +5,6 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.workflow.ChildWorkflowOptions;
-import io.temporal.workflow.Workflow;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -26,10 +24,14 @@ public class RestController {
     }
 
 
-    @PostMapping("/start")
-    String newEmployee() {
 
-        System.out.println("workflowServiceStubs getRpcTimeout(): " + workflowServiceStubs.getOptions().getRpcTimeout());
+
+
+    @PostMapping("/start")
+    String startWorkflow() {
+
+        //System.out.println("workflowServiceStubs getRpcTimeout(): " + workflowServiceStubs.getOptions().getRpcTimeout());
+        System.out.println("----------");
 
         DemoWorkflow workflow = workflowClient.newWorkflowStub(DemoWorkflow.class,
                 WorkflowOptions.newBuilder()
@@ -40,26 +42,12 @@ public class RestController {
 
         Date d1 = new Date();
 
-
-
-
-
-
-
         WorkflowExecution workflowInstance = WorkflowClient.start(workflow::exec, "");
-
-
-
-
-
-
-
-
 
         Date d2 = new Date();
 
         long seconds = (d2.getTime()-d1.getTime());
-        System.out.println("Request ms: " + seconds);
+        System.out.println("Request start workflow execution ms: " + seconds);
 
 
         return workflowInstance.getWorkflowId();
