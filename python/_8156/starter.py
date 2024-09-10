@@ -1,14 +1,11 @@
 import argparse
 import asyncio
-import dataclasses
 from typing import Optional
 
-import temporalio.converter
 from temporalio.client import Client
 from temporalio.service import TLSConfig
 
-from codec import EncryptionCodec
-from worker import GreetingWorkflow
+from worker import GreetingWorkflow, dataConverter
 
 
 async def main():
@@ -50,9 +47,7 @@ async def main():
             client_cert=client_cert,
             client_private_key=client_key,
         ),
-        data_converter=dataclasses.replace(
-            temporalio.converter.default(), payload_codec=EncryptionCodec()
-        ),
+        data_converter=await dataConverter(),
 
     )
 

@@ -19,6 +19,8 @@ def build_codec_server() -> web.Application:
         return resp
 
     # General purpose payloads-to-payloads
+
+
     async def apply(
         fn: Callable[[Iterable[Payload]], Awaitable[List[Payload]]], req: web.Request
     ) -> web.Response:

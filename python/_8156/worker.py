@@ -70,12 +70,7 @@ async def main():
             client_cert=client_cert,
             client_private_key=client_key,
         ),
-        data_converter=dataclasses.replace(
-            temporalio.converter.default(),
-            payload_codec=EncryptionCodec(),
-            failure_converter_class=FailureConverterWithDecodedAttributes,
-        ),
-
+        data_converter=await dataConverter(),
     )
     # Run a worker for the workflow
     async with Worker(
@@ -87,6 +82,15 @@ async def main():
         print("Worker started, ctrl+c to exit")
         await interrupt_event.wait()
         print("Shutting down")
+
+
+async def dataConverter():
+    return dataclasses.replace(
+        temporalio.converter.default(),
+        payload_codec=EncryptionCodec(),
+        failure_converter_class=FailureConverterWithDecodedAttributes,
+    )
+
 
 
 if __name__ == "__main__":
