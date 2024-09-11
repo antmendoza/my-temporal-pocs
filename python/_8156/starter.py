@@ -27,9 +27,20 @@ async def main():
     )
     print(f"Workflow result: {result}")
 
+    try:
+        query = "greeting"
+        print("> querying workflow." + query + "")
+        result = await client.get_workflow_handle("encryption-workflow-id").query(query)
+        print("result workflow." + query + "= " +  result)
+
+    except BaseException as exc:
+        print(exc)
 
     try:
-        await client.get_workflow_handle("encryption-workflow-id").query("non-existing-query")
+        query = "non-existing-query"
+        print("> querying workflow." + query + "")
+        await client.get_workflow_handle("encryption-workflow-id").query(query)
+        print("result workflow." + query + "= " +  result)
     except BaseException as exc:
         print(exc)
 
