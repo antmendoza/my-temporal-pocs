@@ -61,5 +61,11 @@ async def main():
     print(f"Workflow result: {result}")
 
 
+    try:
+        await client.get_workflow_handle("encryption-workflow-id").query("non-existing-query")
+    except BaseException as exc:
+        print(exc)
+
+
 if __name__ == "__main__":
     asyncio.run(main())

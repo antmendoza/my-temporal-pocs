@@ -9,12 +9,15 @@ import temporalio.converter
 import temporalio.converter
 from temporalio import workflow
 from temporalio.client import Client
+from temporalio.converter import DefaultFailureConverter
 from temporalio.service import TLSConfig
 from temporalio.worker import Worker
 
-from failure_converter import FailureConverterWithDecodedAttributes
 from codec import EncryptionCodec
 
+class FailureConverterWithDecodedAttributes(DefaultFailureConverter):
+    def __init__(self) -> None:
+        super().__init__(encode_common_attributes=True)
 
 @workflow.defn(name="Workflow")
 class GreetingWorkflow:
@@ -100,3 +103,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         interrupt_event.set()
         loop.run_until_complete(loop.shutdown_asyncgens())
+
+
+
