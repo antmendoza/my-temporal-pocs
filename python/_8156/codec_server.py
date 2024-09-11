@@ -12,15 +12,13 @@ def build_codec_server() -> web.Application:
     # Cors handler
     async def cors_options(req: web.Request) -> web.Response:
         resp = web.Response()
-        if req.headers.get(hdrs.ORIGIN) == "https://cloud.temporal.io":
-            resp.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = "https://cloud.temporal.io"
+        if req.headers.get(hdrs.ORIGIN) == "http://localhost:8233":
+            resp.headers[hdrs.ACCESS_CONTROL_ALLOW_ORIGIN] = "http://localhost:8233"
             resp.headers[hdrs.ACCESS_CONTROL_ALLOW_METHODS] = "POST"
             resp.headers[hdrs.ACCESS_CONTROL_ALLOW_HEADERS] = "content-type,x-namespace"
         return resp
 
     # General purpose payloads-to-payloads
-
-
     async def apply(
         fn: Callable[[Iterable[Payload]], Awaitable[List[Payload]]], req: web.Request
     ) -> web.Response:
@@ -51,4 +49,4 @@ def build_codec_server() -> web.Application:
 
 
 if __name__ == "__main__":
-    web.run_app(build_codec_server(), host="127.0.0.1", port=8086)
+    web.run_app(build_codec_server(), host="127.0.0.1", port=8081)

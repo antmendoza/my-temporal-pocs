@@ -1,4 +1,30 @@
-# Encryption Sample (TC) 
+# Encryption Sample
+
+This project is a copy of https://github.com/temporalio/samples-python/tree/main/encryption 
+
+With the following modifications:
+- Create a new DefaultFailureConverter with encode_common_attributes=True
+
+```
+class FailureConverterWithDecodedAttributes(temporalio.DefaultFailureConverter):
+    def __init__(self) -> None:
+        super().__init__(encode_common_attributes=True)
+```
+
+
+- Add `failure_converter_class=FailureConverterWithDecodedAttributes` to the client.
+```
+    client = await Client.connect(
+        "localhost:7233",
+        # Use the default converter, but change the codec
+        data_converter=dataclasses.replace(
+            temporalio.converter.default(),
+            payload_codec=EncryptionCodec(),
+            failure_converter_class=FailureConverterWithDecodedAttributes,
+        ),
+    )
+```
+
 
 
 ```bash
@@ -7,31 +33,14 @@
 
 
 ``` bash
-poetry run python3 worker.py --target-host antonio.a2dd6.tmprl.cloud:7233 --namespace antonio.a2dd6 \
-        --client-cert ~/dev/temporal/certificates/namespace-antonio-perez/client.pem  \
-        --client-key ~/dev/temporal/certificates/namespace-antonio-perez/client.key
+poetry run python3 worker.py 
 
 ```
-
 
 ```bash
-poetry run python3 starter.py --target-host antonio.a2dd6.tmprl.cloud:7233 --namespace antonio.a2dd6 \
-        --client-cert ~/dev/temporal/certificates/namespace-antonio-perez/client.pem  \
-        --client-key ~/dev/temporal/certificates/namespace-antonio-perez/client.key
+poetry run python3 starter.py 
 
 ```
+After sending a query that does not exist in the workflow the console pring "Encoded failure"
 
-The console print "Encoded failure"
-
-
-- Start a codec server in another terminal:
-
-```bash
-
-poetry run python codec_server.py
-
-```
-
-
-- Add the codec server url to the temporal UI 
-![img.png](img.png)
+This represents a problem since the UI send a non-existing query to the worker to get the list of queryies the workflow exposes.
