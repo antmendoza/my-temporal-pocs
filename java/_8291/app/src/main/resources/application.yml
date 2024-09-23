@@ -1,0 +1,29 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+server:
+  port: 3031
+
+
+
+spring:
+  application:
+    name: temporal-demo
+  sleuth:
+    otel:
+      config:
+        trace-id-ratio-based: 1
+      exporter:
+        otlp:
+          endpoint: http://127.0.0.1:4317
+    propagation:
+      type: W3C
+  temporal:
+    namespace: antonio.a2dd6
+    connection:
+      target: antonio.a2dd6.tmprl.cloud:7233
+      mtls:
+        key-file: /Users/antmendoza/dev/temporal/certificates/namespace-antonio-perez/client.key
+        cert-chain-file: /Users/antmendoza/dev/temporal/certificates/namespace-antonio-perez/client.pem
