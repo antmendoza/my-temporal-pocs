@@ -2,11 +2,6 @@
 package _8421
 
 import (
-	"context"
-	"time"
-
-	"go.temporal.io/sdk/activity"
-	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -15,51 +10,23 @@ type car struct {
 	FieldB string
 }
 
-// SampleScheduleWorkflow executes on the given schedule
-func SampleScheduleWorkflow(ctx workflow.Context, car car) error {
+// SampleScheduleWorkflowCar executes on the given schedule
+func SampleScheduleWorkflowCar(ctx workflow.Context, car car) (result car, err error) {
 
-	workflow.GetLogger(ctx).Info("Schedule workflow started.", "StartTime", workflow.Now(ctx))
+	workflow.GetLogger(ctx).Info("Workflow input ", "car", car)
 
-	workflow.GetLogger(ctx).Info("car.", "car.make", car.FieldA)
-	workflow.GetLogger(ctx).Info("car.", "car", car)
-
-	ao := workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
-	}
-	ctx1 := workflow.WithActivityOptions(ctx, ao)
-
-	info := workflow.GetInfo(ctx1)
-
-	// Workflow Executions started by a Schedule have the following additional properties appended to their search attributes
-	//lint:ignore SA1019 - this is a sample
-	scheduledByIDPayload := info.SearchAttributes.IndexedFields["TemporalScheduledById"]
-	var scheduledByID string
-	err := converter.GetDefaultDataConverter().FromPayload(scheduledByIDPayload, &scheduledByID)
-	if err != nil {
-		return err
-	}
-	//lint:ignore SA1019 - this is a sample
-	startTimePayload := info.SearchAttributes.IndexedFields["TemporalScheduledStartTime"]
-	var startTime time.Time
-	err = converter.GetDefaultDataConverter().FromPayload(startTimePayload, &startTime)
-	if err != nil {
-		return err
-	}
-
-	err = workflow.ExecuteActivity(ctx1, DoSomething, scheduledByID, startTime).Get(ctx, nil)
-	if err != nil {
-		workflow.GetLogger(ctx).Error("schedule workflow failed.", "Error", err)
-		return err
-	}
-
-	return nil
+	return car, nil
 }
 
-// DoSomething is an Activity
-func DoSomething(ctx context.Context, scheduleByID string, startTime time.Time) error {
-	activity.GetLogger(ctx).Info("Schedulde job running.", "scheduleByID", scheduleByID, "startTime", startTime)
-	// Query database, call external API, or do any other non-deterministic action.
-	return nil
+type cat struct {
+	FieldCatA string
+	FieldCatB string
 }
 
-// @@@SNIPEND
+// SampleScheduleWorkflowCar executes on the given schedule
+func SampleScheduleWorkflowCat(ctx workflow.Context, cat cat) (result cat, err error) {
+
+	workflow.GetLogger(ctx).Info("Workflow input ", "cat", cat)
+
+	return cat, nil
+}

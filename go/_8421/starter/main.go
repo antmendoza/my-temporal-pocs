@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"time"
 
@@ -15,31 +16,48 @@ func main() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
+		//DataConverter: _8421.MyDataConverter,
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
-	// @@@SNIPSTART samples-go-schedule-create-delete
+
+	inputStringCar := "{\"FieldA\": \"FieldAValueCar\",\"FieldB\": \"FieldBValueCar\"}"
+	var jsonInputCar map[string]interface{}
+	json.Unmarshal([]byte(inputStringCar), &jsonInputCar)
+
+	runSchedule(err, c, ctx, "SampleScheduleWorkflowCar", jsonInputCar)
+
+	inputStringCat := "{\"FieldCatA\": \"FieldAValueCat\",\"FieldCatB\": \"FieldBValueCat\"}"
+	var jsonInputCat map[string]interface{}
+	json.Unmarshal([]byte(inputStringCat), &jsonInputCat)
+
+	runSchedule(err, c, ctx, "SampleScheduleWorkflowCat", jsonInputCat)
+
+}
+
+func runSchedule(
+	err error,
+	c client.Client,
+	ctx context.Context,
+	workflowType string,
+	jsonInput map[string]interface{}) {
 	// This schedule ID can be user business logic identifier as well.
 	scheduleID := "schedule_" + uuid.New()
 	workflowID := "schedule_workflow_" + uuid.New()
-	// Create the schedule, start with no spec so the schedule will not run.
 
-	data := map[string]interface{}{
-		"FieldA": "FieldAValue",
-		"FieldB": "FieldBValue",
-	}
 	scheduleHandle, err := c.ScheduleClient().Create(ctx, client.ScheduleOptions{
 		ID:   scheduleID,
 		Spec: client.ScheduleSpec{},
 		Action: &client.ScheduleWorkflowAction{
 			ID:        workflowID,
-			Workflow:  "SampleScheduleWorkflow",
+			Workflow:  workflowType,
 			TaskQueue: "schedule",
-			Args:      []interface{}{data},
+			Args:      []any{jsonInput},
 		},
 	})
+
 	if err != nil {
 		log.Fatalln("Unable to create schedule", err)
 	}
@@ -51,8 +69,7 @@ func main() {
 			log.Fatalln("Unable to delete schedule", err)
 		}
 	}()
-	// @@@SNIPEND
-	// @@@SNIPSTART samples-go-schedule-trigger
+
 	// Manually trigger the schedule once
 	log.Println("Manually triggering schedule", "ScheduleID", scheduleHandle.GetID())
 
@@ -62,8 +79,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("Unable to trigger schedule", err)
 	}
-	// @@@SNIPEND
-	// @@@SNIPSTART samples-go-schedule-update
+
 	// Update the schedule with a spec so it will run periodically,
 	log.Println("Updating schedule", "ScheduleID", scheduleHandle.GetID())
 	err = scheduleHandle.Update(ctx, client.ScheduleUpdateOptions{
@@ -94,7 +110,7 @@ func main() {
 			// Start the schedule paused to demonstrate how to unpause a schedule
 			schedule.Description.Schedule.State.Paused = true
 			schedule.Description.Schedule.State.LimitedActions = true
-			schedule.Description.Schedule.State.RemainingActions = 10
+			schedule.Description.Schedule.State.RemainingActions = 2
 
 			return &client.ScheduleUpdate{
 				Schedule: &schedule.Description.Schedule,
@@ -104,8 +120,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("Unable to update schedule", err)
 	}
-	// @@@SNIPEND
-	// @@@SNIPSTART samples-go-schedule-unpause-describe
+
 	// Unpause schedule
 	log.Println("Unpausing schedule", "ScheduleID", scheduleHandle.GetID())
 	err = scheduleHandle.Unpause(ctx, client.ScheduleUnpauseOptions{})
@@ -128,5 +143,3 @@ func main() {
 		}
 	}
 }
-
-// @@@SNIPEND
