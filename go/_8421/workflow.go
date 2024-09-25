@@ -11,9 +11,10 @@ type car struct {
 }
 
 // SampleScheduleWorkflowCar executes on the given schedule
-func SampleScheduleWorkflowCar(ctx workflow.Context, car car) (result car, err error) {
+func SampleScheduleWorkflowCar(ctx workflow.Context, car car, car2 car) (result car, err error) {
 
 	workflow.GetLogger(ctx).Info("Workflow input ", "car", car)
+	workflow.GetLogger(ctx).Info("Workflow input ", "car2", car2)
 
 	return car, nil
 }
