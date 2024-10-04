@@ -6,7 +6,7 @@ from temporalio.client import Client
 from temporalio.common import RetryPolicy
 from temporalio.worker import Worker
 
-from custom_decorator.activity_utils import auto_heartbeater
+from custom_decorator_from_python_samples.activity_utils import auto_heartbeater
 
 
 # Here we use our automatic heartbeater decorator. If this wasn't present, our

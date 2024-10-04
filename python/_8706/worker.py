@@ -113,10 +113,9 @@ async def main():
 class RepeatingTimer(Timer):
     def run(self):
         while not self.finished.is_set():
-            print("heartbeting ...")
+            print("Heartbeating ...")
             self.function(*self.args, **self.kwargs)
             self.finished.wait(self.interval)
-
 
 
 

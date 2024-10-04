@@ -2,7 +2,7 @@ import asyncio
 
 from temporalio.client import Client
 
-from custom_decorator.worker import WaitForCancelWorkflow
+from custom_decorator_from_python_samples.worker import WaitForCancelWorkflow
 
 
 async def main():

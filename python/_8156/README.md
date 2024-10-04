@@ -41,6 +41,6 @@ poetry run python3 worker.py
 poetry run python3 starter.py 
 
 ```
-After sending a query that does not exist in the workflow the console pring "Encoded failure"
+After sending a query that does not exist in the workflow the console print "Encoded failure"
 
 This represents a problem since the UI send a non-existing query to the worker to get the list of queryies the workflow exposes.
