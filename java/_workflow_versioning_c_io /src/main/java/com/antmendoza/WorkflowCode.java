@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Sample Temporal Workflow Definition that executes a single Activity. */
-public class HelloActivity {
+public class WorkflowCode {
 
   // Define the task queue name
   static final String TASK_QUEUE = "HelloActivityTaskQueue";
@@ -45,7 +45,7 @@ public class HelloActivity {
 
 
   @WorkflowInterface
-  public interface GreetingWorkflow {
+  public interface MyWorkflow {
 
 
     @WorkflowMethod
@@ -61,7 +61,7 @@ public class HelloActivity {
   }
 
   // Define the workflow implementation which implements our getGreeting workflow method.
-  public static class GreetingWorkflowImpl implements GreetingWorkflow {
+  public static class MyWorkflowImpl implements MyWorkflow {
 
 
     private final GreetingActivities activities =
@@ -105,7 +105,7 @@ public class HelloActivity {
     Worker worker = factory.newWorker(TASK_QUEUE);
 
 
-    worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
+    worker.registerWorkflowImplementationTypes(MyWorkflowImpl.class);
 
     worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
 
@@ -113,9 +113,9 @@ public class HelloActivity {
     factory.start();
 
     // Create the workflow client stub. It is used to start our workflow execution.
-    GreetingWorkflow workflow =
+    MyWorkflow workflow =
         client.newWorkflowStub(
-            GreetingWorkflow.class,
+            MyWorkflow.class,
             WorkflowOptions.newBuilder()
                 .setWorkflowId(WORKFLOW_ID)
                 .setTaskQueue(TASK_QUEUE)

@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <temporal-sdk.version>1.23.2</temporal-sdk.version>
+        <temporal-sdk.version>1.20.0</temporal-sdk.version>
     </properties>
 
     <dependencies>
