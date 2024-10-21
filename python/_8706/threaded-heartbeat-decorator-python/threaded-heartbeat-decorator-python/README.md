@@ -10,14 +10,9 @@ poetry install
 Start the worker
 
 ``` bash
-poetry run python3 worker.py
+poetry run python3 threaded_heartbeat_python/main.py
 ```
 
-Start the starter
-
-``` bash
-poetry run python3 starter.py
-```
 
 
 

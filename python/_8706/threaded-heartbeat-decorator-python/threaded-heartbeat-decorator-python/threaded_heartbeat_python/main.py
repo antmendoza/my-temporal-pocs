@@ -87,10 +87,18 @@ def heartbeat_every(stop_event: threading.Event, delay: float, *details: Any) ->
 @activity.defn
 @auto_heartbeat
 def run_forever_activity():
+
+
+
+
+
+    # Wait forever, catch the cancel, and return some value
     # Wait forever, catch the cancel, and return some value
     while True:
         print("Hello from run_forever_activity...")
         time.sleep(1)
+
+
 
 
 @workflow.defn
