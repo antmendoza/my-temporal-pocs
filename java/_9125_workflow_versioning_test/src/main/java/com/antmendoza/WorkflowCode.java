@@ -43,10 +43,8 @@ public class WorkflowCode {
   // Define our workflow unique id
   static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
-
   @WorkflowInterface
   public interface MyWorkflow {
-
 
     @WorkflowMethod
     String getGreeting(String name);
@@ -62,7 +60,6 @@ public class WorkflowCode {
 
   // Define the workflow implementation which implements our getGreeting workflow method.
   public static class MyWorkflowImpl implements MyWorkflow {
-
 
     private final GreetingActivities activities =
         Workflow.newActivityStub(
@@ -98,17 +95,13 @@ public class WorkflowCode {
 
     WorkflowClient client = WorkflowClient.newInstance(service);
 
-
     WorkerFactory factory = WorkerFactory.newInstance(client);
 
-
     Worker worker = factory.newWorker(TASK_QUEUE);
-
 
     worker.registerWorkflowImplementationTypes(MyWorkflowImpl.class);
 
     worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
-
 
     factory.start();
 
@@ -120,7 +113,6 @@ public class WorkflowCode {
                 .setWorkflowId(WORKFLOW_ID)
                 .setTaskQueue(TASK_QUEUE)
                 .build());
-
 
     String greeting = workflow.getGreeting("World");
 
