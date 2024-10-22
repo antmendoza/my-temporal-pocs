@@ -22,14 +22,14 @@ package com.antmendoza;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import io.temporal.activity.ActivityOptions;
+import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.api.enums.v1.ParentClosePolicy;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
-import io.temporal.workflow.Workflow;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.workflow.*;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,47 +42,6 @@ public class WorkflowCode {
 
   // Define our workflow unique id
   static final String WORKFLOW_ID = "HelloActivityWorkflow";
-
-  @WorkflowInterface
-  public interface MyWorkflow {
-
-    @WorkflowMethod
-    String getGreeting(String name);
-  }
-
-  @ActivityInterface
-  public interface GreetingActivities {
-
-    // Define your activity method which can be called during workflow execution
-    @ActivityMethod(name = "greet")
-    String composeGreeting(String greeting, String name);
-  }
-
-  // Define the workflow implementation which implements our getGreeting workflow method.
-  public static class MyWorkflowImpl implements MyWorkflow {
-
-    private final GreetingActivities activities =
-        Workflow.newActivityStub(
-            GreetingActivities.class,
-            ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
-
-    @Override
-    public String getGreeting(String name) {
-      // This is a blocking call that returns only after the activity has completed.
-      return activities.composeGreeting("Hello", name);
-    }
-  }
-
-  /** Simple activity implementation, that concatenates two strings. */
-  static class GreetingActivitiesImpl implements GreetingActivities {
-    private static final Logger log = LoggerFactory.getLogger(GreetingActivitiesImpl.class);
-
-    @Override
-    public String composeGreeting(String greeting, String name) {
-      log.info("Composing greeting...");
-      return greeting + " " + name + "!";
-    }
-  }
 
   /**
    * With our Workflow and Activities defined, we can now start execution. The main method starts
@@ -99,7 +58,7 @@ public class WorkflowCode {
 
     Worker worker = factory.newWorker(TASK_QUEUE);
 
-    worker.registerWorkflowImplementationTypes(MyWorkflowImpl.class);
+    worker.registerWorkflowImplementationTypes(MyWorkflowImpl.class, MyChildWorkflowImpl.class);
 
     worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
 
@@ -118,6 +77,102 @@ public class WorkflowCode {
 
     // Display workflow execution results
     System.out.println(greeting);
-    System.exit(0);
+    // System.exit(0);
+  }
+
+  @WorkflowInterface
+  public interface MyWorkflow {
+
+    @WorkflowMethod
+    String getGreeting(String name);
+  }
+
+  @WorkflowInterface
+  public interface MyChildWorkflow {
+
+    @WorkflowMethod
+    String getGreeting(String name);
+  }
+
+  public static class MyChildWorkflowImpl implements MyChildWorkflow {
+
+    @Override
+    public String getGreeting(final String name) {
+      Workflow.sleep(Duration.ofSeconds(5));
+      return "";
+    }
+  }
+
+  @ActivityInterface
+  public interface GreetingActivities {
+
+    // Define your activity method which can be called during workflow execution
+    @ActivityMethod(name = "greet")
+    String composeGreeting(String greeting, String name);
+  }
+
+  public static class MyWorkflowImpl implements MyWorkflow {
+
+    private final GreetingActivities activities =
+        Workflow.newActivityStub(
+            GreetingActivities.class,
+            ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
+
+    @Override
+    public String getGreeting(String name) {
+
+      final String childWorkflow1 = "child_workflow_1";
+
+      final Promise<WorkflowExecution> childExecution_1 =
+          createPromiseChildWorkflow(name, childWorkflow1);
+
+      // Wait for child to start
+      childExecution_1.get();
+
+      //      1	call an activity
+      // This is a blocking call that returns only after the activity has completed.
+      final String hello = activities.composeGreeting("Hello", name);
+
+      //      2	signal external workflow
+      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
+
+      //      3	start child workflow using Async.function
+      final String childWorkflow2 = "child_workflow_2";
+      final Promise<WorkflowExecution> childExecution_2 =
+          createPromiseChildWorkflow(name, childWorkflow2);
+
+      //      4	use getVersion
+
+      //      5	query execution details of the started child workflow in step 3 if version == 1
+      // (i.e. not default version)
+
+      return hello;
+    }
+  }
+
+  static Promise<WorkflowExecution> createPromiseChildWorkflow(
+      final String name, final String childWorkflowId) {
+    final MyChildWorkflow child =
+        Workflow.newChildWorkflowStub(
+            MyChildWorkflow.class,
+            ChildWorkflowOptions.newBuilder()
+                .setWorkflowId(childWorkflowId)
+                .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
+                .build());
+
+    Async.procedure(child::getGreeting, name);
+    final Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(child);
+    return childExecution;
+  }
+
+  /** Simple activity implementation, that concatenates two strings. */
+  static class GreetingActivitiesImpl implements GreetingActivities {
+    private static final Logger log = LoggerFactory.getLogger(GreetingActivitiesImpl.class);
+
+    @Override
+    public String composeGreeting(String greeting, String name) {
+      log.info("Composing greeting...");
+      return greeting + " " + name + "!";
+    }
   }
 }

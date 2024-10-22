@@ -19,7 +19,7 @@
 
 package com.antmendoza;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.antmendoza.WorkflowCode.createPromiseChildWorkflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.api.common.v1.WorkflowExecution;
@@ -28,9 +28,9 @@ import io.temporal.client.WorkflowStub;
 import io.temporal.internal.common.WorkflowExecutionHistory;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.testing.WorkflowReplayer;
+import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,12 +46,6 @@ public class WorkflowCodeReplayTest {
           .setDoNotStart(true)
           .build();
 
-  private static WorkflowCode.GreetingActivities createActivityStub() {
-    return Workflow.newActivityStub(
-        WorkflowCode.GreetingActivities.class,
-        ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
-  }
-
   @AfterEach
   public void after() {
     testWorkflowRule.getTestEnvironment().shutdown();
@@ -62,7 +56,9 @@ public class WorkflowCodeReplayTest {
 
     final Class<WorkflowCode.MyWorkflowImpl> workflowImplementationType =
         WorkflowCode.MyWorkflowImpl.class;
-    final String workflowId = executeWorkflow(workflowImplementationType);
+
+    createWorker(WorkflowCode.MyWorkflowImpl.class);
+    final String workflowId = executeMainWorkflow();
 
     final String eventHistory = getWorkflowExecutionHistory(workflowId).toJson(true);
 
@@ -70,56 +66,18 @@ public class WorkflowCodeReplayTest {
   }
 
   @Test
-  public void replayWorkflowExecutionWithNonDeterministicCode() {
+  public void replayWorkflowExecutionWithVersionAndGetChild() throws Exception {
 
-    try {
-
-      final String workflowId = executeWorkflow(WorkflowCode.MyWorkflowImpl.class);
-
-      final String eventHistory = getWorkflowExecutionHistory(workflowId).toJson(true);
-
-      WorkflowReplayer.replayWorkflowExecution(
-          eventHistory, WorkflowImplWithTimerNotVersioned.class);
-
-      Assert.fail("Should have thrown an Exception");
-    } catch (Exception e) {
-      assertThat(
-          e.getMessage(),
-          CoreMatchers.containsString("error=io.temporal.worker.NonDeterministicException"));
-    }
-  }
-
-  @Test
-  public void replayWorkflowExecutionWithVersionOnly() throws Exception {
-
-    final String workflowId = executeWorkflow(WorkflowCode.MyWorkflowImpl.class);
-
-    final String eventHistory = getWorkflowExecutionHistory(workflowId).toJson(true);
-
-    WorkflowReplayer.replayWorkflowExecution(eventHistory, MyWorkflowImplWithVersionOnly.class);
-  }
-
-  @Test
-  public void replayWorkflowExecutionWithVersionAndNewActivity() throws Exception {
-
-    final String workflowId = executeWorkflow(WorkflowCode.MyWorkflowImpl.class);
+    createWorker(WorkflowCode.MyWorkflowImpl.class);
+    final String workflowId = executeMainWorkflow();
 
     final String eventHistory = getWorkflowExecutionHistory(workflowId).toJson(true);
 
     WorkflowReplayer.replayWorkflowExecution(
-        eventHistory, MyWorkflowImplWithVersionAndNewActivity.class);
+        eventHistory, MyWorkflowImplWithGetChildPromiseVersioned.class);
   }
 
-  private String executeWorkflow(
-      Class<? extends WorkflowCode.MyWorkflow> workflowImplementationType) {
-
-    testWorkflowRule
-        .getWorker()
-        .registerActivitiesImplementations(new WorkflowCode.GreetingActivitiesImpl());
-
-    testWorkflowRule.getWorker().registerWorkflowImplementationTypes(workflowImplementationType);
-
-    testWorkflowRule.getTestEnvironment().start();
+  private String executeMainWorkflow() {
 
     WorkflowCode.MyWorkflow workflow =
         testWorkflowRule
@@ -127,45 +85,71 @@ public class WorkflowCodeReplayTest {
             .newWorkflowStub(
                 WorkflowCode.MyWorkflow.class,
                 WorkflowOptions.newBuilder().setTaskQueue(testWorkflowRule.getTaskQueue()).build());
-    WorkflowExecution execution = WorkflowStub.fromTyped(workflow).start("Hello");
+    WorkflowExecution execution = WorkflowStub.fromTyped(workflow).start("World");
     // wait until workflow completes
-    WorkflowStub.fromTyped(workflow).getResult(String.class);
+    String result = WorkflowStub.fromTyped(workflow).getResult(String.class);
+
+    Assert.assertEquals("Hello World!", result);
 
     return execution.getWorkflowId();
   }
 
-  public static class WorkflowImplWithTimerNotVersioned implements WorkflowCode.MyWorkflow {
+  private void createWorker(
+      final Class<? extends WorkflowCode.MyWorkflow> workflowImplementationType) {
+    testWorkflowRule
+        .getWorker()
+        .registerActivitiesImplementations(new WorkflowCode.GreetingActivitiesImpl());
 
-    @Override
-    public String getGreeting(String name) {
-      Workflow.sleep(100);
-      return createActivityStub().composeGreeting("Hello", name);
-    }
+    testWorkflowRule
+        .getWorker()
+        .registerWorkflowImplementationTypes(
+            workflowImplementationType, WorkflowCode.MyChildWorkflowImpl.class);
+
+    testWorkflowRule.getTestEnvironment().start();
   }
 
-  public static class MyWorkflowImplWithVersionOnly implements WorkflowCode.MyWorkflow {
+  public static class MyWorkflowImplWithGetChildPromiseVersioned
+      implements WorkflowCode.MyWorkflow {
+
+    private final WorkflowCode.GreetingActivities activities =
+        Workflow.newActivityStub(
+            WorkflowCode.GreetingActivities.class,
+            ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
 
     @Override
     public String getGreeting(String name) {
-      int version = Workflow.getVersion("my-version", Workflow.DEFAULT_VERSION, 1);
+
+      final String childWorkflow1 = "child_workflow_1";
+
+      final Promise<WorkflowExecution> childExecution_1 =
+          createPromiseChildWorkflow(name, childWorkflow1);
+
+      // Wait for child to start
+      childExecution_1.get();
+
+      //      1	call an activity
+      // This is a blocking call that returns only after the activity has completed.
+      final String hello = activities.composeGreeting("Hello", name);
+
+      //      2	signal external workflow
+      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
+
+      //      3	start child workflow using Async.function
+      final String childWorkflow2 = "child_workflow_2";
+      final Promise<WorkflowExecution> childExecution_2 =
+          createPromiseChildWorkflow(name, childWorkflow2);
+
+      //      4	use getVersion
+      int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);
+
+      //      5	query execution details of the started child workflow in step 3 if version == 1
+      // (i.e. not default version)
       if (version == 1) {
-        // do nothing yet
-      }
-      return createActivityStub().composeGreeting("Hello", name);
-    }
-  }
-
-  public static class MyWorkflowImplWithVersionAndNewActivity implements WorkflowCode.MyWorkflow {
-
-    @Override
-    public String getGreeting(String name) {
-      int version = Workflow.getVersion("my-version", Workflow.DEFAULT_VERSION, 1);
-
-      if (version == 1) {
-        createActivityStub().composeGreeting("Hello", name);
+        // Wait for child to start
+        childExecution_2.get();
       }
 
-      return createActivityStub().composeGreeting("Hello", name);
+      return hello;
     }
   }
 
