@@ -42,7 +42,7 @@ public class WorkflowCodeReplayTest {
   public TestWorkflowRule testWorkflowRule =
       TestWorkflowRule.newBuilder()
           // .setNamespace("default")
-          // .setUseExternalService(true)
+           //   .setUseExternalService(true)
           .setDoNotStart(true)
           .build();
 
@@ -119,7 +119,7 @@ public class WorkflowCodeReplayTest {
     @Override
     public String getGreeting(String name) {
 
-      final String childWorkflow1 = "child_workflow_1";
+      final String childWorkflow1 = "child_workflow_1_"+Workflow.currentTimeMillis();
 
       final Promise<WorkflowExecution> childExecution_1 =
           createPromiseChildWorkflow(name, childWorkflow1);
@@ -135,7 +135,7 @@ public class WorkflowCodeReplayTest {
       Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
 
       //      3	start child workflow using Async.function
-      final String childWorkflow2 = "child_workflow_2";
+      final String childWorkflow2 = "child_workflow_2_"+Workflow.currentTimeMillis();
       final Promise<WorkflowExecution> childExecution_2 =
           createPromiseChildWorkflow(name, childWorkflow2);
 
