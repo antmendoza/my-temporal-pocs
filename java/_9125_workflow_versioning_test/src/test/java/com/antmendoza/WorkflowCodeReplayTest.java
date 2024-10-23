@@ -28,7 +28,6 @@ import io.temporal.client.WorkflowStub;
 import io.temporal.internal.common.WorkflowExecutionHistory;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.testing.WorkflowReplayer;
-import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.junit.Assert;
@@ -41,8 +40,8 @@ public class WorkflowCodeReplayTest {
   @Rule
   public TestWorkflowRule testWorkflowRule =
       TestWorkflowRule.newBuilder()
-           //.setNamespace("default")
-           //.setUseExternalService(true)
+          // .setNamespace("default")
+          // .setUseExternalService(true)
           .setDoNotStart(true)
           .build();
 
@@ -119,12 +118,11 @@ public class WorkflowCodeReplayTest {
     @Override
     public String getGreeting(String name) {
 
-      final String childWorkflow1 = "child_workflow_1_"+Workflow.currentTimeMillis();
+      final String childWorkflow1 = "child_workflow_1_" + Workflow.currentTimeMillis();
 
       final WorkflowCode.MyChildWorkflow child_1 = createAsyncChildWorkflow(name, childWorkflow1);
       // Wait for child to start
       Workflow.getWorkflowExecution(child_1).get();
-
 
       //      1	call an activity
       // This is a blocking call that returns only after the activity has completed.
@@ -134,7 +132,7 @@ public class WorkflowCodeReplayTest {
       Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
 
       //      3	start child workflow using Async.function
-      final String childWorkflow2 = "child_workflow_2_"+Workflow.currentTimeMillis();
+      final String childWorkflow2 = "child_workflow_2_" + Workflow.currentTimeMillis();
       final WorkflowCode.MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
 
       //      4	use getVersion
