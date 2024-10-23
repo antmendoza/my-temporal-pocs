@@ -19,7 +19,7 @@
 
 package com.antmendoza;
 
-import static com.antmendoza.WorkflowCode.createPromiseChildWorkflow;
+import static com.antmendoza.WorkflowCode.createAsyncChildWorkflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.api.common.v1.WorkflowExecution;
@@ -41,8 +41,8 @@ public class WorkflowCodeReplayTest {
   @Rule
   public TestWorkflowRule testWorkflowRule =
       TestWorkflowRule.newBuilder()
-          // .setNamespace("default")
-           //   .setUseExternalService(true)
+           //.setNamespace("default")
+           //.setUseExternalService(true)
           .setDoNotStart(true)
           .build();
 
@@ -121,11 +121,10 @@ public class WorkflowCodeReplayTest {
 
       final String childWorkflow1 = "child_workflow_1_"+Workflow.currentTimeMillis();
 
-      final Promise<WorkflowExecution> childExecution_1 =
-          createPromiseChildWorkflow(name, childWorkflow1);
-
+      final WorkflowCode.MyChildWorkflow child_1 = createAsyncChildWorkflow(name, childWorkflow1);
       // Wait for child to start
-      childExecution_1.get();
+      Workflow.getWorkflowExecution(child_1).get();
+
 
       //      1	call an activity
       // This is a blocking call that returns only after the activity has completed.
@@ -136,8 +135,7 @@ public class WorkflowCodeReplayTest {
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_"+Workflow.currentTimeMillis();
-      final Promise<WorkflowExecution> childExecution_2 =
-          createPromiseChildWorkflow(name, childWorkflow2);
+      final WorkflowCode.MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
 
       //      4	use getVersion
       int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);
@@ -146,7 +144,7 @@ public class WorkflowCodeReplayTest {
       // (i.e. not default version)
       if (version == 1) {
         // Wait for child to start
-        childExecution_2.get();
+        Workflow.getWorkflowExecution(child_2).get();
       }
 
       return hello;

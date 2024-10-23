@@ -125,11 +125,10 @@ public class WorkflowCode {
 
       final String childWorkflow1 = "child_workflow_1_"+Workflow.currentTimeMillis();
 
-      final Promise<WorkflowExecution> childExecution_1 =
-          createPromiseChildWorkflow(name, childWorkflow1);
-
+      final MyChildWorkflow child_1 = createAsyncChildWorkflow(name, childWorkflow1);
       // Wait for child to start
-      childExecution_1.get();
+      Workflow.getWorkflowExecution(child_1).get();
+
 
       //      1	call an activity
       // This is a blocking call that returns only after the activity has completed.
@@ -140,8 +139,8 @@ public class WorkflowCode {
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_"+Workflow.currentTimeMillis();
-      final Promise<WorkflowExecution> childExecution_2 =
-          createPromiseChildWorkflow(name, childWorkflow2);
+      final MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
+
 
       //      4	use getVersion
 
@@ -154,6 +153,16 @@ public class WorkflowCode {
 
   static Promise<WorkflowExecution> createPromiseChildWorkflow(
       final String name, final String childWorkflowId) {
+
+
+    final MyChildWorkflow child = createAsyncChildWorkflow(name, childWorkflowId);
+    final Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(child);
+    return childExecution;
+
+
+  }
+
+  static MyChildWorkflow createAsyncChildWorkflow(final String name, final String childWorkflowId) {
     final MyChildWorkflow child =
         Workflow.newChildWorkflowStub(
             MyChildWorkflow.class,
@@ -163,8 +172,7 @@ public class WorkflowCode {
                 .build());
 
     Async.procedure(child::getGreeting, name);
-    final Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(child);
-    return childExecution;
+    return child;
   }
 
   /** Simple activity implementation, that concatenates two strings. */
