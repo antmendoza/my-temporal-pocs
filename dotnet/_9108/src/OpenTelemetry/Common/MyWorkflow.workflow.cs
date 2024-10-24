@@ -19,6 +19,8 @@ public class MyWorkflow
                 StartToCloseTimeout = TimeSpan.FromMinutes(5),
             });
 
+        await Workflow.DelayAsync(TimeSpan.FromSeconds(15));
+
         return "complete!";
     }
 }

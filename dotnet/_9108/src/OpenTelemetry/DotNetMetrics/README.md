@@ -26,7 +26,16 @@ Then in another terminal, run the workflow from this directory:
     dotnet run workflow
 ```
 
+
+
 The workflow will complete.
+
+
+
+```bash
+    docker compose down --remove-orphans && docker volume prune -f
+```
+
 
 ## Traces
 

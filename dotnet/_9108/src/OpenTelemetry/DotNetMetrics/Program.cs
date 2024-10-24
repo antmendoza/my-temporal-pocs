@@ -10,6 +10,7 @@ using Temporalio.Extensions.OpenTelemetry;
 using Temporalio.Runtime;
 using Temporalio.Worker;
 using TemporalioSamples.OpenTelemetry.Common;
+using static System.Threading.Thread;
 
 var assemblyName = typeof(TemporalClient).Assembly.GetName();
 
@@ -91,9 +92,10 @@ async Task ExecuteWorkflowAsync()
     for (int i = 0; i < 200; i++)
     {
         Console.WriteLine("Executing workflow " + i);
-        await client.ExecuteWorkflowAsync(
+        await client.StartWorkflowAsync(
             (MyWorkflow wf) => wf.RunAsync(),
-            new(id: "opentelemetry-sample-dotnet-workflow-id", taskQueue: "opentelemetry-sample-dotnet-metrics"));
+            new(id: "opentelemetry-sample-dotnet-workflow-id" + i, taskQueue: "opentelemetry-sample-dotnet-metrics"));
+        await Task.Delay(2000);
     }
 }
 
