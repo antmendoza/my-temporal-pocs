@@ -129,7 +129,8 @@ public class WorkflowCodeReplayTest {
       final String hello = activities.composeGreeting("Hello", name);
 
       //      2	signal external workflow
-      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
+      child_1.signalHandler();
+//      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_" + Workflow.currentTimeMillis();
