@@ -72,7 +72,7 @@ async Task RunWorkerAsync()
         AddWorkflow<MyWorkflow>().
         AddActivity(Activities.MyActivity);
 
-    temporalWorkerOptions.MaxCachedWorkflows = 100;
+    temporalWorkerOptions.MaxCachedWorkflows = 500;
     using var worker = new TemporalWorker(
         client,
         temporalWorkerOptions);
