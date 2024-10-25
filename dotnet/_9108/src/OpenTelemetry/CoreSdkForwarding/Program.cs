@@ -76,10 +76,14 @@ async Task RunWorkerAsync()
 
 async Task ExecuteWorkflowAsync()
 {
-    Console.WriteLine("Executing workflow");
-    await client.ExecuteWorkflowAsync(
-        (MyWorkflow wf) => wf.RunAsync(),
-        new(id: "opentelemetry-sample-core-sdk-workflow-id", taskQueue: "opentelemetry-sample-core-sdk-forwarding"));
+    for (int i = 0; i < 100; i++)
+    {
+        Console.WriteLine("Executing workflow " + i);
+        await client.StartWorkflowAsync(
+            (MyWorkflow wf) => wf.RunAsync(),
+            new(id: "opentelemetry-sample-core-sdk-workflow-id" + i, taskQueue: "opentelemetry-sample-core-sdk-forwarding"));
+        await Task.Delay(10);
+    }
 }
 
 switch (args.ElementAtOrDefault(0))
