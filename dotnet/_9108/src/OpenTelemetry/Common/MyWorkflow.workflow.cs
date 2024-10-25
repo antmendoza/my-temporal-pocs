@@ -11,16 +11,24 @@ public class MyWorkflow
     {
         Workflow.Logger.LogInformation("Running workflow {WorkflowId}.", Workflow.Info.WorkflowId);
 
+        Console.WriteLine($"Standard Numeric Format Specifiers ");
+
         Workflow.MetricMeter.CreateCounter<int>("my-workflow-counter", description: "Replay-safe counter for instrumentation inside a workflow.").Add(123);
-        await Workflow.ExecuteActivityAsync(
+
+        // await ExecuteActivityAsync();
+        await Workflow.DelayAsync(TimeSpan.FromSeconds(10));
+
+        // await ExecuteActivityAsync();
+        return "complete!";
+    }
+
+    private static Task ExecuteActivityAsync()
+    {
+        return Workflow.ExecuteActivityAsync(
             () => Activities.MyActivity("input"),
             new()
             {
                 StartToCloseTimeout = TimeSpan.FromMinutes(5),
             });
-
-        await Workflow.DelayAsync(TimeSpan.FromSeconds(15));
-
-        return "complete!";
     }
 }

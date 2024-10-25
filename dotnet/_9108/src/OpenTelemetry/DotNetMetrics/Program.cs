@@ -89,13 +89,13 @@ async Task RunWorkerAsync()
 
 async Task ExecuteWorkflowAsync()
 {
-    for (int i = 0; i < 200; i++)
+    for (int i = 0; i < 100; i++)
     {
         Console.WriteLine("Executing workflow " + i);
         await client.StartWorkflowAsync(
             (MyWorkflow wf) => wf.RunAsync(),
             new(id: "opentelemetry-sample-dotnet-workflow-id" + i, taskQueue: "opentelemetry-sample-dotnet-metrics"));
-        await Task.Delay(2000);
+        await Task.Delay(10);
     }
 }
 
