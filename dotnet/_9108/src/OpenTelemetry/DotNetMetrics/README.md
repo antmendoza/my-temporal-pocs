@@ -52,7 +52,10 @@ http://localhost:9090/graph?g0.expr=temporal_activity_schedule_to_start_latency_
 ## Test scenario 
 ### SDK dotned
 - cache-size 500
-- workflow implementation [link to github]
+- workflow implementation
+
+![Screenshot 2024-10-29 at 13.28.34.png](Screenshot%202024-10-29%20at%2013.28.34.png)
+
 - schedule 100 workflow execution
 - run worker
     - after workflows goes to sleep stop the worker
@@ -69,13 +72,26 @@ http://localhost:9090/graph?g0.expr=temporal_activity_schedule_to_start_latency_
 like activity schedule to start count 
 
 ![Screenshot 2024-10-25 at 16.06.46.png](Screenshot%202024-10-25%20at%2016.06.46.png)
+
+
 ### SDK JAVA
 - cache-size 500
-- workflow implementation [link to github]
+- workflow implementation
+
+![Screenshot 2024-10-29 at 13.27.49.png](Screenshot%202024-10-29%20at%2013.27.49.png)
+- 
+- 
 - schedule 100 workflow execution
 - run worker
     - after workflows goes to sleep stop the worker
-- query temporal_workflow_task_replay_latency_milliseconds_count My expectation is this to be 0
+- query temporal_workflow_task_replay_latency_seconds_count My expectation is this to be 0
 
+![Screenshot 2024-10-29 at 13.18.19.png](Screenshot%202024-10-29%20at%2013.18.19.png)
 
-rate(  temporal_workflow_task_replay_latency_milliseconds_count [4h])
+- run the worker again, the workflows will be replayed after the timer is triggered
+
+![Screenshot 2024-10-29 at 13.20.07.png](Screenshot%202024-10-29%20at%2013.20.07.png)
+
+- like activity schedule to start count 
+
+![Screenshot 2024-10-29 at 13.22.38.png](Screenshot%202024-10-29%20at%2013.22.38.png)

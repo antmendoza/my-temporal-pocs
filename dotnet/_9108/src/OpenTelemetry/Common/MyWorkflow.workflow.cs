@@ -11,14 +11,12 @@ public class MyWorkflow
     {
         Workflow.Logger.LogInformation("Running workflow {WorkflowId}.", Workflow.Info.WorkflowId);
 
-        Console.WriteLine($"Standard Numeric Format Specifiers ");
-
         Workflow.MetricMeter.CreateCounter<int>("my-workflow-counter", description: "Replay-safe counter for instrumentation inside a workflow.").Add(123);
 
         // await ExecuteActivityAsync();
         await Workflow.DelayAsync(TimeSpan.FromSeconds(10));
 
-        // await ExecuteActivityAsync();
+        await ExecuteActivityAsync();
         return "complete!";
     }
 
