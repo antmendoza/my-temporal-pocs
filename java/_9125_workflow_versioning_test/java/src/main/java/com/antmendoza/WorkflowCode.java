@@ -106,11 +106,7 @@ public class WorkflowCode {
     }
 
     @Override
-    public void signalHandler(final String value) {
-
-    }
-
-
+    public void signalHandler(final String value) {}
   }
 
   @ActivityInterface
@@ -144,17 +140,14 @@ public class WorkflowCode {
       //      2	signal external workflow
       child_1.signalHandler(Math.random() + "");
 
-
       //      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_" + Workflow.currentTimeMillis();
       final MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
 
-
       //      4	use getVersion
       int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);
-
 
       //      5	query execution details of the started child workflow in step 3 if version == 1
       // (i.e. not default version)
