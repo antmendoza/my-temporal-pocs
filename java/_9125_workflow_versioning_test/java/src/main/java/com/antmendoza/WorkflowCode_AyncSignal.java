@@ -19,7 +19,6 @@
 
 package com.antmendoza;
 
-import io.grpc.netty.shaded.io.netty.handler.codec.socks.SocksRequestType;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import io.temporal.activity.ActivityOptions;
@@ -31,13 +30,12 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.workflow.*;
+import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-
 /** Sample Temporal Workflow Definition that executes a single Activity. */
-public class WorkflowCode_from_jpmc_code {
+public class WorkflowCode_AyncSignal {
 
   // Define the task queue name
   static final String TASK_QUEUE = "WorkflowCode_from_jpmc_code";
@@ -60,7 +58,8 @@ public class WorkflowCode_from_jpmc_code {
 
     Worker worker = factory.newWorker(TASK_QUEUE);
 
-    worker.registerWorkflowImplementationTypes(MyWorkflowJPMCCodeImpl.class, MyChildWorkflowImpl.class);
+    worker.registerWorkflowImplementationTypes(
+        MyWorkflowJPMCCodeImpl.class, MyChildWorkflowImpl.class);
 
     worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
 
@@ -69,7 +68,7 @@ public class WorkflowCode_from_jpmc_code {
     // Create the workflow client stub. It is used to start our workflow execution.
     MyWorkflowJPMCCode workflow =
         client.newWorkflowStub(
-                MyWorkflowJPMCCode.class,
+            MyWorkflowJPMCCode.class,
             WorkflowOptions.newBuilder()
                 .setWorkflowId(WORKFLOW_ID)
                 .setTaskQueue(TASK_QUEUE)
@@ -108,9 +107,7 @@ public class WorkflowCode_from_jpmc_code {
     }
 
     @Override
-    public void signalHandler() {
-
-    }
+    public void signalHandler() {}
   }
 
   @ActivityInterface
@@ -143,28 +140,25 @@ public class WorkflowCode_from_jpmc_code {
 
       //      2	signal external workflow
 
+      Promise signalWorkflow =
+          Async.procedure(
+              WorkflowCode_AyncSignal.MyWorkflowJPMCCodeImpl::signalWorkflow, childWorkflow1);
+      // signalWorkflow.get();
 
-      Promise signalWorkflow = Async.procedure(WorkflowCode_from_jpmc_code.MyWorkflowJPMCCodeImpl::signalWorkflow, childWorkflow1);
-      //signalWorkflow.get();
-
-//      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
+      //      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_";
       final MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2, TASK_QUEUE);
 
-
-
-//      Workflow.getVersion("ww", Workflow.DEFAULT_VERSION, 1);
+      //      Workflow.getVersion("ww", Workflow.DEFAULT_VERSION, 1);
 
       //      4	use getVersion
 
       //      5	query execution details of the started child workflow in step 3 if version == 1
       // (i.e. not default version)
 
-     // Workflow.getWorkflowExecution(child_2).get();
-
-
+      // Workflow.getWorkflowExecution(child_2).get();
 
       Workflow.sleep(Duration.ofSeconds(2));
 
@@ -173,8 +167,6 @@ public class WorkflowCode_from_jpmc_code {
 
     public static void signalWorkflow(final String childWorkflow) {
       Workflow.newUntypedExternalWorkflowStub(childWorkflow).signal("signalHandler");
-
-
     }
   }
 
@@ -186,26 +178,24 @@ public class WorkflowCode_from_jpmc_code {
     return childExecution;
   }
 
-  static MyChildWorkflow createAsyncChildWorkflow(final String name,
-                                                  final String childWorkflowId,
-                                                  final String taskqueue_name
-  ) {
+  static MyChildWorkflow createAsyncChildWorkflow(
+      final String name, final String childWorkflowId, final String taskqueue_name) {
     final MyChildWorkflow child =
         Workflow.newChildWorkflowStub(
             MyChildWorkflow.class,
             ChildWorkflowOptions.newBuilder()
                 .setWorkflowId(childWorkflowId)
-                    .setTaskQueue(taskqueue_name)
+                .setTaskQueue(taskqueue_name)
                 .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
                 .build());
 
-    Promise<String> promise = Async.function(child::getGreeting, name)
-            .thenApply((result) -> {
-              System.out.println("Hello " + result);
-              return result;
-            });
-
-
+    Promise<String> promise =
+        Async.function(child::getGreeting, name)
+            .thenApply(
+                (result) -> {
+                  System.out.println("Hello " + result);
+                  return result;
+                });
 
     return child;
   }

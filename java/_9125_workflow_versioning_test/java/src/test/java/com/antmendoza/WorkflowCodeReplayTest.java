@@ -40,8 +40,8 @@ public class WorkflowCodeReplayTest {
   @Rule
   public TestWorkflowRule testWorkflowRule =
       TestWorkflowRule.newBuilder()
-          // .setNamespace("default")
-          // .setUseExternalService(true)
+          .setNamespace("default")
+          .setUseExternalService(true)
           .setDoNotStart(true)
           .build();
 
@@ -107,6 +107,12 @@ public class WorkflowCodeReplayTest {
     testWorkflowRule.getTestEnvironment().start();
   }
 
+  private WorkflowExecutionHistory getWorkflowExecutionHistory(final String workflowId) {
+    return new WorkflowExecutionHistory(
+        testWorkflowRule.getHistory(
+            WorkflowExecution.newBuilder().setWorkflowId(workflowId).build()));
+  }
+
   public static class MyWorkflowImplWithGetChildPromiseVersioned
       implements WorkflowCode.MyWorkflow {
 
@@ -114,6 +120,7 @@ public class WorkflowCodeReplayTest {
         Workflow.newActivityStub(
             WorkflowCode.GreetingActivities.class,
             ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
+
 
     @Override
     public String getGreeting(String name) {
@@ -129,12 +136,15 @@ public class WorkflowCodeReplayTest {
       final String hello = activities.composeGreeting("Hello", name);
 
       //      2	signal external workflow
-      child_1.signalHandler();
-//      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
+      child_1.signalHandler(Math.random() + "");
+
+
+      //      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_" + Workflow.currentTimeMillis();
       final WorkflowCode.MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
+
 
       //      4	use getVersion
       int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);
@@ -146,13 +156,11 @@ public class WorkflowCodeReplayTest {
         Workflow.getWorkflowExecution(child_2).get();
       }
 
+      //      6 signal external workflow W1 again
+      child_1.signalHandler(Math.random() + "");
+
       return hello;
     }
-  }
 
-  private WorkflowExecutionHistory getWorkflowExecutionHistory(final String workflowId) {
-    return new WorkflowExecutionHistory(
-        testWorkflowRule.getHistory(
-            WorkflowExecution.newBuilder().setWorkflowId(workflowId).build()));
   }
 }

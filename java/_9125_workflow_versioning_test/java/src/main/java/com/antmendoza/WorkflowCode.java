@@ -94,7 +94,7 @@ public class WorkflowCode {
     String getGreeting(String name);
 
     @SignalMethod
-    void signalHandler();
+    void signalHandler(String value);
   }
 
   public static class MyChildWorkflowImpl implements MyChildWorkflow {
@@ -106,9 +106,11 @@ public class WorkflowCode {
     }
 
     @Override
-    public void signalHandler() {
+    public void signalHandler(final String value) {
 
     }
+
+
   }
 
   @ActivityInterface
@@ -140,18 +142,25 @@ public class WorkflowCode {
       final String hello = activities.composeGreeting("Hello", name);
 
       //      2	signal external workflow
+      child_1.signalHandler(Math.random() + "");
 
-      child_1.signalHandler();
-//      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
+
+      //      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_" + Workflow.currentTimeMillis();
       final MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
 
+
       //      4	use getVersion
+      int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);
+
 
       //      5	query execution details of the started child workflow in step 3 if version == 1
       // (i.e. not default version)
+
+      //      6 signal external workflow W1 again
+      child_1.signalHandler(Math.random() + "");
 
       return hello;
     }
@@ -174,7 +183,7 @@ public class WorkflowCode {
                 .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
                 .build());
 
-    Async.procedure(child::getGreeting, name);
+    Async.function(child::getGreeting, name);
     return child;
   }
 
