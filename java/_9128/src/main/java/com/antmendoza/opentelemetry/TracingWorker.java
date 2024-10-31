@@ -45,7 +45,7 @@ public class TracingWorker {
         WorkerFactoryOptions factoryOptions =
                 WorkerFactoryOptions.newBuilder()
                         .setWorkerInterceptors(
-                                new OpenTracingWorkerInterceptor(TraceUtils.getDynatraceOptions(type)))
+                                new OpenTracingWorkerInterceptor(TraceUtils.getOptions(type)))
                         .build();
         WorkerFactory factory = WorkerFactory.newInstance(client, factoryOptions);
 

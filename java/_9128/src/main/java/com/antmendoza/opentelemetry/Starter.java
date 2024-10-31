@@ -47,7 +47,7 @@ public class Starter {
     // Set the OpenTracing client interceptor
     WorkflowClientOptions clientOptions =
         WorkflowClientOptions.newBuilder()
-            .setInterceptors(new OpenTracingClientInterceptor(TraceUtils.getDynatraceOptions(type)))
+            .setInterceptors(new OpenTracingClientInterceptor(TraceUtils.getOptions(type)))
             .build();
     WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
 

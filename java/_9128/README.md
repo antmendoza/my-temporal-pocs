@@ -1,8 +1,25 @@
-- data explorer https://docs.dynatrace.com/docs/observe-and-explore/explorer
-- https://docs.dynatrace.com/docs/dynatrace-api/environment-api/metric-v2/post-ingest-metrics
-- https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/walkthroughs/java/java-manual#prerequisites
 
-### OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
-- https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/9329#issuecomment-1698526445
+# Example to push metrics and traces to datadog
+
+## Collector configuration
+
+- configure `YOUR_API_KEY` in [collector.yaml](collector/collector.yaml) and modify the pipelines according your needs
+
+#### Start the collector 
+
+``` bash
+cd collector
+docker compose down --remove-orphans && docker volume prune -f
+docker-compose up 
+```
+
+
+#### Start the worker and starter
+- [Starter.java](src/main/java/com/antmendoza/opentelemetry/Starter.java)
+- [TracingWorker.java](src/main/java/com/antmendoza/opentelemetry/TracingWorker.java)
+
+By default, if you have not disabled the logging exporter in the traces pipeline, the collector should start printing traces.
+
+![img.png](img.png)
 
 
