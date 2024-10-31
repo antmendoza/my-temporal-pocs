@@ -20,7 +20,6 @@
 package com.antmendoza.opentelemetry;
 
 import com.antmendoza.opentelemetry.workflow.TracingWorkflow;
-import io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap;
 import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
@@ -48,7 +47,7 @@ public class Starter {
     // Set the OpenTracing client interceptor
     WorkflowClientOptions clientOptions =
         WorkflowClientOptions.newBuilder()
-            .setInterceptors(new OpenTracingClientInterceptor(DynatraceUtils.getDynatraceOptions(type)))
+            .setInterceptors(new OpenTracingClientInterceptor(TraceUtils.getDynatraceOptions(type)))
             .build();
     WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
 

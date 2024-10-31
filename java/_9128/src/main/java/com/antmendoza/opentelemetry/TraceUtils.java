@@ -1,6 +1,5 @@
 package com.antmendoza.opentelemetry;
 
-import com.antmendoza.EnvVariables;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -19,7 +18,7 @@ import io.temporal.opentracing.OpenTracingSpanContextCodec;
 
 import java.util.concurrent.TimeUnit;
 
-public class DynatraceUtils {
+public class TraceUtils {
 
     public static OpenTracingOptions getDynatraceOptions(String type) {
         if (type.equals("OpenTracing")) {

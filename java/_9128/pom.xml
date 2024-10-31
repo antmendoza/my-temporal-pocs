@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.temporal</groupId>
-  <artifactId>temporal_java_poc_5731</artifactId>
+  <artifactId>_9128_temporal_java_poc</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
@@ -37,13 +37,6 @@
             <artifactId>temporal-testing</artifactId>
             <version>${temporal-sdk.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.dynatrace.metric.util/dynatrace-metric-utils-java -->
-        <dependency>
-            <groupId>com.dynatrace.metric.util</groupId>
-            <artifactId>dynatrace-metric-utils-java</artifactId>
-            <version>2.2.1</version>
         </dependency>
 
 
@@ -142,12 +135,6 @@
         </dependency>
 
 
-        <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-dynatrace -->
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-dynatrace</artifactId>
-            <version>1.13.0</version>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-core -->
         <dependency>
