@@ -73,7 +73,6 @@ public class WorkflowsWithVersionCheckEventOrderTest {
   public void replayWorkflowExecution() throws Exception {
     createWorker();
 
-    String resultimplementationMyWorkflowImplVersioned;
     String resultimplementationMyWorkflowImplWithoutVersion;
     final Predicate<HistoryEvent> historyEventPredicate =
         e -> {
@@ -82,8 +81,6 @@ public class WorkflowsWithVersionCheckEventOrderTest {
         };
 
     {
-      final Class<MyWorkflowWithoutVersionImpl> implementationMyWorkflowImplWithoutVersion =
-          MyWorkflowWithoutVersionImpl.class;
       final String workflowId = executeMainWorkflow(MyWorkflowWithoutVersion.class);
       final WorkflowExecutionHistory eventHistory = getWorkflowExecutionHistory(workflowId);
 
@@ -94,9 +91,12 @@ public class WorkflowsWithVersionCheckEventOrderTest {
               .toList()
               .toString();
     }
+
+
+
+
+    String resultimplementationMyWorkflowImplVersioned;
     {
-      final Class<MyWorkflowVersionedImpl> implementationMyWorkflowImplVersioned =
-          MyWorkflowVersionedImpl.class;
       final String workflowId = executeMainWorkflow(MyWorkflowVersioned.class);
       final WorkflowExecutionHistory eventHistory = getWorkflowExecutionHistory(workflowId);
 
@@ -108,6 +108,9 @@ public class WorkflowsWithVersionCheckEventOrderTest {
               .toString();
     }
 
+
+  //  System.out.println(resultimplementationMyWorkflowImplVersioned);
+  //  System.out.println(resultimplementationMyWorkflowImplWithoutVersion);
     Assert.assertEquals(
         resultimplementationMyWorkflowImplVersioned,
         resultimplementationMyWorkflowImplWithoutVersion);
