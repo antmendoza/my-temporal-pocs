@@ -95,14 +95,11 @@ public class WorkflowCodeReplayTest {
 
   private void createWorker(
       final Class<? extends WorkflowCode.MyWorkflow> workflowImplementationType) {
-    testWorkflowRule
-        .getWorker()
-        .registerActivitiesImplementations(new WorkflowCode.GreetingActivitiesImpl());
+    testWorkflowRule.getWorker().registerActivitiesImplementations(new GreetingActivitiesImpl());
 
     testWorkflowRule
         .getWorker()
-        .registerWorkflowImplementationTypes(
-            workflowImplementationType, WorkflowCode.MyChildWorkflowImpl.class);
+        .registerWorkflowImplementationTypes(workflowImplementationType, MyChildWorkflowImpl.class);
 
     testWorkflowRule.getTestEnvironment().start();
   }
@@ -116,9 +113,9 @@ public class WorkflowCodeReplayTest {
   public static class MyWorkflowImplWithGetChildPromiseVersioned
       implements WorkflowCode.MyWorkflow {
 
-    private final WorkflowCode.GreetingActivities activities =
+    private final GreetingActivities activities =
         Workflow.newActivityStub(
-            WorkflowCode.GreetingActivities.class,
+            GreetingActivities.class,
             ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
 
     @Override
@@ -126,7 +123,7 @@ public class WorkflowCodeReplayTest {
 
       final String childWorkflow1 = "child_workflow_1_" + Workflow.currentTimeMillis();
 
-      final WorkflowCode.MyChildWorkflow child_1 = createAsyncChildWorkflow(name, childWorkflow1);
+      final MyChildWorkflow child_1 = createAsyncChildWorkflow(name, childWorkflow1);
       // Wait for child to start
       Workflow.getWorkflowExecution(child_1).get();
 
@@ -141,7 +138,7 @@ public class WorkflowCodeReplayTest {
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_" + Workflow.currentTimeMillis();
-      final WorkflowCode.MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
+      final MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
 
       //      4	use getVersion
       int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);

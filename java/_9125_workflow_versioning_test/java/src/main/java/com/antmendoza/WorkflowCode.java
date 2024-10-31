@@ -19,8 +19,6 @@
 
 package com.antmendoza;
 
-import io.temporal.activity.ActivityInterface;
-import io.temporal.activity.ActivityMethod;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.ParentClosePolicy;
@@ -31,8 +29,6 @@ import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.workflow.*;
 import java.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Sample Temporal Workflow Definition that executes a single Activity. */
 public class WorkflowCode {
@@ -87,36 +83,6 @@ public class WorkflowCode {
     String getGreeting(String name);
   }
 
-  @WorkflowInterface
-  public interface MyChildWorkflow {
-
-    @WorkflowMethod
-    String getGreeting(String name);
-
-    @SignalMethod
-    void signalHandler(String value);
-  }
-
-  public static class MyChildWorkflowImpl implements MyChildWorkflow {
-
-    @Override
-    public String getGreeting(final String name) {
-      Workflow.sleep(Duration.ofSeconds(1));
-      return "";
-    }
-
-    @Override
-    public void signalHandler(final String value) {}
-  }
-
-  @ActivityInterface
-  public interface GreetingActivities {
-
-    // Define your activity method which can be called during workflow execution
-    @ActivityMethod(name = "greet")
-    String composeGreeting(String greeting, String name);
-  }
-
   public static class MyWorkflowImpl implements MyWorkflow {
 
     private final GreetingActivities activities =
@@ -147,7 +113,7 @@ public class WorkflowCode {
       final MyChildWorkflow child_2 = createAsyncChildWorkflow(name, childWorkflow2);
 
       //      4	use getVersion
-      int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);
+      // int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);
 
       //      5	query execution details of the started child workflow in step 3 if version == 1
       // (i.e. not default version)
@@ -178,16 +144,5 @@ public class WorkflowCode {
 
     Async.function(child::getGreeting, name);
     return child;
-  }
-
-  /** Simple activity implementation, that concatenates two strings. */
-  static class GreetingActivitiesImpl implements GreetingActivities {
-    private static final Logger log = LoggerFactory.getLogger(GreetingActivitiesImpl.class);
-
-    @Override
-    public String composeGreeting(String greeting, String name) {
-      log.info("Composing greeting...");
-      return greeting + " " + name + "!";
-    }
   }
 }

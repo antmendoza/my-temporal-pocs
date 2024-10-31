@@ -100,14 +100,11 @@ public class WorkflowCodeReplay_AsyncSignal_Test {
   }
 
   private void createWorker(final Class<?> workflowImplementationType) {
-    testWorkflowRule
-        .getWorker()
-        .registerActivitiesImplementations(new WorkflowCode.GreetingActivitiesImpl());
+    testWorkflowRule.getWorker().registerActivitiesImplementations(new GreetingActivitiesImpl());
 
     testWorkflowRule
         .getWorker()
-        .registerWorkflowImplementationTypes(
-            workflowImplementationType, WorkflowCode.MyChildWorkflowImpl.class);
+        .registerWorkflowImplementationTypes(workflowImplementationType, MyChildWorkflowImpl.class);
 
     testWorkflowRule.getTestEnvironment().start();
   }
@@ -121,9 +118,9 @@ public class WorkflowCodeReplay_AsyncSignal_Test {
   public static class MyWorkflowImplWithGetChildPromiseVersioned
       implements WorkflowCode_AyncSignal.MyWorkflowJPMCCode {
 
-    private final WorkflowCode.GreetingActivities activities =
+    private final GreetingActivities activities =
         Workflow.newActivityStub(
-            WorkflowCode.GreetingActivities.class,
+            GreetingActivities.class,
             ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
 
     @Override
