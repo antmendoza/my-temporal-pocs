@@ -43,8 +43,8 @@ public class WorkflowCodeReplay_AsyncSignal_Test {
   @Rule
   public TestWorkflowRule testWorkflowRule =
       TestWorkflowRule.newBuilder()
-          .setNamespace("default")
-          .setUseExternalService(true)
+          //.setNamespace("default")
+          //.setUseExternalService(true)
           .setDoNotStart(true)
           .build();
 
@@ -128,8 +128,7 @@ public class WorkflowCodeReplay_AsyncSignal_Test {
 
       final String childWorkflow1 = "child_workflow_1_" + Workflow.currentTimeMillis();
 
-      final WorkflowCode_AyncSignal.MyChildWorkflow child_1 =
-          createAsyncChildWorkflow(name, childWorkflow1, TASK_QUEUE);
+      final WorkflowCode_AyncSignal.MyChildWorkflow child_1 = createAsyncChildWorkflow(name, childWorkflow1, TASK_QUEUE);
       // Wait for child to start
       Workflow.getWorkflowExecution(child_1).get();
 
@@ -138,15 +137,18 @@ public class WorkflowCodeReplay_AsyncSignal_Test {
       final String hello = activities.composeGreeting("Hello", name);
 
       //      2	signal external workflow
+
       Promise signalWorkflow =
-          Async.procedure(
-              WorkflowCode_AyncSignal.MyWorkflowJPMCCodeImpl::signalWorkflow, childWorkflow1);
+              Async.procedure(
+                      WorkflowCode_AyncSignal.MyWorkflowJPMCCodeImpl::signalWorkflow, childWorkflow1);
       // signalWorkflow.get();
+
+      //      Workflow.newUntypedExternalWorkflowStub(childWorkflow1).signal("signal_1", "value_1");
 
       //      3	start child workflow using Async.function
       final String childWorkflow2 = "child_workflow_2_";
       final WorkflowCode_AyncSignal.MyChildWorkflow child_2 =
-          createAsyncChildWorkflow(name, childWorkflow2, TASK_QUEUE);
+              createAsyncChildWorkflow(name, childWorkflow2, TASK_QUEUE);
 
       //      4	use getVersion
       int version = Workflow.getVersion("get-child-workflow", Workflow.DEFAULT_VERSION, 1);
@@ -155,7 +157,7 @@ public class WorkflowCodeReplay_AsyncSignal_Test {
 
         //      5	query execution details of the started child workflow in step 3 if version == 1
         // (i.e. not default version)
-        Workflow.getWorkflowExecution(child_2).get();
+       // Workflow.getWorkflowExecution(child_2).get();
       }
 
       Workflow.sleep(Duration.ofSeconds(2));
