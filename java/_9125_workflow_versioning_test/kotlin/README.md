@@ -46,6 +46,7 @@ the workflow history is different.
 
 ![img_1.png](img_1.png)
 
+---
 
 
-![img_2.png](img_2.png)
+![Screenshot 2024-11-08 at 11.07.43.png](Screenshot%202024-11-08%20at%2011.07.43.png)
