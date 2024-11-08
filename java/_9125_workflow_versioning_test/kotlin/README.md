@@ -45,7 +45,7 @@ Caused by: io.grpc.StatusRuntimeException: INVALID_ARGUMENT: io.temporal.worker.
 ## Running with Java
 
 If we run the same workflow in Java, [Workflow_Java_Runner.java](src/main/kotlin/com/test/Workflow_Java_Runner.java) 
-the workflow history is different.
+the workflow history differs.
 
 ![img_1.png](img_1.png)
 
