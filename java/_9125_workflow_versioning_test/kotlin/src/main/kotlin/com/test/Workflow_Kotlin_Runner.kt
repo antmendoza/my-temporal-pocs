@@ -18,9 +18,9 @@ import io.temporal.workflow.*
 import java.time.Duration
 
 /** Sample Temporal Workflow Definition that executes a single Activity.  */
-object WorkflowRunner {
+object Workflow_Kotlin_Runner {
     // Define the task queue name
-    const val TASK_QUEUE: String = "HelloActivityTaskQueue"
+    const val TASK_QUEUE: String = "Kotlin-Workflow_task_queue"
 
     // Define our workflow unique id
     const val WORKFLOW_ID: String = "Kotlin-Workflow"
@@ -66,7 +66,7 @@ object WorkflowRunner {
         val greeting = workflow.getGreeting("World")
 
         // Display workflow execution results
-        println(greeting)
+        println("workflow completed with result " + greeting)
 
 
         try {

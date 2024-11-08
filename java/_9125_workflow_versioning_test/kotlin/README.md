@@ -3,7 +3,7 @@
 
 ## Reproduce replay NDE with Kotlin
 
-Note the workflow implementation in [WorkflowRunner.kt](src/main/kotlin/com/test/WorkflowRunner.kt)
+Note the workflow implementation in [Workflow_Java_Runner.java](src/main/kotlin/com/test/Workflow_Java_Runner.java)
 
 ```
 if(WorkflowInternal.isReplaying()){
@@ -18,7 +18,7 @@ if(WorkflowInternal.isReplaying()){
 
 - Set the temporal version to 1.20 in the [pom.xml](pom.xml) file 
 
-- Run [WorkflowRunner.kt](src/main/kotlin/com/test/WorkflowRunner.kt)
+- Run [Workflow_Java_Runner.java](src/main/kotlin/com/test/Workflow_Java_Runner.java)
 
 - The runner will throw a NDE after querying the workflow (witch will trigger workflow replay)
 ```
@@ -32,13 +32,18 @@ Caused by: io.grpc.StatusRuntimeException: INVALID_ARGUMENT: io.temporal.worker.
 
 ### With Temporal SDK 1.26.1
 
-- Set the temporal version to 1.20 in the [pom.xml](pom.xml) file
+- Set the temporal version to 1.26.1 in the [pom.xml](pom.xml) file
 
-- Run [WorkflowRunner.kt](src/main/kotlin/com/test/WorkflowRunner.kt)
+- Run [Workflow_Java_Runner.java](src/main/kotlin/com/test/Workflow_Java_Runner.java)
 
 - It just works, even if some events in the workflow history are swapped
 
 ![img.png](img.png)
 
+
+If we run the same workflow in Java, [Workflow_Java_Runner.java](src/main/kotlin/com/test/Workflow_Java_Runner.java) 
+the workflow history is different.
+
+![img_1.png](img_1.png)
 
 
