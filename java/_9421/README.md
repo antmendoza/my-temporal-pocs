@@ -1,0 +1,5 @@
+
+```bash
+./mvnw clean test 
+```
+
