@@ -2,7 +2,7 @@ import asyncio
 import dataclasses
 
 import temporalio.converter
-from temporalio.client import Client
+from temporalio.client import Client, WorkflowQueryFailedError
 
 from codec import EncryptionCodec
 from worker import GreetingWorkflow
@@ -39,8 +39,11 @@ async def main():
         print("> querying workflow." + "non-existing-query" + "")
         await client.get_workflow_handle("encryption-workflow-id").query("non-existing-query")
         print("result workflow." + "non-existing-query" + "= " + result)
-    except BaseException as exc:
+    except WorkflowQueryFailedError as exc:
+        print("-------")
         print(exc)
+        print("-------")
+        print(dir(exc))
 
 
 if __name__ == "__main__":
