@@ -1,4 +1,4 @@
-package com.example.service2;
+package com.example.service3;
 
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;

@@ -1,4 +1,4 @@
-package com.example.service2.activities;
+package com.example.service3.activities;
 
 import io.temporal.activity.ActivityInterface;
 

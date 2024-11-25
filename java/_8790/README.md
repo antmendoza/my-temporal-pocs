@@ -30,7 +30,7 @@ The activity implementation extract and returns the traceId
 ```bash
 cd service-3
 
-./mvnw compile exec:java -Dexec.mainClass=com.example.service2.Service2Application
+./mvnw compile exec:java -Dexec.mainClass=com.example.service3.Service3Application
 ```
 
 ## Send request to service 1

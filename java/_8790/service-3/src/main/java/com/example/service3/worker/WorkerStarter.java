@@ -1,7 +1,7 @@
-package com.example.service2.worker;
+package com.example.service3.worker;
 
-import com.example.service2.TraceUtils;
-import com.example.service2.activities.TestActivityImpl;
+import com.example.service3.TraceUtils;
+import com.example.service3.activities.TestActivityImpl;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.client.WorkflowClient;
 import io.temporal.opentracing.OpenTracingWorkerInterceptor;
