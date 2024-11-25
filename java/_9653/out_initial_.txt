@@ -1,0 +1,79 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for io.temporal:_9653_grpc_version:jar:1.0.0-SNAPSHOT
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-compiler-plugin is missing. @ line 84, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] -------------------< io.temporal:_9653_grpc_version >-------------------
+[INFO] Building _9653_grpc_version 1.0.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ _9653_grpc_version ---
+[INFO] io.temporal:_9653_grpc_version:jar:1.0.0-SNAPSHOT
+[INFO] +- io.temporal:temporal-sdk:jar:1.26.2:compile
+[INFO] |  +- io.temporal:temporal-serviceclient:jar:1.26.2:compile
+[INFO] |  |  +- io.grpc:grpc-api:jar:1.54.1:compile
+[INFO] |  |  |  \- io.grpc:grpc-context:jar:1.54.1:compile
+[INFO] |  |  +- io.grpc:grpc-stub:jar:1.54.1:compile
+[INFO] |  |  +- io.grpc:grpc-netty-shaded:jar:1.54.1:compile
+[INFO] |  |  |  +- io.perfmark:perfmark-api:jar:0.25.0:runtime
+[INFO] |  |  |  \- io.grpc:grpc-core:jar:1.54.1:compile (version selected from constraint [1.54.1,1.54.1])
+[INFO] |  |  |     +- com.google.android:annotations:jar:4.1.1.4:runtime
+[INFO] |  |  |     \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.21:runtime
+[INFO] |  |  +- io.grpc:grpc-services:jar:1.54.1:compile
+[INFO] |  |  |  \- io.grpc:grpc-protobuf:jar:1.54.1:compile
+[INFO] |  |  |     +- com.google.protobuf:protobuf-java:jar:3.21.7:compile
+[INFO] |  |  |     +- com.google.api.grpc:proto-google-common-protos:jar:2.9.0:compile
+[INFO] |  |  |     \- io.grpc:grpc-protobuf-lite:jar:1.54.1:compile
+[INFO] |  |  +- com.google.protobuf:protobuf-java-util:jar:3.22.0:compile
+[INFO] |  |  \- com.uber.m3:tally-core:jar:0.13.0:compile
+[INFO] |  +- com.google.code.gson:gson:jar:2.10.1:compile
+[INFO] |  +- io.micrometer:micrometer-core:jar:1.9.9:compile
+[INFO] |  |  +- org.hdrhistogram:HdrHistogram:jar:2.1.12:compile
+[INFO] |  |  \- org.latencyutils:LatencyUtils:jar:2.0.3:runtime
+[INFO] |  +- io.nexusrpc:nexus-sdk:jar:0.2.1-alpha:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.14.2:compile
+[INFO] |  |  \- com.fasterxml.jackson.core:jackson-annotations:jar:2.14.2:compile
+[INFO] |  +- com.google.guava:guava:jar:32.0.1-jre:compile
+[INFO] |  |  +- com.google.guava:failureaccess:jar:1.0.1:compile
+[INFO] |  |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile
+[INFO] |  |  +- com.google.code.findbugs:jsr305:jar:3.0.2:compile
+[INFO] |  |  +- org.checkerframework:checker-qual:jar:3.33.0:compile
+[INFO] |  |  +- com.google.errorprone:error_prone_annotations:jar:2.18.0:compile
+[INFO] |  |  \- com.google.j2objc:j2objc-annotations:jar:2.8:compile
+[INFO] |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.14.2:runtime
+[INFO] |  \- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.14.2:runtime
+[INFO] +- ch.qos.logback:logback-classic:jar:1.2.11:compile
+[INFO] |  +- ch.qos.logback:logback-core:jar:1.2.11:compile
+[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.32:compile
+[INFO] +- commons-configuration:commons-configuration:jar:1.10:compile
+[INFO] |  +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] +- io.temporal:temporal-testing:jar:1.26.2:test
+[INFO] |  +- io.temporal:temporal-test-server:jar:1.26.2:test
+[INFO] |  |  \- com.cronutils:cron-utils:jar:9.2.1:test
+[INFO] |  \- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO] |     \- net.minidev:json-smart:jar:2.5.0:test
+[INFO] |        \- net.minidev:accessors-smart:jar:2.5.0:test
+[INFO] |           \- org.ow2.asm:asm:jar:9.3:test
+[INFO] +- javax.servlet:javax.servlet-api:jar:4.0.1:compile
+[INFO] +- org.apache.commons:commons-lang3:jar:3.12.0:compile
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-guava:jar:2.17.0:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-core:jar:2.17.0:compile
+[INFO] +- commons-io:commons-io:jar:2.11.0:compile
+[INFO] \- org.basepom.maven:duplicate-finder-maven-plugin:jar:2.0.1:compile
+[INFO]    +- net.jcip:jcip-annotations:jar:1.0:compile
+[INFO]    +- com.github.spotbugs:spotbugs-annotations:jar:4.7.3:compile
+[INFO]    +- org.codehaus.woodstox:stax2-api:jar:3.1.4:compile
+[INFO]    +- com.fasterxml.staxmate:staxmate:jar:2.2.1:compile
+[INFO]    \- org.codehaus.woodstox:woodstox-core-asl:jar:4.4.1:runtime
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.492 s
+[INFO] Finished at: 2024-11-25T10:15:52+01:00
+[INFO] ------------------------------------------------------------------------
