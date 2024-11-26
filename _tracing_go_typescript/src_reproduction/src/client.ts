@@ -8,7 +8,7 @@ import { example } from './workflows';
 
 async function run() {
   const resource = new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'interceptors-sample-client',
+    [SemanticResourceAttributes.SERVICE_NAME]: 'tracing',
   });
   // Export spans to console for simplicity
   const exporter = new ConsoleSpanExporter();
@@ -27,7 +27,7 @@ async function run() {
   });
   try {
     const result = await client.workflow.execute(example, {
-      taskQueue: 'interceptors-opentelemetry-example',
+      taskQueue: 'ts-taskqueue',
       workflowId: 'otel-example-0' + Math.random(),
       args: ['Temporal'],
     });
