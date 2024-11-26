@@ -2,7 +2,7 @@ import {DefaultLogger, Runtime, Worker} from '@temporalio/worker';
 import {Resource} from '@opentelemetry/resources';
 import {SEMRESATTRS_SERVICE_NAME} from '@opentelemetry/semantic-conventions';
 import {ConsoleSpanExporter} from '@opentelemetry/sdk-trace-base';
-import {NodeSDK} from '@opentelemetry/sdk-node';
+import {api, node, NodeSDK} from '@opentelemetry/sdk-node';
 import {
     makeWorkflowExporter,
     OpenTelemetryActivityInboundInterceptor,
@@ -12,23 +12,42 @@ import {JaegerExporter} from '@opentelemetry/exporter-jaeger';
 
 
 import {createActivities} from "./activities";
+import {propagation} from "@opentelemetry/api";
+import {CompositePropagator, W3CBaggagePropagator, W3CTraceContextPropagator} from "@opentelemetry/core";
+import {JaegerPropagator} from "@opentelemetry/propagator-jaeger";
 
 
 async function main() {
 
+    const compositePropagator = new CompositePropagator({
+        propagators: [
+            new W3CTraceContextPropagator(),
+            new W3CBaggagePropagator(),
+            new JaegerPropagator(),
+        ],
+    });
 
     const resource = new Resource({
         [SEMRESATTRS_SERVICE_NAME]: 'tracing',
     });
-    // Export spans to console for simplicity
-    const exporter = new ConsoleSpanExporter();
 
     const jaegerExporter = new JaegerExporter();
+
+
+
+
 
 
     const otel = new NodeSDK({
         traceExporter: jaegerExporter, resource,
     });
+
+    propagation.setGlobalPropagator(
+        compositePropagator,
+    );
+
+
+
     await otel.start();
 
     // Silence the Worker logs to better see the span output in this sample

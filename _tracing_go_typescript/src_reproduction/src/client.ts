@@ -4,9 +4,24 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OpenTelemetryWorkflowClientInterceptor } from '@temporalio/interceptors-opentelemetry';
-import { example } from './workflows';
+import {ts_workflow} from "./workflows";
+import { propagation } from '@opentelemetry/api';
+import {CompositePropagator, W3CBaggagePropagator, W3CTraceContextPropagator} from "@opentelemetry/core";
+import { JaegerPropagator } from '@opentelemetry/propagator-jaeger';
 
 async function run() {
+
+  propagation.setGlobalPropagator(
+      new CompositePropagator({
+        propagators: [
+          new W3CTraceContextPropagator(),
+          new W3CBaggagePropagator(),
+          new JaegerPropagator(),
+        ],
+      }),
+  );
+
+
   const resource = new Resource({
     [SemanticResourceAttributes.SERVICE_NAME]: 'tracing',
   });
@@ -26,7 +41,7 @@ async function run() {
     },
   });
   try {
-    const result = await client.workflow.execute(example, {
+    const result = await client.workflow.execute(ts_workflow, {
       taskQueue: 'ts-taskqueue',
       workflowId: 'otel-example-0' + Math.random(),
       args: ['Temporal'],

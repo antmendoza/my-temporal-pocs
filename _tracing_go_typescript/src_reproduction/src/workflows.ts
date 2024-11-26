@@ -12,7 +12,7 @@ const { activity1} = proxyActivities<ReturnType<typeof createActivities>>({
 });
 
 // A workflow that simply calls an activity
-export async function example(name: string): Promise<string> {
+export async function ts_workflow(name: string): Promise<string> {
   return await activity1(name);
 }
 

@@ -40,8 +40,6 @@ func main() {
 	w.RegisterWorkflow(ctxpropagation.CtxPropWorkflow)
 	w.RegisterActivity(ctxpropagation.SampleActivity)
 
-	w.Run()
-
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
 		log.Fatalln("Unable to start worker", err)

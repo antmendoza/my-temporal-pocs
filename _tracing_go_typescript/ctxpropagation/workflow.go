@@ -1,15 +1,17 @@
 package ctxpropagation
 
 import (
+	"fmt"
 	"go.temporal.io/sdk/workflow"
 	"time"
 )
 
 // CtxPropWorkflow workflow definition
 func CtxPropWorkflow(ctx workflow.Context) (err error) {
+	tsTaskQueueName := "ts-taskqueue"
 	tsAo := workflow.ActivityOptions{
 		StartToCloseTimeout: 5 * time.Second,
-		TaskQueue:           "ts-taskqueue",
+		TaskQueue:           tsTaskQueueName,
 	}
 	tsCtx := workflow.WithActivityOptions(ctx, tsAo)
 
@@ -39,6 +41,16 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 		return err
 	}
 	workflow.GetLogger(ctx).Info("tsActivityResult", tsActivityResult)
+
+	ctxChild := workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
+		WorkflowID: fmt.Sprintf("%s%s", workflow.GetInfo(ctx).WorkflowExecution.ID, "::child"),
+		TaskQueue:  tsTaskQueueName,
+	})
+
+	childWorkflow := workflow.ExecuteChildWorkflow(ctxChild, "ts_workflow", "input")
+
+	// Wait for child to complete
+	_ = childWorkflow.Get(ctx, nil)
 
 	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil
