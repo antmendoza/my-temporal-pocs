@@ -15,8 +15,7 @@
     <description>Temporal Spring Boot Demo</description>
     <properties>
         <java.version>11</java.version>
-        <version.temporal>1.26.1</version.temporal>
-        <spring-cloud-sleuth-otel.version>1.1.0-M7</spring-cloud-sleuth-otel.version>
+        <version.temporal>1.24.1</version.temporal>
         <version.json.path>2.6.0</version.json.path>
     </properties>
     <dependencies>
@@ -42,14 +41,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-sleuth-otel-autoconfigure</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-otlp</artifactId>
-        </dependency>
+
 
         <!-- Spring Web UI -->
         <dependency>
@@ -60,17 +52,7 @@
 
 
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-sleuth-otel-dependencies</artifactId>
-                <version>${spring-cloud-sleuth-otel.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+
 
     <build>
         <plugins>

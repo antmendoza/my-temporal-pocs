@@ -27,12 +27,9 @@ import org.springframework.stereotype.Component;
 @Component
 @ActivityImpl(taskQueues = {"HelloSampleTaskQueue", "otherTaskqueue"})
 public class HelloActivityImpl implements HelloActivity {
-  @Value("${samples.data.language}")
-  private String language;
 
   @Override
   public String hello(Person person) {
-    String greeting = language.equals("spanish") ? "Hola " : "Hello ";
-    return greeting + person.getFirstName() + " " + person.getLastName() + "!";
+    return "Hi" + person.getFirstName() + " " + person.getLastName() + "!";
   }
 }
