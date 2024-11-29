@@ -11,10 +11,10 @@
 	</parent>
 
 	<groupId>com.example</groupId>
-	<artifactId>service2</artifactId>
+	<artifactId>service-temporal-springboot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>service2</name>
-	<description>Service 2</description>
+	<name>service-temporal-springboot</name>
+	<description>service-temporal-springboot</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -51,6 +51,12 @@
 		<dependency>
 			<groupId>io.temporal</groupId>
 			<artifactId>temporal-sdk</artifactId>
+			<version>1.26.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.temporal</groupId>
+			<artifactId>temporal-spring-boot-starter</artifactId>
 			<version>1.26.0</version>
 		</dependency>
 

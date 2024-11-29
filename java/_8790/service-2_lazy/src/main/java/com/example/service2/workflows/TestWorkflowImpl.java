@@ -13,6 +13,7 @@ public class TestWorkflowImpl implements TestWorkflow {
     private final TestActivity testActivity = Workflow.newActivityStub(TestActivity.class,
             ActivityOptions.newBuilder()
                     .setStartToCloseTimeout(Duration.ofSeconds(3))
+                    //.setTaskQueue("TASK_QUEUE_3")
                     .build());
 
     @Override

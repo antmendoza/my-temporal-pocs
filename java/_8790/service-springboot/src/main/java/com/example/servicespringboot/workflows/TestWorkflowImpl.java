@@ -1,23 +1,24 @@
-package com.example.service2.workflows;
+package com.example.servicespringboot.workflows;
 
-import com.example.service2.activities.TestActivity;
+import com.example.servicespringboot.activities.TestActivity;
 import io.temporal.activity.ActivityOptions;
+import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 
 import java.time.Duration;
 
-@Slf4j
+@WorkflowImpl(taskQueues = {"TASK_QUEUE"})
 public class TestWorkflowImpl implements TestWorkflow {
+
     private final TestActivity testActivity = Workflow.newActivityStub(TestActivity.class,
             ActivityOptions.newBuilder()
                     .setStartToCloseTimeout(Duration.ofSeconds(3))
+                    //.setTaskQueue("TASK_QUEUE")
                     .build());
 
     @Override
     public String callTestActivity() {
-        log.info("Calling test activity");
         return testActivity.printHello();
     }
 }

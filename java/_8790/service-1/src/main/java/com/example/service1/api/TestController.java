@@ -1,6 +1,7 @@
 package com.example.service1.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,8 @@ public class TestController {
         log.info("Starting Service 1 -> Service 2 call");
         String url = "http://localhost:8082/v1/test/tracing";
         String response = restTemplate.getForObject(url, String.class);
-        final String s = "Response from Service 2, traceId= " + response;
+        String s = "Initial traceId = " + MDC.get("traceId") + " \n ";
+        s += "Response from Service , traceId= " + response;
         log.info(s);
         return s;
     }

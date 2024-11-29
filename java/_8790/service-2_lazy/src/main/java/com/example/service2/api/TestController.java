@@ -1,6 +1,7 @@
 package com.example.service2.api;
 
 import com.example.service2.TraceUtils;
+import com.example.service2.worker.WorkerStarter;
 import com.example.service2.workflows.TestWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
@@ -19,13 +20,16 @@ public class TestController {
 
     private final WorkflowClient client;
 
-
     public TestController() {
         this.client = createWorkflowClient();
     }
 
     @GetMapping("tracing")
     public String testTracing() {
+
+
+        log.info("Starting worker");
+        new WorkerStarter().run();
 
         log.info("Received request from Service 1");
 

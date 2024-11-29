@@ -1,7 +1,8 @@
-package com.example.service3.worker;
+package com.example.service2.worker;
 
-import com.example.service3.TraceUtils;
-import com.example.service3.activities.TestActivityImpl;
+import com.example.service2.TraceUtils;
+import com.example.service2.activities.TestActivityImpl;
+import com.example.service2.workflows.TestWorkflowImpl;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.client.WorkflowClient;
 import io.temporal.opentracing.OpenTracingWorkerInterceptor;
@@ -10,32 +11,37 @@ import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkflowImplementationOptions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-public class WorkerStarter implements ApplicationRunner {
-    @Autowired
-    private TestActivityImpl testActivityImpl;
+public class WorkerStarter {
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
+
+    private static boolean hasWorker(final WorkerFactory factory, final String taskQueue) {
+        try {
+            return factory.getWorker(taskQueue) == null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void run() {
         WorkerFactory factory = createWorkerFactory();
-        Worker worker = factory.newWorker("TASK_QUEUE_3");
-        WorkflowImplementationOptions workflowOptions = createWorkflowImplementationOptions();
-        worker.registerActivitiesImplementations(testActivityImpl);
-        factory.start();
+
+        final String taskQueue = "TASK_QUEUE";
+        if (!hasWorker(factory, taskQueue)) {
+            Worker worker = factory.newWorker(taskQueue);
+            WorkflowImplementationOptions workflowOptions = createWorkflowImplementationOptions();
+            worker.registerWorkflowImplementationTypes(workflowOptions, TestWorkflowImpl.class);
+            worker.registerActivitiesImplementations(new TestActivityImpl());
+            factory.start();
+        }
+
     }
 
     private WorkerFactory createWorkerFactory() {
-
-
 
 
         WorkflowClient client = createWorkflowClient();
@@ -45,13 +51,11 @@ public class WorkerStarter implements ApplicationRunner {
                         .setWorkerInterceptors(
                                 new OpenTracingWorkerInterceptor(
                                         TraceUtils.getOptions()
-                                ) )
+                                ))
                         .build();
 
 
-
         WorkerFactory factory = WorkerFactory.newInstance(client, factoryOptions);
-
 
 
         return factory;

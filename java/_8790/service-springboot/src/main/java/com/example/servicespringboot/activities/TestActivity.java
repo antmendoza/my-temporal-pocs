@@ -1,4 +1,4 @@
-package com.example.service3.activities;
+package com.example.servicespringboot.activities;
 
 import io.temporal.activity.ActivityInterface;
 
