@@ -5,5 +5,5 @@
 
 ```bash
 
-poetry run python test.py
+poetry run python client.py
 ```
