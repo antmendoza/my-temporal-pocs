@@ -1,14 +1,14 @@
 import asyncio
-from datetime import timedelta
 
 from temporalio.client import Client
 from temporalio.worker import Worker
 
+
 from activity import compose_greeting
-from converter import pydantic_data_converter
 from workflow import GreetingWorkflow
 
 
+from converter import pydantic_data_converter
 
 
 async def main():
@@ -42,9 +42,9 @@ async def start_workflow(client, i):
     result = await client.execute_workflow(
         GreetingWorkflow.run,
         "World",
-        id="hello-activity-workflow-idwsw" + str(i),
+        id="hello-activity-workflow-id-" + str(i),
         task_queue="hello-activity-task-queue",
-        task_timeout=timedelta(seconds=120)
+        # task_timeout=timedelta(seconds=120)
     )
     print(f"Result: {result}")
 
