@@ -18,6 +18,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.8"
 temporalio = "^1.8.0"
+pydantic = "2.9.2"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
@@ -65,7 +66,7 @@ opentelemetry-exporter-otlp-proto-grpc = "1.18.0"
 
 [tool.poetry.group.pydantic]
 optional = true
-dependencies = { pydantic = "^1.10.4" }
+dependencies = { pydantic = "2.9.2" }
 
 [tool.poetry.group.sentry]
 optional = true
