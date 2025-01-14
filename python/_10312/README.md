@@ -1,5 +1,9 @@
 
 ```bash
-    poetry install
+    poetry install --with pydantic
 ```
 
+```bash
+
+poetry run python test.py
+```

@@ -1,22 +1,21 @@
 import asyncio
-from dataclasses import dataclass
 from datetime import timedelta
 
 from temporalio import activity, workflow
 from temporalio.client import Client
-
 from temporalio.worker import Worker
 
-from hello_10.test_types import ComposeGreetingInput
+from converter import pydantic_data_converter
+from test_types import ComposeGreetingInput
 
 
-#pydantic_data_converter = DataConverter(
+# pydantic_data_converter = DataConverter(
 #    payload_converter_class=PydanticPayloadConverter
-#)  # pydantic_data_converter: instance to be harnessed by the client
+# )  # pydantic_data_converter: instance to be harnessed by the client
 
 
-#@dataclass
-#class ComposeGreetingInput:
+# @dataclass
+# class ComposeGreetingInput:
 #    greeting: str
 #    name: str
 
@@ -90,7 +89,9 @@ async def main():
     # logging.basicConfig(level=logging.INFO)
 
     # Start client
-    client = await Client.connect("localhost:7233")
+    client = await Client.connect(
+        "localhost:7233",
+        data_converter=pydantic_data_converter)
 
     # Run a worker for the workflow
     async with Worker(
@@ -100,14 +101,13 @@ async def main():
             activities=[compose_greeting],
             max_concurrent_workflow_tasks=200,
     ):
-        # Create a list of 1000 coroutines
-        tasks = [asyncio.create_task(method_name(client, i)) for i in range(2)]
+        tasks = [asyncio.create_task(start_workflow(client, i)) for i in range(1000)]
 
         # Wait for all tasks to complete
         await asyncio.gather(*tasks)
 
 
-async def method_name(client, i):
+async def start_workflow(client, i):
     # While the worker is running, use the client to run the workflow and
     # print out its result. Note, in many production setups, the client
     # would be in a completely separate process from the worker.
@@ -116,7 +116,7 @@ async def method_name(client, i):
         "World",
         id="hello-activity-workflow-idwsw" + str(i),
         task_queue="hello-activity-task-queue",
-        task_timeout=timedelta(seconds=125)
+        task_timeout=timedelta(seconds=120)
     )
     print(f"Result: {result}")
 
