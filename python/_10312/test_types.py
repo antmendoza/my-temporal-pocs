@@ -5906,3 +5906,8 @@ class GeneratedType499(BaseModel):
     text_4: str
     number_5: int
     text_5: str
+
+
+class ComposeGreetingRequest(BaseModel):
+    id: str
+    name: str
