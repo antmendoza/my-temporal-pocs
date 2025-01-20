@@ -5,7 +5,7 @@ import io.temporal.activity.ActivityMethod;
 
 @ActivityInterface
 public interface MyActivity {
-    @ActivityMethod(name = "doSomething_v2")
+    @ActivityMethod
     String doSomething();
 
 }
