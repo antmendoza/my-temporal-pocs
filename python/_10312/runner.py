@@ -9,7 +9,7 @@ from temporalio.worker import Worker
 
 from activity import compose_greeting
 from workflow import GreetingWorkflow
-
+from test_types import ComposeGreetingRequest
 
 from converter import pydantic_data_converter
 
@@ -36,7 +36,8 @@ async def main():
             activities=[compose_greeting],
             max_concurrent_workflow_tasks=200,
     ):
-        tasks = [asyncio.create_task(start_workflow(client, i)) for i in range(1000)]
+        tasks = [asyncio.create_task(start_workflow(client, i))
+                 for i in range(1000)]
 
         # Wait for all tasks to complete
         await asyncio.gather(*tasks)
@@ -48,7 +49,7 @@ async def start_workflow(client, i):
     # would be in a completely separate process from the worker.
     result = await client.execute_workflow(
         GreetingWorkflow.run,
-        "World",
+        ComposeGreetingRequest(id=str(i), name="World"),
         id="hello-activity-workflow-id-" + str(i),
         task_queue="hello-activity-task-queue",
         # task_timeout=timedelta(seconds=120)
