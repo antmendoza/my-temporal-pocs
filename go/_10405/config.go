@@ -1,6 +1,7 @@
 package helloworld
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"flag"
@@ -10,9 +11,59 @@ import (
 	"os"
 )
 
-// ParseClientOptionFlags parses the given arguments into client options. In
-// some cases a failure will be returned as an error, in others the process may
-// exit with help info.
+const key = ""
+
+// Create headers provider
+type APIKeyProvider struct {
+	APIKey    string
+	Namespace string
+}
+
+func (a *APIKeyProvider) GetHeaders(context.Context) (map[string]string, error) {
+	return map[string]string{"Authorization": "Bearer " + a.APIKey, "temporal-namespace": a.Namespace}, nil
+}
+
+func GetClient() (client.Client, error) {
+	// https://docs.temporal.io/cloud/api-keys#sdk
+	// Use headers provider
+	apiKeyProvider := &APIKeyProvider{APIKey: key, Namespace: "antonio-api-key-2.a2dd6"}
+
+	c, err := client.Dial(client.Options{
+		HostPort: "us-east-1.aws.api.temporal.io:7233",
+		//	HostPort:        "antonio-api-key-2.a2dd6.tmprl.cloud:7233",
+		Namespace:       "antonio-api-key-2.a2dd6",
+		HeadersProvider: apiKeyProvider,
+		ConnectionOptions: client.ConnectionOptions{
+			TLS: &tls.Config{},
+			//DialOptions: []grpc.DialOption{
+			//	grpc.WithUnaryInterceptor(
+			//		func(ctx context.Context, method string, req any, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			//			return invoker(
+			//				metadata.AppendToOutgoingContext(ctx, "temporal-namespace", "antonio-api-key-2.a2dd6"),
+			//				method,
+			//				req,
+			//				reply,
+			//				cc,
+			//				opts...,
+			//			)
+			//		},
+			//	),
+			//},
+		},
+		//		Credentials: client.NewAPIKeyStaticCredentials(key),
+	})
+	return c, err
+}
+
+func GetWorkerOptions() worker.Options {
+	return worker.Options{
+		MaxConcurrentActivityExecutionSize:     1000,
+		MaxConcurrentWorkflowTaskExecutionSize: 1000,
+		MaxConcurrentActivityTaskPollers:       100, //we have eager dispatch for activities.
+		MaxConcurrentWorkflowTaskPollers:       500,
+	}
+}
+
 func ParseClientOptionFlags(args []string) (client.Options, error) {
 	// Parse args
 	set := flag.NewFlagSet("hello-world-mtls", flag.ExitOnError)
@@ -59,13 +110,4 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 			},
 		},
 	}, nil
-}
-
-func GetWorkerOptions() worker.Options {
-	return worker.Options{
-		MaxConcurrentActivityExecutionSize:     1000,
-		MaxConcurrentWorkflowTaskExecutionSize: 1000,
-		MaxConcurrentActivityTaskPollers:       100, //we have eager dispatch for activities.
-		MaxConcurrentWorkflowTaskPollers:       500,
-	}
 }

@@ -4,19 +4,15 @@ import (
 	helloworld "_10405"
 	"context"
 	"fmt"
+	"go.temporal.io/sdk/client"
 	"log"
 	"math/rand"
-	"os"
-
-	"go.temporal.io/sdk/client"
 )
 
 func main() {
-	clientOptions, err := helloworld.ParseClientOptionFlags(os.Args[1:])
-	if err != nil {
-		log.Fatalf("Invalid arguments: %v", err)
-	}
-	c, err := client.Dial(clientOptions)
+
+	c, err := helloworld.GetClient()
+
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
