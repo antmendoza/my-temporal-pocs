@@ -1,6 +1,9 @@
 import asyncio
+import logging
+import os
 
 from temporalio.client import Client
+from temporalio.runtime import Runtime, TelemetryConfig
 from temporalio.worker import Worker
 
 
@@ -14,7 +17,11 @@ from converter import pydantic_data_converter
 async def main():
     # Uncomment the lines below to see logging output
     # import logging
-    # logging.basicConfig(level=logging.INFO)
+
+    os.environ["RUST_LOG"] = "temporal_sdk_core=DEBUG"
+
+    logging.basicConfig(level=logging.DEBUG)
+
 
     # Start client
     client = await Client.connect(
