@@ -26,12 +26,14 @@ func (a *APIKeyProvider) GetHeaders(context.Context) (map[string]string, error) 
 func GetClient() (client.Client, error) {
 	// https://docs.temporal.io/cloud/api-keys#sdk
 	// Use headers provider
-	apiKeyProvider := &APIKeyProvider{APIKey: key, Namespace: "antonio-api-key-2.a2dd6"}
+	namespace := "antonio-api-key-2.a2dd6"
+	apiKeyProvider := &APIKeyProvider{APIKey: key, Namespace: namespace}
 
+	hostPort := "us-east-1.aws.api.temporal.io:7233"
 	c, err := client.Dial(client.Options{
-		HostPort: "us-east-1.aws.api.temporal.io:7233",
+		HostPort: hostPort,
 		//	HostPort:        "antonio-api-key-2.a2dd6.tmprl.cloud:7233",
-		Namespace:       "antonio-api-key-2.a2dd6",
+		Namespace:       namespace,
 		HeadersProvider: apiKeyProvider,
 		ConnectionOptions: client.ConnectionOptions{
 			TLS: &tls.Config{},
