@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 	"log"
 	"math/rand"
 )
@@ -17,6 +18,23 @@ func main() {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
+
+	if false {
+		w := worker.New(c, "hello-world",
+			helloworld.GetWorkerOptions(),
+		)
+
+		w.RegisterWorkflow(helloworld.SendPlay)
+
+		activities := &helloworld.MyActivity{WorkflowClient: c}
+
+		w.RegisterActivity(activities)
+
+		err = w.Start()
+		if err != nil {
+			log.Fatalln("Unable to start worker", err)
+		}
+	}
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        fmt.Sprintf("%d", rand.Int()),
