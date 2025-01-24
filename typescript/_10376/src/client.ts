@@ -27,12 +27,7 @@ async function run({
     serverRootCACertificate = await fs.readFile(serverRootCACertificatePath);
   }
 
-  //add grpc internceptor
-
-
-
-
-
+  //add grpc interceptor
   const connection = await Connection.connect({
     address,
     tls: {
@@ -57,9 +52,13 @@ async function run({
       makeGrpcRetryInterceptor(defaultGrpcRetryOptions()),
     ],
   });
+
   const client = new Client({ connection, namespace });
 
+
   for (let i = 0; i <2000; i++) {
+
+
 
     await client.workflow.start(example, {
       taskQueue,
@@ -70,9 +69,9 @@ async function run({
       console.error(err);
     });
 
-    if( i %100 == 0){
+    if( i %50 == 0){
       console.log(`Started ${i} workflows and sleeping for 100ms`)
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
 
 
