@@ -47,7 +47,7 @@ class GreetingWorkflow:
 
     @workflow.run
     async def run(self, input: MyInput) -> str:
-#    async def run(self, input: MyInput) -> str:
+#    async def run(self, input: str) -> str:
 
         try:
             self.some_date = (
