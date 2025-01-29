@@ -1,8 +1,8 @@
 import { ApplicationFailure } from '@temporalio/activity';
 
-export async function greet(failWithNonRetryableError: boolean): Promise<string> {
-  if (failWithNonRetryableError) {
-    throw ApplicationFailure.nonRetryable('Application failure');
+export async function greet(throwError: boolean): Promise<string> {
+  if (throwError) {
+    throw Error('My error');
   }
   return `done`;
 }
