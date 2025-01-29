@@ -1,4 +1,5 @@
 import asyncio
+import concurrent
 import logging
 import os
 
@@ -18,9 +19,9 @@ async def main():
     # Uncomment the lines below to see logging output
     # import logging
 
-    os.environ["RUST_LOG"] = "temporal_sdk_core=DEBUG"
+#    os.environ["RUST_LOG"] = "temporal_sdk_core=DEBUG"
 
-    logging.basicConfig(level=logging.DEBUG)
+#    logging.basicConfig(level=logging.DEBUG)
 
 
     # Start client
@@ -28,19 +29,22 @@ async def main():
         "localhost:7233",
         data_converter=pydantic_data_converter)
 
-    # Run a worker for the workflow
-    async with Worker(
+
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1000) as activity_executor:
+        worker = Worker(
             client,
             task_queue="hello-activity-task-queue",
             workflows=[GreetingWorkflow],
             activities=[compose_greeting],
             max_concurrent_workflow_tasks=200,
-    ):
+            max_concurrent_activities=2000,
+            activity_executor=activity_executor,
+        )
         tasks = [asyncio.create_task(start_workflow(client, i))
-                 for i in range(1000)]
+                 for i in range(20)]
 
-        # Wait for all tasks to complete
-        await asyncio.gather(*tasks)
+        await worker.run()
 
 
 async def start_workflow(client, i):

@@ -1,3 +1,4 @@
+import asyncio
 from datetime import timedelta
 
 from temporalio import workflow
@@ -14,51 +15,34 @@ class GreetingWorkflow:
     @workflow.run
     async def run(self, request: ComposeGreetingRequest) -> str:
         workflow.logger.info(f"Running workflow with parameter {request.name}")
-        seconds_ = await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=600),
+        results = await asyncio.gather(
+            workflow.execute_activity(
+                compose_greeting,
+                ComposeGreetingInput(greeting="Hello", name=request.name),
+                start_to_close_timeout=timedelta(seconds=600),
+            ),
+            workflow.execute_activity(
+                compose_greeting,
+                ComposeGreetingInput(greeting="Hello", name=request.name),
+                start_to_close_timeout=timedelta(seconds=600),
+            ),
+            workflow.execute_activity(
+                compose_greeting,
+                ComposeGreetingInput(greeting="Hello", name=request.name),
+                start_to_close_timeout=timedelta(seconds=600),
+            ),
+            workflow.execute_activity(
+                compose_greeting,
+                ComposeGreetingInput(greeting="Hello", name=request.name),
+                start_to_close_timeout=timedelta(seconds=600),
+            ),
+            workflow.execute_activity(
+                compose_greeting,
+                ComposeGreetingInput(greeting="Hello", name=request.name),
+                start_to_close_timeout=timedelta(seconds=600),
+            ),
         )
 
-        await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=30),
-        )
-        await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=70),
-        )
-        await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=40),
-        )
-        await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=60),
-        )
-        await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=40),
-        )
-        await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=30),
-        )
-        await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=20),
-        )
-        await workflow.execute_activity(
-            compose_greeting,
-            ComposeGreetingInput(greeting="Hello", name=request.name),
-            start_to_close_timeout=timedelta(seconds=10),
-        )
 
-        return seconds_
+
+        return "seconds_"
