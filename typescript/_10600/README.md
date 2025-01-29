@@ -11,10 +11,5 @@ This sample shows how to use [Child Workflows](https://docs.temporal.io/dev-guid
 3. `npm run start.watch` to start the Worker.
 4. In another shell, `npm run workflow` to run the Workflow.
 
-The Workflow should return:
-
-```
-I am a child named Alice
-I am a child named Bob
-I am a child named Charlie
-```
+### Output
+Workflow should fail since we don't handle child workflow errors.
