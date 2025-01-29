@@ -12,11 +12,8 @@ export async function parentWorkflow(...names: string[]): Promise<string> {
     pathResults.push(handle.result());
   }
 
-  //  try{
+  //this will fail the parent workflow if any of the child workflows fail
   await Promise.all(pathResults);
-  //  }catch (e) {
-  //    console.log(e);
-  //  }
 
   return 'done';
 }
@@ -26,6 +23,7 @@ const { greet } = proxyActivities<typeof activities>({
 });
 
 export async function childWorkflow(i: number): Promise<string> {
-  await sleep(1000 + (i * 100));
-  return await greet(i % 3 === 0);
+  await sleep(1000 + i * 100);
+  const failWithNonRetryableError = i % 3 === 0;
+  return await greet(failWithNonRetryableError);
 }
