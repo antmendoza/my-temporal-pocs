@@ -18,6 +18,7 @@ from temporalio.worker import Worker
 class GreetingWorkflow:
     @workflow.run
     async def run(self, name: str) -> str:
+        await asyncio.sleep(10)
         return await workflow.execute_activity(
             compose_greeting,
             name,
