@@ -31,13 +31,4 @@ Start the starter
 poetry run python3 starter.py
 ```
 
-
-
-
-Go to https://app.datadoghq.com/metric/explorer and add the following query 
-```
-sum:temporal_request{*} by {operation}.as_rate()
-```
-
-
-![img.png](img.png)
+![Screenshot 2025-01-30 at 16.30.21.png](Screenshot%202025-01-30%20at%2016.30.21.png)

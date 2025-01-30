@@ -6,6 +6,19 @@ from temporalio.contrib.opentelemetry import TracingInterceptor
 from open_telemetry_with_collector.worker import init_runtime_with_telemetry, GreetingWorkflow
 
 
+async def create_workflow(client, x):
+    # Run workflow
+    result = await client.execute_workflow(
+        GreetingWorkflow.run,
+        "Temporal",
+        id=f"open_telemetry-workflow-id"+ str(x),
+        task_queue="open_telemetry-task-queue",
+    )
+
+    print(f"Workflow result: {result}")
+
+
+
 async def main():
     runtime = init_runtime_with_telemetry()
 
@@ -17,14 +30,9 @@ async def main():
         runtime=runtime,
     )
 
-    # Run workflow
-    result = await client.execute_workflow(
-        GreetingWorkflow.run,
-        "Temporal",
-        id=f"open_telemetry-workflow-id",
-        task_queue="open_telemetry-task-queue_ticket_8440",
-    )
-    print(f"Workflow result: {result}")
+    for x in range(500):
+        await asyncio.create_task(create_workflow(client, x))
+
 
 
 if __name__ == "__main__":

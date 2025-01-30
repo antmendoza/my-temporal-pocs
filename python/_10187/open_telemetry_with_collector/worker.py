@@ -68,7 +68,7 @@ async def main():
     # Run a worker for the workflow
     async with Worker(
         client,
-        task_queue="open_telemetry-task-queue_ticket_8440",
+        task_queue="open_telemetry-task-queue",
         workflows=[GreetingWorkflow],
         activities=[compose_greeting],
     ):
