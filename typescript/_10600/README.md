@@ -19,5 +19,19 @@ The folder [./wh](./wh) contains the workflow histories with a reproduction of t
 This behaviour only happen if the two child workflows fail at the same time. I guess when the two ChildWorkflowFailure are 
 delivered as part of the same workflow task.
 
-Waiting for the child workflows to complete/fail with `await Promise.all(childs);` 
+Waiting for the child workflows to complete/fail with 
+
+```
+await Promise.all(childs);` 
+```
+
+
+instead of 
+```
+    for (const pendingResult of childs) {
+      console.log(await pendingResult);
+    }
+```
+
+
 works as expected (the error is propagated to the parent workflow).

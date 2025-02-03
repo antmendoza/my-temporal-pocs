@@ -26,8 +26,8 @@ export async function parentWorkflow(...names: string[]): Promise<string> {
   if (waitWithPromiseAll) {
     await Promise.all(childs);
   } else {
-    for await (const pendingResult of childs) {
-      console.log(pendingResult);
+    for (const pendingResult of childs) {
+      console.log(await pendingResult);
     }
   }
   return 'done';
