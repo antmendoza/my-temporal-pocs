@@ -14,7 +14,7 @@ Sometimes, unhandled ChildWorkflowFailure cause workflowTaskFailure instead of f
 ![img.png](img.png)
 
 
-The folder (wh)[./wh] contains the workflow histories. 
+The folder [./wh](./wh) contains the workflow histories with a reproduction of this issue.
 
 This behaviour only happen if the two child workflows fail at the same time. I guess when the two ChildWorkflowFailure are 
 delivered as part of the same workflow task.
