@@ -1,8 +1,3 @@
-# Child Workflows
-
-This sample shows how to use [Child Workflows](https://docs.temporal.io/dev-guide/typescript/features#child-workflows):
-
-[`src/workflows.ts`](./src/workflows.ts)
 
 ### Running this sample
 
@@ -12,4 +7,17 @@ This sample shows how to use [Child Workflows](https://docs.temporal.io/dev-guid
 4. In another shell, `npm run workflow` to run the Workflow.
 
 ### Output
-Workflow should fail since we don't handle child workflow errors.
+The parent workflow should fail if one of the child workflows fail and the error is not handled. 
+
+Sometimes, unhandled ChildWorkflowFailure cause workflowTaskFailure instead of failing the workflow.
+
+![img.png](img.png)
+
+
+The folder (wh)[./wh] contains the workflow histories. 
+
+This behaviour only happen if the two child workflows fail at the same time. I guess when the two ChildWorkflowFailure are 
+delivered as part of the same workflow task.
+
+Waiting for the child workflows to complete/fail with `await Promise.all(childs);` 
+works as expected (the error is propagated to the parent workflow).

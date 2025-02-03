@@ -1,5 +1,6 @@
 import { Client } from '@temporalio/client';
 import { parentWorkflow } from './workflows';
+import { WorkflowIdConflictPolicy } from '@temporalio/common/src/workflow-options';
 
 async function run() {
   const client = new Client();
@@ -7,12 +8,10 @@ async function run() {
   const result = await client.workflow.execute(parentWorkflow, {
     taskQueue: 'child-workflows',
     workflowId: 'parent-sample-0',
-    args: ['Alice', 'Bob', 'Charlie'],
+    args: [''],
+    workflowIdConflictPolicy: "TERMINATE_EXISTING",
   });
   console.log(result);
-  // I am a child named Alice
-  // I am a child named Bob
-  // I am a child named Charlie
 }
 
 run().catch((err) => {
