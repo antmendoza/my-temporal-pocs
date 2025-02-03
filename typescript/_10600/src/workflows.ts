@@ -4,13 +4,26 @@ import type * as activities from './activities';
 
 export async function parentWorkflow(...names: string[]): Promise<string> {
   const pathResults = [];
-  for (let i = 1; i < 6; i++) {
+
+  const childWorkflows = [];
+  for (let i = 1; i < 3; i++) {
+    const workflowId = workflowInfo().workflowId + '/child-' + i;
     const handle = await startChild(childWorkflow, {
-      workflowId: workflowInfo().workflowId + '/child-' + i,
+      workflowId,
       args: [i],
     });
+
+    childWorkflows.push(workflowId)
     pathResults.push(handle.result());
   }
+
+
+  console.log('before sleep');
+
+  await sleep(5000)
+
+
+  console.log('childWorkflow', childWorkflows);
 
   //this will fail the parent workflow if any of the child workflows fail
   //await Promise.all(pathResults);
@@ -30,7 +43,8 @@ const { greet } = proxyActivities<typeof activities>({
 });
 
 export async function childWorkflow(i: number): Promise<string> {
-  await sleep(1000 + i * 100);
-  const throwError = i % 3 === 0;
-  return await greet(throwError);
+  //await sleep(1000 + i * 100);
+  await sleep(5000);
+  const throwError = i % 2 === 0;
+  return await greet(true);
 }
