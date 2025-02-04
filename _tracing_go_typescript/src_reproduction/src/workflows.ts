@@ -1,6 +1,6 @@
 import { proxyActivities, WorkflowInterceptorsFactory } from '@temporalio/workflow';
 import {
-  OpenTelemetryInboundInterceptor,
+  OpenTelemetryInboundInterceptor, OpenTelemetryInternalsInterceptor,
   OpenTelemetryOutboundInterceptor,
 } from '@temporalio/interceptors-opentelemetry/lib/workflow';
 // @@@SNIPSTART typescript-activity-deps-workflow
@@ -20,4 +20,5 @@ export async function ts_workflow(name: string): Promise<string> {
 export const interceptors: WorkflowInterceptorsFactory = () => ({
   inbound: [new OpenTelemetryInboundInterceptor()],
   outbound: [new OpenTelemetryOutboundInterceptor()],
+  internals: [new OpenTelemetryInternalsInterceptor()],
 });

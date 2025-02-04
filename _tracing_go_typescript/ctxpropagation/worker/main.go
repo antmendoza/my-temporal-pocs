@@ -8,7 +8,6 @@ import (
 	"go.temporal.io/sdk/contrib/opentracing"
 	"go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 )
 
 func main() {
@@ -24,9 +23,9 @@ func main() {
 
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.Dial(client.Options{
-		HostPort:           client.DefaultHostPort,
-		ContextPropagators: []workflow.ContextPropagator{ctxpropagation.NewContextPropagator()},
-		Interceptors:       []interceptor.ClientInterceptor{tracingInterceptor},
+		HostPort: client.DefaultHostPort,
+		//		ContextPropagators: []workflow.ContextPropagator{ctxpropagation.NewContextPropagator()},
+		Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
