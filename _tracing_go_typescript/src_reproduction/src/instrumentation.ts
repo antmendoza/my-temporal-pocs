@@ -15,6 +15,7 @@ import { MetricReader, PeriodicExportingMetricReader, ConsoleMetricExporter } fr
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
+import {JaegerExporter} from "@opentelemetry/exporter-jaeger";
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 /**
@@ -123,7 +124,7 @@ export const otelSdk = new NodeSDK({
   resource,
 
   // This is required for use with the `@temporalio/interceptors-opentelemetry` package.
-  traceExporter,
+  traceExporter: new JaegerExporter(),
 
   // This is optional; it enables collecting metrics about the Node process, and some other libraries.
   // Note that Temporal's Worker metrics are controlled through the Runtime options and do not relate

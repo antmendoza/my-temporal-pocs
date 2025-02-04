@@ -30,6 +30,11 @@ docker run --rm --name jaeger \
   jaegertracing/all-in-one:1.59
 
 ```
+
+UI in [http://localhost:16686/search](http://localhost:16686/search)
+
+
+
 ### Install dependencies
 
 
