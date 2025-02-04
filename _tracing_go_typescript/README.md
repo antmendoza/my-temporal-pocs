@@ -1,5 +1,18 @@
 
-## Run Jeager (WIP)
+
+## Workflow implementation
+
+- parent workflow (go sdk)
+    - start activity (go sdk)
+    - start activity (ts sdk)
+    - start child workflow (ts sdk)
+        - start activity (ts sdk)
+- end workflow (go sdk)
+
+
+
+## Prepare environment 
+### Run Jeager (WIP)
 
 ```sh
 docker run --rm --name jaeger \
@@ -17,13 +30,15 @@ docker run --rm --name jaeger \
   jaegertracing/all-in-one:1.59
 
 ```
+### Install dependencies
 
-## Install dependencies
 
 ```bash
 cd ctxpropagation
 go mod tidy  
 ```
+
+### Star temporal server
 
 
 ```bash
@@ -31,8 +46,9 @@ cd src_reproduction
 npm install
 ```
 
+## Run 
 
-## Run the go worker, that host the workflow
+### Run the go worker, that host the workflow
 ```bash
 cd ctxpropagation
 go run worker/main.go
@@ -40,7 +56,7 @@ go run worker/main.go
 
 
 
-## Run the ts worker, that host the activity
+### Run the ts worker, that host the activity and child workflow
 ```bash
 cd src_reproduction
 npm run start.watch
@@ -48,7 +64,7 @@ npm run start.watch
 
 
 
-## Start the workflow from go client
+### Start the workflow from go client
 ```bash
 cd ctxpropagation
 go run starter/main.go

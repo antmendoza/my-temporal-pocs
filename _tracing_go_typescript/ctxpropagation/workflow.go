@@ -20,19 +20,8 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 	}
 	goCtx := workflow.WithActivityOptions(ctx, goAo)
 
-	if val := ctx.Value(PropagateKey); val != nil {
-		vals := val.(Values)
-		workflow.GetLogger(ctx).Info("custom context propagated to workflow", vals.Key, vals.Value)
-	}
-
-	var values Values
-	if err = workflow.ExecuteActivity(goCtx, SampleActivity).Get(goCtx, &values); err != nil {
-		workflow.GetLogger(ctx).Error("CtxPropWorkflow failed.", "Error", err)
-		return err
-	}
-	workflow.GetLogger(ctx).Info("context propagated to activity", values.Key, values.Value)
-
-	workflow.ExecuteActivity(goCtx, SampleActivity).Get(goCtx, &values)
+	var goActivityResult string
+	workflow.ExecuteActivity(goCtx, SampleActivity).Get(goCtx, &goActivityResult)
 
 	//Activity running in a TS worker
 	var tsActivityResult string
