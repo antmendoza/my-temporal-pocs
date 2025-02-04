@@ -22,9 +22,19 @@ docker-compose up
 1. In another shell, `npm run workflow` to run the Workflow.
 
 
+#### Metrics
+
 Go to https://app.datadoghq.com/metric/explorer and add the following query
 ```
 sum:temporal_request{*} by {operation}.as_rate()
 ```
 
 ![](img.png)
+
+
+#### Traces
+
+https://app.datadoghq.com/apm/traces
+
+![Screenshot 2025-02-04 at 14.28.51.png](Screenshot%202025-02-04%20at%2014.28.51.png)
+

@@ -33,7 +33,7 @@ exporters:
   datadog/exporter:
     api:
       site: datadoghq.com
-      key: ---
+      key: ${DD_API_KEY}
   debug:
     verbosity: detailed
     sampling_initial: 5
@@ -46,10 +46,10 @@ service:
       receivers: [prometheus, otlp]
       processors: [batch]
       exporters: [datadog/exporter, debug]
-#    traces:
-#      receivers: [otlp]
-#      processors: [batch]
-#      exporters: [datadog/exporter, debug]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [datadog/exporter, debug]
 #    logs:
 #      receivers: [otlp, filelog]
 #      processors: [batch]
