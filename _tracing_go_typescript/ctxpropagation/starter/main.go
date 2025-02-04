@@ -2,52 +2,62 @@ package main
 
 import (
 	"context"
-	"ctxpropagation"
+	opentelemetry2 "github.com/temporalio/samples-go"
 	"log"
-	"time"
 
-	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
-	opentracing "go.temporal.io/sdk/contrib/opentracing"
+	"go.temporal.io/sdk/contrib/opentelemetry"
 	"go.temporal.io/sdk/interceptor"
 )
 
 func main() {
-	// Set tracer which will be returned by opentracing.GlobalTracer().
-	closer, _ := ctxpropagation.SetJaegerGlobalTracer()
-	defer func() { _ = closer.Close() }()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	// Create interceptor
-	tracingInterceptor, err := opentracing.NewInterceptor(opentracing.TracerOptions{})
+	tp, err := opentelemetry2.InitializeGlobalTracerProvider()
 	if err != nil {
-		log.Fatalf("Failed creating interceptor: %v", err)
+		log.Fatalln("Unable to create a global trace provider", err)
+	}
+
+	defer func() {
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Println("Error shutting down trace provider:", err)
+		}
+	}()
+
+	tracingInterceptor, err := opentelemetry.NewTracingInterceptor(opentelemetry.TracerOptions{})
+	if err != nil {
+		log.Fatalln("Unable to create interceptor", err)
+	}
+
+	options := client.Options{
+		Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
 	}
 
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.Dial(client.Options{
-		HostPort:     client.DefaultHostPort,
-		Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
-		//		ContextPropagators: []workflow.ContextPropagator{ctxpropagation.NewContextPropagator()},
-	})
+	c, err := client.Dial(options)
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
-	workflowID := "ctx-propagation_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        workflowID,
-		TaskQueue: "go-taskqueue",
+		ID:        "otel_workflowID",
+		TaskQueue: "otel",
 	}
 
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, ctxpropagation.PropagateKey, &ctxpropagation.Values{Key: "test", Value: "tested"})
-
-	we, err := c.ExecuteWorkflow(ctx, workflowOptions, ctxpropagation.CtxPropWorkflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, opentelemetry2.CtxPropWorkflow)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
+
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 
-	time.Sleep(time.Second * 10)
+	// Synchronously wait for the workflow completion.
+	var result string
+	err = we.Get(context.Background(), &result)
+	if err != nil {
+		log.Fatalln("Unable get workflow result", err)
+	}
+	log.Println("CtxPropWorkflow result:", result)
 }

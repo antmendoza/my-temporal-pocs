@@ -27,7 +27,7 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 
 	var values Values
 	if err = workflow.ExecuteActivity(goCtx, SampleActivity).Get(goCtx, &values); err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", "Error", err)
+		workflow.GetLogger(ctx).Error("CtxPropWorkflow failed.", "Error", err)
 		return err
 	}
 	workflow.GetLogger(ctx).Info("context propagated to activity", values.Key, values.Value)
@@ -37,7 +37,7 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 	//Activity running in a TS worker
 	var tsActivityResult string
 	if err = workflow.ExecuteActivity(tsCtx, "activity1").Get(tsCtx, &tsActivityResult); err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", "Error", err)
+		workflow.GetLogger(ctx).Error("CtxPropWorkflow failed.", "Error", err)
 		return err
 	}
 	workflow.GetLogger(ctx).Info("tsActivityResult", tsActivityResult)
@@ -52,6 +52,6 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 	// Wait for child to complete
 	_ = childWorkflow.Get(ctx, nil)
 
-	workflow.GetLogger(ctx).Info("Workflow completed.")
+	workflow.GetLogger(ctx).Info("CtxPropWorkflow completed.")
 	return nil
 }
