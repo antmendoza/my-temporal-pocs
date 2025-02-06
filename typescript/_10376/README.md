@@ -1,11 +1,11 @@
 # Hello World with mTLS
 
 We're using @grpc/grpc-js@1.12.0 and 1.11.2 for the Temporal SDK.
-
+```
 ❯ npm ls --all | grep  grpc-js
 ├─┬ @grpc/grpc-js@1.12.0
 │ ├── @grpc/grpc-js@1.12.0 deduped
-
+```
 
 - start 2000 workflows without interceptors 
 
