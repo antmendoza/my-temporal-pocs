@@ -24,30 +24,24 @@ import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
-public class HelloActivityV1 {
 
-    // Define the task queue name
-    static final String TASK_QUEUE = "HelloActivityTaskQueue";
+public class HelloActivityV4_add_object {
 
-    // Define our workflow unique id
-    static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
     @WorkflowInterface
     public interface GreetingWorkflow {
 
-        /**
-         * This is the method that is executed when the Workflow Execution is started. The Workflow
-         * Execution completes when this method finishes execution.
-         */
+
         @WorkflowMethod
-        String getGreeting(String name);
+        String getGreeting(String name, MyObject names);
 
 
         @SignalMethod
-        void signal(String name);
+        void signal(String name, MyObject names);
 
 
     }
+
 
     // Define the workflow implementation which implements our getGreeting workflow method.
     public static class GreetingWorkflowImpl implements GreetingWorkflow {
@@ -56,7 +50,7 @@ public class HelloActivityV1 {
         private boolean signaled = false;
 
         @Override
-        public String getGreeting(String name) {
+        public String getGreeting(String name, MyObject names) {
             // This is a blocking call that returns only after the activity has completed.
 
             Workflow.await(() -> {
@@ -67,10 +61,40 @@ public class HelloActivityV1 {
         }
 
         @Override
-        public void signal(final String name) {
+        public void signal(final String name,  MyObject names) {
+            System.out.println("Signal received");
             this.signaled = true;
         }
     }
 
 
+    private static class MyObject {
+
+        private String name;
+        private int age;
+        private String address;
+
+
+        public MyObject() {
+        }
+
+
+        public MyObject(String name, int age, String address) {
+            this.name = name;
+            this.age = age;
+            this.address = address;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+    }
 }

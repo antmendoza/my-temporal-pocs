@@ -37,7 +37,7 @@ public class HelloActivityV2_add_string {
 
 
         @SignalMethod
-        void signal(String name);
+        void signal(String name, String names);
 
 
     }
@@ -61,7 +61,7 @@ public class HelloActivityV2_add_string {
         }
 
         @Override
-        public void signal(final String name) {
+        public void signal(final String name,  String names) {
             System.out.println("Signal received");
             this.signaled = true;
         }

@@ -39,7 +39,7 @@ public class HelloActivityReplayTest {
             TestWorkflowRule.newBuilder().setDoNotStart(true).build();
 
     @Test
-    public void replayWorkflowExecution() throws Exception {
+    public void replayWorkflowExecutionAddString() throws Exception {
 
         final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
 
@@ -47,6 +47,45 @@ public class HelloActivityReplayTest {
         WorkflowReplayer.replayWorkflowExecution(
                 eventHistory, HelloActivityV2_add_string.GreetingWorkflowImpl.class);
     }
+
+
+    @Test
+    public void replayWorkflowExecutionHelloActivityV3_add_list_strings() throws Exception {
+
+        final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
+
+        //Replay with V2
+        WorkflowReplayer.replayWorkflowExecution(
+                eventHistory, HelloActivityV3_add_list_strings.GreetingWorkflowImpl.class);
+    }
+
+
+    @Test
+    public void replayWorkflowExecutionHelloActivityV4_add_objects() throws Exception {
+
+        final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
+
+        //Replay with V2
+        WorkflowReplayer.replayWorkflowExecution(
+                eventHistory, HelloActivityV4_add_object.GreetingWorkflowImpl.class);
+    }
+
+
+
+    @Test
+    public void HelloActivityV6_add_list_object() throws Exception {
+
+        final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
+
+        //Replay with V2
+        WorkflowReplayer.replayWorkflowExecution(
+                eventHistory, HelloActivityV6_add_list_object.GreetingWorkflowImpl.class);
+    }
+
+
+
+
+
 
 
     private String executeWorkflow(Class<?> workflowImplementationType) throws InterruptedException {
