@@ -1,0 +1,14 @@
+#server:
+#  port: 3031
+
+
+
+#spring:
+#  application:
+#    name: temporal-demo
+#  temporal:
+#    namespace: default
+#    connection:
+#      target: localhost:7233
+#    workersAutoDiscovery:
+#      packages: com.temporal.demos.temporalspringbootdemo.workflows
