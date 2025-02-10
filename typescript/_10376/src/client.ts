@@ -1,8 +1,10 @@
-import fs from 'fs/promises';
 
 import { Connection, Client, makeGrpcRetryInterceptor, defaultGrpcRetryOptions } from '@temporalio/client';
 import { example } from './workflows';
 import { InterceptingCall } from '@grpc/grpc-js';
+import * as grpc from '@grpc/grpc-js';
+import fs from 'fs/promises';
+import * as fsSt from 'fs';
 
 /**
  * Schedule a Workflow connecting with mTLS, configuration is provided via environment variables.
@@ -26,6 +28,26 @@ async function run({
   if (serverRootCACertificatePath) {
     serverRootCACertificate = await fs.readFile(serverRootCACertificatePath);
   }
+
+
+
+  ///
+  // Open a write stream for logging
+  const logFile = fsSt.createWriteStream('./grpc-logs.txt', { flags: 'a' });
+
+// Custom logging function to write gRPC logs to the file
+  function customLogger(severity: string, message: string) {
+    const timestamp = new Date().toISOString();
+    logFile.write(`[${timestamp}] [${severity}] ${message}\n`);
+  }
+
+// Override the gRPC logger
+  grpc.setLogger({
+    error: (msg: string) => customLogger("ERROR", msg),
+    warn: (msg: string) => customLogger("WARN", msg),
+    info: (msg: string) => customLogger("INFO", msg),
+    debug: (msg: string) => customLogger("DEBUG", msg),
+  });
 
   //add grpc interceptor
   const connection = await Connection.connect({
@@ -55,10 +77,7 @@ async function run({
 
   const client = new Client({ connection, namespace });
 
-
   for (let i = 0; i <2000; i++) {
-
-
 
     await client.workflow.start(example, {
       taskQueue,

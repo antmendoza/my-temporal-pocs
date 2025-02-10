@@ -78,6 +78,16 @@ We're using @grpc/grpc-js@1.12.0 and 1.11.2 for the Temporal SDK.
 
 ```bash
 
+
+export TEMPORAL_ADDRESS=${namespace}.tmprl.cloud:7233
+export TEMPORAL_NAMESPACE=${namespace}
+export TEMPORAL_CLIENT_CERT_PATH=/path-to/client.pem
+export TEMPORAL_CLIENT_KEY_PATH=/path-to/client.key
+
+
+export GRPC_TRACE=all
+export GRPC_VERBOSITY=DEBUG
+
 npm run workflow
 
 ```
