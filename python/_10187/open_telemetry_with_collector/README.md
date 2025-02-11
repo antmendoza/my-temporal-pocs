@@ -31,4 +31,10 @@ Start the starter
 poetry run python3 starter.py
 ```
 
+Start the starter new code (same result)
+
+``` bash
+poetry run python3 starter_new_code.py
+```
+
 ![Screenshot 2025-01-30 at 16.30.21.png](Screenshot%202025-01-30%20at%2016.30.21.png)
