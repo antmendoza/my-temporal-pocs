@@ -33,7 +33,7 @@ public class HelloActivityV2_add_string {
 
 
         @WorkflowMethod
-        String getGreeting(String name, String names);
+        String execute(String name, String names);
 
 
         @SignalMethod
@@ -43,19 +43,15 @@ public class HelloActivityV2_add_string {
     }
 
 
-    // Define the workflow implementation which implements our getGreeting workflow method.
     public static class GreetingWorkflowImpl implements GreetingWorkflow {
 
 
         private boolean signaled = false;
 
         @Override
-        public String getGreeting(String name, String names) {
-            // This is a blocking call that returns only after the activity has completed.
+        public String execute(String name, String names) {
 
-            Workflow.await(() -> {
-                return this.signaled;
-            });
+            Workflow.await(() -> this.signaled);
 
             return "done";
         }

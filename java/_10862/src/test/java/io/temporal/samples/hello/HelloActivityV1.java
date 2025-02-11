@@ -26,21 +26,13 @@ import io.temporal.workflow.WorkflowMethod;
 
 public class HelloActivityV1 {
 
-    // Define the task queue name
-    static final String TASK_QUEUE = "HelloActivityTaskQueue";
-
-    // Define our workflow unique id
-    static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
     @WorkflowInterface
     public interface GreetingWorkflow {
 
-        /**
-         * This is the method that is executed when the Workflow Execution is started. The Workflow
-         * Execution completes when this method finishes execution.
-         */
+
         @WorkflowMethod
-        String getGreeting(String name);
+        String execute(String name);
 
 
         @SignalMethod
@@ -49,25 +41,23 @@ public class HelloActivityV1 {
 
     }
 
-    // Define the workflow implementation which implements our getGreeting workflow method.
+
     public static class GreetingWorkflowImpl implements GreetingWorkflow {
 
 
         private boolean signaled = false;
 
         @Override
-        public String getGreeting(String name) {
-            // This is a blocking call that returns only after the activity has completed.
+        public String execute(String name) {
 
-            Workflow.await(() -> {
-                return this.signaled;
-            });
+            Workflow.await(() -> this.signaled);
 
             return "done";
         }
 
         @Override
         public void signal(final String name) {
+            System.out.println("Signal received");
             this.signaled = true;
         }
     }

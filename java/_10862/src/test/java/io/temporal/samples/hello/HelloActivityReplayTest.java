@@ -20,6 +20,7 @@
 package io.temporal.samples.hello;
 
 import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
 import io.temporal.internal.common.WorkflowExecutionHistory;
@@ -28,70 +29,70 @@ import io.temporal.testing.WorkflowReplayer;
 import org.junit.Rule;
 import org.junit.Test;
 
-/**
- * Unit test for replay {@link HelloActivityV1.GreetingWorkflowImpl}. Doesn't use an external Temporal
- * service.
- */
+
 public class HelloActivityReplayTest {
+
+
+    static final String WORKFLOW_ID = "HelloActivityWorkflow";
+
 
     @Rule
     public TestWorkflowRule testWorkflowRule =
-            TestWorkflowRule.newBuilder().setDoNotStart(true).build();
+            TestWorkflowRule.newBuilder()
+                    .setDoNotStart(true).build();
+
+
 
     @Test
-    public void replayWorkflowExecutionAddString() throws Exception {
+    public void replayWorkflowExecution() throws Exception {
 
         final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
 
-        //Replay with V2
+        WorkflowReplayer.replayWorkflowExecution(
+                eventHistory, HelloActivityV1.GreetingWorkflowImpl.class);
+    }
+
+
+    @Test
+    public void replayWorkflowExecution_with_HelloActivityV2_add_string() throws Exception {
+
+        final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
+
+        //Replay with HelloActivityV2_add_string
         WorkflowReplayer.replayWorkflowExecution(
                 eventHistory, HelloActivityV2_add_string.GreetingWorkflowImpl.class);
     }
 
 
     @Test
-    public void replayWorkflowExecutionHelloActivityV3_add_list_strings() throws Exception {
+    public void replayWorkflowExecution_with_HelloActivityV3_add_list_strings() throws Exception {
 
         final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
 
-        //Replay with V2
+        //Replay with HelloActivityV3_add_list_strings
         WorkflowReplayer.replayWorkflowExecution(
                 eventHistory, HelloActivityV3_add_list_strings.GreetingWorkflowImpl.class);
     }
 
 
     @Test
-    public void replayWorkflowExecutionHelloActivityV4_add_objects() throws Exception {
+    public void replayWorkflowExecution_with_HelloActivityV4_add_object() throws Exception {
 
         final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
 
-        //Replay with V2
+        //Replay with HelloActivityV4_add_object
         WorkflowReplayer.replayWorkflowExecution(
                 eventHistory, HelloActivityV4_add_object.GreetingWorkflowImpl.class);
     }
 
 
 
-    @Test
-    public void HelloActivityV6_add_list_object() throws Exception {
-
-        final String eventHistory = executeWorkflow(HelloActivityV1.GreetingWorkflowImpl.class);
-
-        //Replay with V2
-        WorkflowReplayer.replayWorkflowExecution(
-                eventHistory, HelloActivityV6_add_list_object.GreetingWorkflowImpl.class);
-    }
-
-
-
-
-
-
-
     private String executeWorkflow(Class<?> workflowImplementationType) throws InterruptedException {
+
 
         testWorkflowRule
                 .getWorker();
+
 
         testWorkflowRule.getWorker().registerWorkflowImplementationTypes(workflowImplementationType);
 
@@ -102,7 +103,9 @@ public class HelloActivityReplayTest {
                         .getWorkflowClient()
                         .newWorkflowStub(
                                 HelloActivityV1.GreetingWorkflow.class,
-                                WorkflowOptions.newBuilder().setTaskQueue(testWorkflowRule.getTaskQueue()).build());
+                                WorkflowOptions.newBuilder()
+                                        .setWorkflowId(WORKFLOW_ID + Math.random())
+                                        .setTaskQueue(testWorkflowRule.getTaskQueue()).build());
 
 
 
@@ -113,7 +116,6 @@ public class HelloActivityReplayTest {
         WorkflowStub.fromTyped(workflow).signal("signal", "anything");
 
         Thread.sleep(500);
-        // wait until workflow completes
         WorkflowStub.fromTyped(workflow).getResult(String.class);
 
         return new WorkflowExecutionHistory(testWorkflowRule.getHistory(execution)).toJson(true);
