@@ -35,6 +35,6 @@ class CustomerCronTaskTest {
     val result = testEnv.taskStub().taskExecutionLogic(payload)
 
     val expectedTeam = listOf("Riley", "Helen", "Dan", "Nick", "Sever")
-    assertEquals(expectedTeam, result.team)
+    assertEquals(expectedTeam, (result as CustomerCronTaskResult).team)
   }
 }

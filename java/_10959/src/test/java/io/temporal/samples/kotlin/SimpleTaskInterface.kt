@@ -24,7 +24,8 @@ class SimpleTaskTestEnvironment<T, K : Any>(private val task: SimpleTask<T, K>) 
   init {
     testActivityEnvironment.registerActivitiesImplementations(SimpleTaskTestWrapper(task))
   }
-  fun taskStub(): SimpleTaskInterface<T, K> {
-    return testActivityEnvironment.newActivityStub(SimpleTaskInterface::class.java) as SimpleTaskInterface<T, K>
+  fun taskStub(): SimpleTaskInterface<T, ICustomerCronTaskResult> {
+    val newActivityStub = testActivityEnvironment.newActivityStub(SimpleTaskInterface::class.java)
+    return newActivityStub as SimpleTaskInterface<T, ICustomerCronTaskResult>
   }
 }

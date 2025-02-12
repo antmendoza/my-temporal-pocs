@@ -1,12 +1,20 @@
 package io.temporal.samples.kotlin
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class CustomerCronTaskResult(listOf: List<String>) {
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+    JsonSubTypes.Type(value = CustomerCronTaskResult::class, name = "customerCronTaskResult")
+)
+open interface ICustomerCronTaskResult{
+
+}
+
+
+public class CustomerCronTaskResult(listOf: List<String>): ICustomerCronTaskResult {
     public val team: List<String> = listOf
-
     //create empty constructor
     constructor() : this(listOf())
-
 }
