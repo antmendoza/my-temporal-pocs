@@ -26,21 +26,7 @@ class GreetingWorkflow:
                 ComposeGreetingInput(greeting="Hello", name=request.name),
                 start_to_close_timeout=timedelta(seconds=600),
             ),
-            workflow.execute_activity(
-                compose_greeting,
-                ComposeGreetingInput(greeting="Hello", name=request.name),
-                start_to_close_timeout=timedelta(seconds=600),
-            ),
-            workflow.execute_activity(
-                compose_greeting,
-                ComposeGreetingInput(greeting="Hello", name=request.name),
-                start_to_close_timeout=timedelta(seconds=600),
-            ),
-            workflow.execute_activity(
-                compose_greeting,
-                ComposeGreetingInput(greeting="Hello", name=request.name),
-                start_to_close_timeout=timedelta(seconds=600),
-            ),
+
         )
 
 

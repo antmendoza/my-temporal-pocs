@@ -31,18 +31,18 @@ async def main():
 
 
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1000) as activity_executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as activity_executor:
         worker = Worker(
             client,
             task_queue="hello-activity-task-queue",
             workflows=[GreetingWorkflow],
             activities=[compose_greeting],
             max_concurrent_workflow_tasks=200,
-            max_concurrent_activities=2000,
+            max_concurrent_activities=4,
             activity_executor=activity_executor,
         )
         tasks = [asyncio.create_task(start_workflow(client, i))
-                 for i in range(20)]
+                 for i in range(1)]
 
         await worker.run()
 
