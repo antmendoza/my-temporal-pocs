@@ -92,7 +92,7 @@ public class MyPayloadConverter implements PayloadConverter {
 
             // To handle generics we need something like this , but cleaner, this is only a POC
             if(valueClass == Object.class){
-                //We need to indicate the concrete class on interface, otherwise it will be converted to a Map
+                //We need to indicate the concrete class or interface, otherwise it will be converted to a Map
                 reference = mapper.getTypeFactory().constructType(MyRequest.class);
             }
             final T t = mapper.readValue(content.getData().toByteArray(), reference);
