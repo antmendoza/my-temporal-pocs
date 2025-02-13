@@ -1,4 +1,4 @@
-package io.temporal.samples.kotlin
+package kotlin
 
 class SimpleTaskPayload<T>(taskPayload: Any) {
     val taskPayload: Any = taskPayload

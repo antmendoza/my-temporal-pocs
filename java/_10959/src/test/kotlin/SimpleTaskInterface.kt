@@ -1,4 +1,4 @@
-package io.temporal.samples.kotlin
+package kotlin
 
 import io.temporal.activity.ActivityInterface
 import io.temporal.activity.DynamicActivity
@@ -24,8 +24,8 @@ class SimpleTaskTestEnvironment<T, K : Any>(private val task: SimpleTask<T, K>) 
   init {
     testActivityEnvironment.registerActivitiesImplementations(SimpleTaskTestWrapper(task))
   }
-  fun taskStub(): SimpleTaskInterface<T, ICustomerCronTaskResult> {
+  fun taskStub(): SimpleTaskInterface<T, Any> {
     val newActivityStub = testActivityEnvironment.newActivityStub(SimpleTaskInterface::class.java)
-    return newActivityStub as SimpleTaskInterface<T, ICustomerCronTaskResult>
+    return newActivityStub as SimpleTaskInterface<T, Any>
   }
 }

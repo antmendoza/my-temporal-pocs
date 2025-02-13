@@ -1,4 +1,4 @@
-package io.temporal.samples.kotlin
+package kotlin
 
 import org.junit.Assert.assertEquals
 import org.junit.Before
