@@ -24,94 +24,88 @@ import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.common.converter.CodecDataConverter;
-import io.temporal.common.converter.DataConverter;
 import io.temporal.common.converter.DefaultDataConverter;
-import io.temporal.payload.codec.ZlibPayloadCodec;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
-import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
+
 import java.time.Duration;
 
 
 public class HelloActivityRunner {
 
-  static final String TASK_QUEUE = "HelloActivityTaskQueue";
+    public static final DefaultDataConverter dataConverter = DefaultDataConverter.newDefaultInstance().withPayloadConverterOverrides(new MyPayloadConverter());
+    static final String TASK_QUEUE = "HelloActivityTaskQueue";
+    static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
-  static final String WORKFLOW_ID = "HelloActivityWorkflow";
+    public static void main(String[] args) {
 
-
-  @WorkflowInterface
-  public interface GreetingWorkflow {
-
-
-    @WorkflowMethod
-    String getGreeting(String name);
-  }
-
-  // Define the workflow implementation which implements our getGreeting workflow method.
-  public static class GreetingWorkflowImpl implements GreetingWorkflow {
+        // Get a Workflow service stub.
+        WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
 
-    private final TestActivity<MyRequest, MyRequest> activities =
-        Workflow.newActivityStub(
-                TestActivity.class,
-            ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
+        WorkflowClient client = WorkflowClient.newInstance(
+                service,
+                WorkflowClientOptions.newBuilder()
+                        .setDataConverter(dataConverter)
+                        .build());
 
-    @Override
-    public String getGreeting(String name) {
-      // This is a blocking call that returns only after the activity has completed.
-      final MyRequest myRequest = activities.activity1(new MyRequest(name, "1"));
-      return myRequest.getName();
+        final WorkerFactory factory = WorkerFactory.newInstance(client);
+
+
+        final Worker worker = factory.newWorker(TASK_QUEUE,
+                WorkerOptions.newBuilder().build());
+
+
+        worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
+        worker.registerActivitiesImplementations(new ActivityImpl());
+
+        factory.start();
+
+        GreetingWorkflow workflow =
+                client.newWorkflowStub(
+                        GreetingWorkflow.class,
+                        WorkflowOptions.newBuilder()
+                                .setWorkflowId(WORKFLOW_ID)
+                                .setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
+                                .setTaskQueue(TASK_QUEUE)
+                                .build());
+
+
+        String greeting = workflow.getGreeting("World");
+
+        // Display workflow execution results
+        System.out.println(greeting);
+        System.exit(0);
     }
-  }
 
 
-
-  public static void main(String[] args) {
-
-    // Get a Workflow service stub.
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    @WorkflowInterface
+    public interface GreetingWorkflow {
 
 
-    final DefaultDataConverter dataConverter = DefaultDataConverter.newDefaultInstance().withPayloadConverterOverrides(new MyPayloadConverter());
-    WorkflowClient client = WorkflowClient.newInstance(
-            service,
-            WorkflowClientOptions.newBuilder()
-                    .setDataConverter(dataConverter)
-                    .build());
+        @WorkflowMethod
+        String getGreeting(String name);
+    }
 
-    final WorkerFactory factory = WorkerFactory.newInstance(client);
+    // Define the workflow implementation which implements our getGreeting workflow method.
+    public static class GreetingWorkflowImpl implements GreetingWorkflow {
 
 
-    final Worker worker = factory.newWorker(TASK_QUEUE,
-            WorkerOptions.newBuilder().build());
+        private final TestActivity<MyRequest, MyRequest> activities =
+                Workflow.newActivityStub(
+                        TestActivity.class,
+                        ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
 
-
-    worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
-    worker.registerActivitiesImplementations(new ActivityImpl());
-
-    factory.start();
-
-    GreetingWorkflow workflow =
-        client.newWorkflowStub(
-            GreetingWorkflow.class,
-            WorkflowOptions.newBuilder()
-                .setWorkflowId(WORKFLOW_ID)
-                    .setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
-                .setTaskQueue(TASK_QUEUE)
-                .build());
-
-
-    String greeting = workflow.getGreeting("World");
-
-    // Display workflow execution results
-    System.out.println(greeting);
-    System.exit(0);
-  }
+        @Override
+        public String getGreeting(String name) {
+            // This is a blocking call that returns only after the activity has completed.
+            final MyRequest myRequest = activities.activity1(new MyRequest(name, "1"));
+            return myRequest.getName();
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package io.temporal.samples.hello;
 
+import io.temporal.client.WorkflowClientOptions;
 import io.temporal.testing.TestActivityEnvironment;
 import io.temporal.testing.TestEnvironmentOptions;
 import org.junit.Assert;
@@ -9,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.temporal.samples.hello.HelloActivityRunner.dataConverter;
 import static org.junit.Assert.assertEquals;
 
 public class HelloActivityTest_activity {
@@ -16,10 +18,12 @@ public class HelloActivityTest_activity {
 
 
     TestActivityEnvironment testEnvironment = TestActivityEnvironment.newInstance(
-            TestEnvironmentOptions
-                    .newBuilder()
+            TestEnvironmentOptions.newBuilder()
+                    .setWorkflowClientOptions(WorkflowClientOptions.newBuilder()
+                            .setDataConverter(dataConverter).build())
+
                     .build()
-    );
+            );
 
     @Test
     public void testSuccess() throws ExecutionException, InterruptedException {
@@ -41,9 +45,9 @@ public class HelloActivityTest_activity {
         final AtomicReference<MyRequest> result = new AtomicReference<>();
         CompletableFuture.runAsync(
                 () -> {
-                    TestActivity activity = testEnvironment.newActivityStub(TestActivity.class);
-                    activity.activity1(new MyRequest("input1", "type1"));
-                    result.set(new MyRequest("input1", "type1"));
+                    TestActivity<MyRequest, MyRequest> activity = testEnvironment.newActivityStub(TestActivity.class);
+                    MyRequest myRequest = activity.activity1(new MyRequest("input1", "type1"));
+                    result.set(myRequest);
                 });
 
         completableFuture.get();
