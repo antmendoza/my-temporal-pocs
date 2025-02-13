@@ -41,7 +41,7 @@ public class HelloDynamic {
   public static final String WORKFLOW_ID = "HelloDynamicWorkflow";
 
   // Dynamic Workflow Implementation
-  public static class DynamicGreetingWorkflowImpl implements DynamicWorkflow {
+  public static class DynamicGreetingWorkflowImpl<K, T> implements DynamicWorkflow {
     private String name;
 
     @Override
@@ -60,7 +60,10 @@ public class HelloDynamic {
               ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(10)).build());
       // Execute the dynamic Activity. Note that the provided Activity name is not
       // explicitly registered with the Worker
-      String greetingResult = activity.execute("DynamicACT", String.class, greeting, name, type);
+
+
+
+      K greetingResult = (K) activity.execute("DynamicACT", Object.class, greeting, name, type);
 
       // Return results
       return greetingResult;
