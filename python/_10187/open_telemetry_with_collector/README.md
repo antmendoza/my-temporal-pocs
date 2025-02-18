@@ -74,11 +74,15 @@ export PROMETHEUS_PORT=9000
 poetry run python3 starter_new_code.py
 ```
 
-## Navigate to prometheus and query temporal_workflow_completed
+#### Navigate to prometheus and query temporal_workflow_completed
 
 http://localhost:9090/graph?g0.expr=sum(temporal_workflow_completed)&g0.tab=0&g0.stacked=0&g0.show_exemplars=0&g0.range_input=15m
 
 ![Screenshot 2025-02-18 at 13.55.10.png](Screenshot%202025-02-18%20at%2013.55.10.png)
 
+
+
+## references
+https://docs.datadoghq.com/opentelemetry/guide/otlp_delta_temporality/
 
 
