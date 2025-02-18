@@ -1,17 +1,14 @@
 import asyncio
 from datetime import timedelta
 
-import opentelemetry.context
-from opentelemetry import trace
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry.sdk.resources import SERVICE_NAME, Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from temporalio import activity, workflow
 from temporalio.client import Client
 from temporalio.contrib.opentelemetry import TracingInterceptor
-from temporalio.runtime import OpenTelemetryConfig, Runtime, TelemetryConfig, OpenTelemetryMetricTemporality
+from temporalio.runtime import OpenTelemetryConfig, Runtime, TelemetryConfig, OpenTelemetryMetricTemporality, \
+    PrometheusConfig
 from temporalio.worker import Worker
+
+import os
 
 
 @workflow.defn
@@ -34,23 +31,25 @@ interrupt_event = asyncio.Event()
 
 
 def init_runtime_with_telemetry() -> Runtime:
-    # Setup global tracer for workflow traces
-    # provider = TracerProvider(resource=Resource.create({SERVICE_NAME: "my-service"}))
-    # exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
-    # provider.add_span_processor(BatchSpanProcessor(exporter))
-    # trace.set_tracer_provider(provider)
 
 
-    # Setup SDK metrics to OTel endpoint
-    return Runtime(
-        telemetry=TelemetryConfig(
-            metrics=OpenTelemetryConfig(
-                url="http://localhost:4317",
-                metric_periodicity=timedelta(seconds=1),
-                metric_temporality=OpenTelemetryMetricTemporality.DELTA,
+    ## if env variable prometheus-port is not null setup prometheus
+    prometheus_port = os.environ.get("PROMETHEUS_PORT")
+    if prometheus_port is not None:
+        return  Runtime(
+            telemetry=TelemetryConfig(metrics=PrometheusConfig("127.0.0.1:" + prometheus_port))
+        )
+    else:
+        # Setup SDK metrics to OTel endpoint
+        return Runtime(
+            telemetry=TelemetryConfig(
+                metrics=OpenTelemetryConfig(
+                    url="http://localhost:4317",
+                    metric_periodicity=timedelta(seconds=1),
+                    metric_temporality=OpenTelemetryMetricTemporality.DELTA,
+                )
             )
         )
-    )
 
 
 
