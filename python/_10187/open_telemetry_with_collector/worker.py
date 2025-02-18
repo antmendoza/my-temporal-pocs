@@ -51,8 +51,7 @@ def init_runtime_with_telemetry() -> Runtime:
                 metrics=OpenTelemetryConfig(
                     url="http://localhost:4317",
                     metric_periodicity=timedelta(seconds=1),
-                    metric_temporality=OpenTelemetryMetricTemporality.DELTA,
-                    headers={"worker_": "service_id"},
+                    metric_temporality=OpenTelemetryMetricTemporality.DELTA
                 ),
                 global_tags={"env": "worker_" + WORKER_ID},
 

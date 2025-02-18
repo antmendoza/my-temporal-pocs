@@ -15,7 +15,7 @@ docker-compose up
 
 ```
 
-### Datadog
+### Otel / Datadog
 
 
 Start the worker
@@ -39,7 +39,7 @@ Start some workflows
 
 ``` bash
 export WORKER_ID=CLIENT
-export WORKFLOW_COUNT=1000
+export WORKFLOW_COUNT=5000
 poetry run python3 starter_new_code.py
 ```
 
