@@ -21,19 +21,25 @@ docker-compose up
 Start the worker
 
 ``` bash
+export WORKER_ID=WORKER_1
 poetry run python3 worker.py 
 ```
 
-Start the starter
-
 ``` bash
-poetry run python3 starter.py
+export WORKER_ID=WORKER_2
+poetry run python3 worker.py 
 ```
 
-Start the starter new code
+``` bash
+export WORKER_ID=WORKER_3
+poetry run python3 worker.py 
+```
+
+Start some workflows
 
 ``` bash
-export WORKFLOW_COUNT=10252
+export WORKER_ID=CLIENT
+export WORKFLOW_COUNT=1000
 poetry run python3 starter_new_code.py
 ```
 
@@ -60,7 +66,7 @@ export PROMETHEUS_PORT=9003
 poetry run python3 worker.py   
 ```
 
-Start 10252 workflows
+Start some workflows
 
 ``` bash
 export WORKFLOW_COUNT=10252
