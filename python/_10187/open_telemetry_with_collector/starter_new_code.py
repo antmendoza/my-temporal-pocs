@@ -1,5 +1,8 @@
 import asyncio
 import os
+import random
+import time
+import uuid
 
 from temporalio.client import Client
 from temporalio.contrib.opentelemetry import TracingInterceptor
@@ -12,7 +15,7 @@ async def create_workflow(client, x):
     result = await client.start_workflow(
         GreetingWorkflow.run,
         "Temporal",
-        id=f"open_telemetry-workflow-id"+ str(x),
+        id=f"open_telemetry-workflow-id"+ str(x) + str(uuid.uuid4()),
         task_queue="open_telemetry-task-queue",
     )
 
@@ -34,8 +37,22 @@ async def main():
 
     # This is the new code,
     workflow_count = int(os.environ.get("WORKFLOW_COUNT"))
-    tasks = [create_workflow(client, x) for x in range(workflow_count)]
-    await asyncio.gather(*tasks)
+
+
+    # Example list
+    a = [0]*workflow_count
+
+    # Chunk size
+    n = 500
+
+    # Using list comprehension to create chunks
+    chunks = [a[i:i + n] for i in range(0, len(a), n)]
+    for chunk in chunks:
+        tasks = [create_workflow(client, x) for x in chunk]
+        await asyncio.gather(*tasks)
+        ## print number or elements processed in the chunk
+        time.sleep(0.3)
+
 
 
 if __name__ == "__main__":

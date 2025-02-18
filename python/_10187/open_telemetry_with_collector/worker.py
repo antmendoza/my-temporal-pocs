@@ -1,5 +1,6 @@
 import asyncio
 import os
+import random
 from datetime import timedelta
 
 from temporalio import activity, workflow
@@ -14,18 +15,18 @@ from temporalio.worker import Worker
 class GreetingWorkflow:
     @workflow.run
     async def run(self, name: str) -> str:
-        return await workflow.execute_activity(
-            compose_greeting,
-            name,
-            start_to_close_timeout=timedelta(seconds=60),
-        )
+        seconds_ = await workflow.execute_activity(compose_greeting, name,
+                                                   start_to_close_timeout=timedelta(seconds=60), )
+
+        print(f"Workflow completing")
+        return seconds_
 
 
 @activity.defn
 async def compose_greeting(name: str) -> str:
     ## calculate random number smaller than 10
-    # random_number = random.randint(1,10)
-    # await asyncio.sleep(random_number)
+    #random_number = random.randint(1,10)
+    #await asyncio.sleep(random_number)
     return f"Hello, {name}!"
 
 

@@ -18,32 +18,29 @@ docker-compose up
 ### Otel / Datadog
 
 
-Start the worker
+Start ten workers
 
 ``` bash
-export WORKER_ID=WORKER_1
-poetry run python3 worker.py 
+ps aux | grep worker.py
+
+pkill -f worker.py
+
+for i in {1..10}; do export WORKER_ID=100_WORKER___$i; poetry run python3 worker.py & done
 ```
 
-``` bash
-export WORKER_ID=WORKER_2
-poetry run python3 worker.py 
-```
-
-``` bash
-export WORKER_ID=WORKER_3
-poetry run python3 worker.py 
-```
-
-Start some workflows
+Start 50K workflows
 
 ``` bash
 export WORKER_ID=CLIENT
-export WORKFLOW_COUNT=5000
+export WORKFLOW_COUNT=50000
 poetry run python3 starter_new_code.py
 ```
 
-![Screenshot 2025-01-30 at 16.30.21.png](Screenshot%202025-01-30%20at%2016.30.21.png)
+
+![image.png](image.png)
+
+
+---
 
 
 ### Prometheus
@@ -66,7 +63,7 @@ export PROMETHEUS_PORT=9003
 poetry run python3 worker.py   
 ```
 
-Start some workflows
+Start 10252 workflows
 
 ``` bash
 export WORKFLOW_COUNT=10252

@@ -19,6 +19,11 @@ exporters:
       site: datadoghq.com
       key: ${DD_API_KEY}
 
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
 service:
   pipelines:
     metrics:
