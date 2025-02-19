@@ -37,7 +37,7 @@ poetry run python3 starter_new_code.py
 ```
 
 
-![image.png](image.png)
+![Screenshot 2025-02-19 at 12.32.28.png](Screenshot%202025-02-19%20at%2012.32.28.png)
 
 
 ---
