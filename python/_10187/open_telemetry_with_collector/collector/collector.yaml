@@ -10,7 +10,7 @@ processors:
     send_batch_size: 10
     timeout: 10s
 
-  cumulativetodelta:
+#  cumulativetodelta:
 
 
 exporters:
