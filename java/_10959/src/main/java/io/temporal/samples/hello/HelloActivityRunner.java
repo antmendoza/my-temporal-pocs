@@ -38,7 +38,7 @@ import java.time.Duration;
 
 public class HelloActivityRunner {
 
-    public static final DefaultDataConverter dataConverter = DefaultDataConverter.newDefaultInstance().withPayloadConverterOverrides(new MyPayloadConverter());
+    public static final DefaultDataConverter dataConverter = new DefaultDataConverter().withPayloadConverterOverrides(new MyPayloadConverter());
     static final String TASK_QUEUE = "HelloActivityTaskQueue";
     static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
