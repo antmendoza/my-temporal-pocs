@@ -25,6 +25,7 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.common.converter.DefaultDataConverter;
+import io.temporal.common.converter.GsonJsonPayloadConverter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
@@ -38,7 +39,9 @@ import java.time.Duration;
 
 public class HelloActivityRunner {
 
-    public static final DefaultDataConverter dataConverter = new DefaultDataConverter().withPayloadConverterOverrides(new MyPayloadConverter());
+    public static final DefaultDataConverter dataConverter = new DefaultDataConverter().withPayloadConverterOverrides(new GsonJsonPayloadConverter());
+
+    //public static final DefaultDataConverter dataConverter = new DefaultDataConverter().withPayloadConverterOverrides(new MyPayloadConverter());
     static final String TASK_QUEUE = "HelloActivityTaskQueue";
     static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
