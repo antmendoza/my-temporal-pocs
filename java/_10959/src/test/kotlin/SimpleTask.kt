@@ -1,6 +1,5 @@
-package kotlin
+package mypackage
 
 interface SimpleTask<T, U> {
-    fun taskExecutionLogic(simpleTaskPayload: SimpleTaskPayload<T>): U
-
+    fun run(simpleTaskPayload: Any): U
 }

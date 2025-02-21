@@ -3,10 +3,13 @@ package io.temporal.samples.hello;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.testing.TestActivityEnvironment;
 import io.temporal.testing.TestEnvironmentOptions;
+import mypackage.SimpleTask;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.concurrent.ExecutionException;
+
+
 
 public class HelloActivityTest_ {
 
