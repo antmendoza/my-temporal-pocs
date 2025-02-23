@@ -19,6 +19,7 @@ func main() {
 
 	w.RegisterWorkflow(customer.NotifyCell)
 	w.RegisterWorkflow(customer.NotifyCustomers)
+	w.RegisterWorkflow(customer.NotifyCustomer)
 
 	activities := &customer.NotificationActivity{WorkflowClient: c}
 	w.RegisterActivity(activities)

@@ -49,19 +49,60 @@ type NotifyCellResponse struct {
 	Customers []Customer
 }
 
-type NotifyCustomersRequest struct {
-	Customers []Customer
+type NotifyCustomerRequest struct {
+	Customer Customer
+	Text     string
 }
 
-type NotifyCustomersResponse struct {
-	Customers []Customer
+type NotifyCustomerResponse struct {
+	Customer Customer
+}
+
+func NotifyCustomer(ctx workflow.Context, request NotifyCustomerRequest) (NotifyCustomerResponse, error) {
+
+	return NotifyCustomerResponse{
+		Customer: request.Customer,
+	}, nil
 }
 
 func NotifyCustomers(ctx workflow.Context, request NotifyCustomersRequest) (NotifyCustomersResponse, error) {
 
+	logger := workflow.GetLogger(ctx)
+
+	for _, customer := range request.Customers {
+
+		cwo := workflow.ChildWorkflowOptions{
+			WorkflowID: workflow.GetInfo(ctx).WorkflowExecution.ID + "/notify-customer[" + customer.CustomerId + "]",
+		}
+		ctx = workflow.WithChildOptions(ctx, cwo)
+
+		var result NotifyCustomerResponse
+		input := NotifyCustomerRequest{
+			Customer: customer,
+			Text:     request.Text,
+		}
+		err := workflow.ExecuteChildWorkflow(ctx, NotifyCustomer, input).Get(ctx, &result)
+		if err != nil {
+			logger.Error("Parent execution received child execution failure.", "Error", err)
+			//TODO track failed notification
+			//			return workflowresult, err
+		}
+
+		workflow.GetLogger(ctx).Info("Notifying customer", "customer", customer)
+	}
+
 	return NotifyCustomersResponse{
 		Customers: request.Customers,
 	}, nil
+}
+
+type NotifyCustomersRequest struct {
+	Customers []Customer
+	Text      string
+}
+
+type NotifyCustomersResponse struct {
+	Customers []Customer
 }
 
 func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResponse, error) {
@@ -78,10 +119,10 @@ func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResp
 
 	var a *NotificationActivity
 
-	var result []Customer
+	var getCustomersResult []Customer
 	var workflowresult = NotifyCellResponse{}
 
-	err := workflow.ExecuteActivity(ctx, a.GetCustomers, request.CustomerType).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, a.GetCustomers, request.CustomerType).Get(ctx, &getCustomersResult)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return workflowresult, err
@@ -95,7 +136,11 @@ func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResp
 		ctx = workflow.WithChildOptions(ctx, cwo)
 
 		var result NotifyCustomersResponse
-		err := workflow.ExecuteChildWorkflow(ctx, NotifyCustomers, workflowresult).Get(ctx, &result)
+		input := NotifyCustomersRequest{
+			Customers: getCustomersResult,
+			Text:      request.Text,
+		}
+		err := workflow.ExecuteChildWorkflow(ctx, NotifyCustomers, input).Get(ctx, &result)
 		if err != nil {
 			logger.Error("Parent execution received child execution failure.", "Error", err)
 			return workflowresult, err
@@ -104,7 +149,7 @@ func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResp
 	}
 
 	workflowresult = NotifyCellResponse{
-		Customers: result,
+		Customers: getCustomersResult,
 	}
 
 	logger.Info("NotifyCell completed.", "result", workflowresult)
