@@ -60,6 +60,14 @@ type NotifyCustomerResponse struct {
 
 func NotifyCustomer(ctx workflow.Context, request NotifyCustomerRequest) (NotifyCustomerResponse, error) {
 
+	//get notification channel
+
+	// if slack
+	// send slack notification
+	// else
+	// get users
+	//create zendesk ticket
+
 	return NotifyCustomerResponse{
 		Customer: request.Customer,
 	}, nil
@@ -81,6 +89,9 @@ func NotifyCustomers(ctx workflow.Context, request NotifyCustomersRequest) (Noti
 			Customer: customer,
 			Text:     request.Text,
 		}
+
+		//TODO run in parallel
+
 		err := workflow.ExecuteChildWorkflow(ctx, NotifyCustomer, input).Get(ctx, &result)
 		if err != nil {
 			logger.Error("Parent execution received child execution failure.", "Error", err)
@@ -89,6 +100,8 @@ func NotifyCustomers(ctx workflow.Context, request NotifyCustomersRequest) (Noti
 		}
 
 		workflow.GetLogger(ctx).Info("Notifying customer", "customer", customer)
+
+		//TODO continue as new if needed
 	}
 
 	return NotifyCustomersResponse{
