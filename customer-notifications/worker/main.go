@@ -17,10 +17,10 @@ func main() {
 		customer.GetWorkerOptions(),
 	)
 
-	w.RegisterWorkflow(customer.SendPlay)
+	w.RegisterWorkflow(customer.NotifyCell)
+	w.RegisterWorkflow(customer.NotifyCustomers)
 
-	activities := &customer.MyActivity{WorkflowClient: c}
-
+	activities := &customer.NotificationActivity{WorkflowClient: c}
 	w.RegisterActivity(activities)
 
 	err = w.Start()

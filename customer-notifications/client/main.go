@@ -18,17 +18,19 @@ func main() {
 	}
 	defer c.Close()
 
+	input := customer.NotifyCellRequest{
+		CellId: "1",
+		Text:   "Hello World",
+		CustomerType: customer.CustomerTypeFilter{
+			Types: []string{"mission-critical", "enterprise"},
+		},
+	}
+
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        fmt.Sprintf("%d", rand.Int()),
+		ID:        "notify-cell[" + input.CellId + "]/" + fmt.Sprintf("%d", rand.Int()),
 		TaskQueue: "hello-world",
 	}
-
-	input := customer.WorkflowInput{
-		NumberOfActivitiesInParent:           20,
-		NumberOfExternalWorkflowsPerActivity: 50,
-	}
-
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, customer.SendPlay, input)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, customer.NotifyCell, input)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
@@ -36,7 +38,7 @@ func main() {
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 
 	// Synchronously wait for the workflow completion.
-	var result string
+	var result customer.NotifyCellResponse
 	err = we.Get(context.Background(), &result)
 	if err != nil {
 		log.Fatalln("Unable get workflow result", err)
