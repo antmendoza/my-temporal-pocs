@@ -12,6 +12,9 @@ import (
 func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResponse, error) {
 
 	//TODO validate inputs
+	logger := workflow.GetLogger(ctx)
+	logger.Info("NotifyCell started", "request", request)
+
 	//TODO local activity
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
@@ -20,10 +23,6 @@ func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResp
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
-
-	logger := workflow.GetLogger(ctx)
-	logger.Info("NotifyCell started", "request", request)
-
 	var a *NotificationActivity
 
 	var getCustomersResult []Customer
@@ -36,7 +35,6 @@ func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResp
 	}
 
 	var result NotifyCustomersResponse
-
 	cwo := workflow.ChildWorkflowOptions{
 		WorkflowID: workflow.GetInfo(ctx).WorkflowExecution.ID + "/notify-customers",
 	}
@@ -51,7 +49,6 @@ func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResp
 		logger.Error("Parent execution received NotifyCustomers execution failure.", "Error", err)
 		return workflowresult, err
 	}
-	logger.Info("1 NotifyCell completed.", "result", workflowresult)
 
 	workflowresult = NotifyCellResponse{
 		Customers:      getCustomersResult,
@@ -138,7 +135,7 @@ func (a *NotificationActivity) GetCustomersInCell(request CustomerTypeFilter) ([
 
 	customers := getDataSetCustomers(request.CellId)
 
-	filteredCustomers := []Customer{}
+	var filteredCustomers []Customer
 	for _, customer := range customers {
 		for _, filter := range request.Types {
 			if customer.Type == filter {
