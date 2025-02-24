@@ -7,14 +7,30 @@ services:
       - ./collector/collector.yaml:/etc/otelcol-contrib/config.yaml
     ports:
       - 4317:4317 # OTLP gRPC receiver
+    depends_on:
+      - prometheus
+    networks:
+      - temporal_network
 
 
   prometheus:
     container_name: prometheus
     image: prom/prometheus:v2.37.0
+    command:
+      - --web.enable-remote-write-receiver
+      - --config.file=/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
     volumes:
       - type: bind
         source: ./prometheus/config.yml
         target: /etc/prometheus/prometheus.yml
+
+    networks:
+      - temporal_network
+
+
+networks:
+  temporal_network:
+    driver: bridge
+    name: temporal_network

@@ -32,7 +32,7 @@ Start 50K workflows
 
 ``` bash
 export WORKER_ID=CLIENT
-export WORKFLOW_COUNT=50000
+export WORKFLOW_COUNT=1
 poetry run python3 starter_new_code.py
 ```
 

@@ -1,6 +1,5 @@
 import asyncio
 import os
-import random
 from datetime import timedelta
 
 from temporalio import activity, workflow
@@ -25,8 +24,8 @@ class GreetingWorkflow:
 @activity.defn
 async def compose_greeting(name: str) -> str:
     ## calculate random number smaller than 10
-    #random_number = random.randint(1,10)
-    #await asyncio.sleep(random_number)
+    # random_number = random.randint(1,10)
+    # await asyncio.sleep(random_number)
     return f"Hello, {name}!"
 
 
@@ -40,7 +39,7 @@ def init_runtime_with_telemetry() -> Runtime:
         return Runtime(
             telemetry=TelemetryConfig(
                 metrics=PrometheusConfig("127.0.0.1:" + prometheus_port),
-                global_tags={"env": "worker_" + prometheus_port},
+                global_tags={"anything": "worker_" + prometheus_port},
             )
         )
     else:
@@ -54,7 +53,10 @@ def init_runtime_with_telemetry() -> Runtime:
                     metric_periodicity=timedelta(seconds=1),
                     metric_temporality=OpenTelemetryMetricTemporality.DELTA
                 ),
-                global_tags={"env": "worker_" + WORKER_ID},
+                global_tags={"anything": "worker_" + WORKER_ID,
+                             "env": "worker_" + WORKER_ID,
+                             "env33": "worker_" + WORKER_ID
+                             },
 
             )
         )
