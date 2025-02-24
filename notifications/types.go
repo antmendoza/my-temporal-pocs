@@ -8,7 +8,8 @@ type NotifyCellRequest struct {
 }
 
 type CustomerTypeFilter struct {
-	Types []string
+	CellId string
+	Types  []string
 }
 
 type Customer struct {

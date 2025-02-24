@@ -29,7 +29,7 @@ func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResp
 	var getCustomersResult []Customer
 	var workflowresult = NotifyCellResponse{}
 
-	err := workflow.ExecuteActivity(ctx, a.GetCustomers, request.CustomerType).Get(ctx, &getCustomersResult)
+	err := workflow.ExecuteActivity(ctx, a.GetCustomersInCell, request.CustomerType).Get(ctx, &getCustomersResult)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return workflowresult, err
@@ -69,7 +69,7 @@ func NotifyCustomers(ctx workflow.Context, request NotifyCustomersRequest) (Noti
 	}
 
 	logger := workflow.GetLogger(ctx)
-	
+
 	var childs []workflow.Future
 	for _, customer := range request.Customers {
 
@@ -127,18 +127,23 @@ func NotifyCustomer(ctx workflow.Context, request NotifyCustomerRequest) (Notify
 	}, nil
 }
 
-func getDataSetCustomers() []Customer {
+type NotificationActivity struct {
+	WorkflowClient client.Client
+}
 
-	customers := []Customer{
-		createCustomer("mission-critical", "1", "1"),
-		createCustomer("mission-critical", "1", "2"),
-		createCustomer("enterprise", "1", "3"),
-		createCustomer("enterprise", "1", "4"),
-		createCustomer("essential", "1", "5"),
+func (a *NotificationActivity) GetCustomersInCell(request CustomerTypeFilter) ([]Customer, error) {
+
+	customers := getDataSetCustomers(request.CellId)
+
+	filteredCustomers := []Customer{}
+	for _, customer := range customers {
+		for _, filter := range request.Types {
+			if customer.Type == filter {
+				filteredCustomers = append(filteredCustomers, customer)
+			}
+		}
 	}
-
-	return customers
-
+	return filteredCustomers, nil
 }
 
 func createCustomer(type_ string, cellId string, customerId string) Customer {
@@ -150,23 +155,16 @@ func createCustomer(type_ string, cellId string, customerId string) Customer {
 	}
 }
 
-type NotificationActivity struct {
-	WorkflowClient client.Client
-}
+func getDataSetCustomers(cellId string) []Customer {
 
-func (a *NotificationActivity) GetCustomers(request CustomerTypeFilter) ([]Customer, error) {
-
-	customers := getDataSetCustomers()
-
-	filteredCustomers := []Customer{}
-	for _, customer := range customers {
-		for _, filter := range request.Types {
-			if customer.Type == filter {
-				filteredCustomers = append(filteredCustomers, customer)
-			}
-		}
+	customers := []Customer{
+		createCustomer("mission-critical", cellId, "1"),
+		createCustomer("mission-critical", cellId, "2"),
+		createCustomer("enterprise", cellId, "3"),
+		createCustomer("enterprise", cellId, "4"),
+		createCustomer("essential", cellId, "5"),
 	}
 
-	return filteredCustomers, nil
+	return customers
 
 }

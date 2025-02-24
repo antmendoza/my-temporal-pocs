@@ -18,11 +18,13 @@ func main() {
 	}
 	defer c.Close()
 
+	cellId := "1"
 	input := notification.NotifyCellRequest{
-		CellId: "1",
+		CellId: cellId,
 		Text:   "Hello World",
 		CustomerType: notification.CustomerTypeFilter{
-			Types: []string{"mission-critical", "enterprise"},
+			CellId: cellId,
+			Types:  []string{"mission-critical", "enterprise"},
 		},
 	}
 
