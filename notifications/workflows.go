@@ -64,14 +64,15 @@ func NotifyCell(ctx workflow.Context, request NotifyCellRequest) (NotifyCellResp
 
 func NotifyCustomers(ctx workflow.Context, request NotifyCustomersRequest) (NotifyCustomersResponse, error) {
 
+	customers := request.Customers
 	response := NotifyCustomersResponse{
-		Customers: request.Customers,
+		Customers: customers,
 	}
 
 	logger := workflow.GetLogger(ctx)
+	completed := 0
 
-	var childs []workflow.Future
-	for _, customer := range request.Customers {
+	for _, customer := range customers {
 
 		cwo := workflow.ChildWorkflowOptions{
 			WorkflowID: workflow.GetInfo(ctx).WorkflowExecution.ID + "/notify-customer[" + customer.CustomerId + "]",
@@ -81,23 +82,25 @@ func NotifyCustomers(ctx workflow.Context, request NotifyCustomersRequest) (Noti
 			Customer: customer,
 			Text:     request.Text,
 		}
-		future := workflow.ExecuteChildWorkflow(ctx, NotifyCustomer, input)
-		childs = append(childs, future)
-	}
 
-	for _, future := range childs {
-		var result NotifyCustomerResponse
-		err := future.Get(ctx, &result)
-		if err != nil {
-			logger.Error("Parent execution received NotifyCustomer execution failure.", "Error", err)
-			response.ErrorsToNotify = append(response.ErrorsToNotify, NotificationError{
-				//		Customer: customer,
-				Error: err.Error(),
-			})
-		}
+		workflow.Go(ctx, func(ctx workflow.Context) {
+			var result NotifyCustomerResponse
+			err := workflow.ExecuteChildWorkflow(ctx, NotifyCustomer, input).Get(ctx, &result)
+			if err != nil {
+				logger.Error("Parent execution received NotifyCustomer execution failure.", "Error", err)
+				response.ErrorsToNotify = append(response.ErrorsToNotify, NotificationError{
+					Customer: customer,
+					Error:    err.Error(),
+				})
+			}
+			completed++
+		})
 	}
 
 	//TODO continue as new if needed
+	workflow.Await(ctx, func() bool {
+		return len(customers) == completed
+	})
 
 	return response, nil
 }
@@ -156,7 +159,6 @@ func createCustomer(type_ string, cellId string, customerId string) Customer {
 }
 
 func getDataSetCustomers(cellId string) []Customer {
-
 	customers := []Customer{
 		createCustomer("mission-critical", cellId, "1"),
 		createCustomer("mission-critical", cellId, "2"),
@@ -164,7 +166,5 @@ func getDataSetCustomers(cellId string) []Customer {
 		createCustomer("enterprise", cellId, "4"),
 		createCustomer("essential", cellId, "5"),
 	}
-
 	return customers
-
 }
