@@ -64,7 +64,7 @@ class SimpleTaskPayload<T> (
 }
 
 fun createWireGsonJsonDataConverter(): DataConverter {
-  return DefaultDataConverter()
+  return DefaultDataConverter.newDefaultInstance()
     .withPayloadConverterOverrides(
       GsonJsonPayloadConverter { it.registerTypeAdapterFactory(WireTypeAdapterFactory()) },
     )
