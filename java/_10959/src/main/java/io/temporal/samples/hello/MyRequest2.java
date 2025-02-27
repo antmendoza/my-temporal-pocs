@@ -1,13 +1,13 @@
 package io.temporal.samples.hello;
 
-public class MyRequest {
+public class MyRequest2 {
     private String name;
     private String type;
 
-    public MyRequest() {
+    public MyRequest2() {
     }
 
-    public MyRequest(final String name, final String type) {
+    public MyRequest2(final String name, final String type) {
         this.name = name;
         this.type = type;
     }

@@ -1,5 +1,6 @@
 package mytasks.jackson
 
+import io.temporal.samples.hello.HelloActivityRunner.dataConverter
 import simpletask.SimpleTaskPayload
 import simpletask.SimpleTaskTemporalConfig
 import simpletask.StartSimpleTaskParams
@@ -11,6 +12,7 @@ fun main() {
       temporalTargetEndpoint = "localhost:7233",
       temporalNamespace = "default",
       taskQueue = "jackson-task-queue",
+      dataConverter = dataConverter,
     )
   )
 
@@ -28,6 +30,8 @@ fun main() {
     )
 
     val result = task.executeTaskAndWaitForResult(params)
+
+
     println("Task returned: ${result.output}")
   } finally {
     task.shutdown()

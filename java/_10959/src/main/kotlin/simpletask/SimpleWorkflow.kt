@@ -6,6 +6,7 @@ import io.temporal.common.converter.EncodedValues
 import io.temporal.workflow.ActivityStub
 import io.temporal.workflow.DynamicWorkflow
 import io.temporal.workflow.Workflow
+import mytasks.jackson.JacksonTaskOutput
 import java.time.Duration
 
 class SimpleWorkflow : DynamicWorkflow {
@@ -48,7 +49,8 @@ class SimpleWorkflow : DynamicWorkflow {
       cashPayload.getActivityName(),
       Any::class.java,
       cashPayload,
-    )
+    ) as JacksonTaskOutput
+
 
     return activityResult
   }

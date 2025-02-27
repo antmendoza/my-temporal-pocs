@@ -37,6 +37,11 @@ class SimpleTaskClientManager(
   ): K {
     val workflowStub = createWorkflowStub(workflowId, workflowType, simpleTaskWorkflowConfig)
 
+
+    //Antonio: this fails with the same class java.util.LinkedHashMap cannot be cast to class mytasks.jackson.JacksonTaskOutput
+    //   workflowStub.start(payload)
+    //    return workflowStub.getResult(Any::class.java) as K
+
     workflowStub.start(payload)
     return workflowStub.getResult(resultClass.java)
   }
