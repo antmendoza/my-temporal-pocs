@@ -1,8 +1,5 @@
 package mytasks.dataclass
 
-import mytasks.jackson.JacksonTask
-import mytasks.jackson.JacksonTaskInput
-import mytasks.jackson.JacksonTaskOutput
 import simpletask.SimpleTaskPayload
 import simpletask.SimpleTaskTemporalConfig
 import simpletask.StartSimpleTaskParams

@@ -7,7 +7,6 @@ import com.squareup.wire.WireTypeAdapterFactory
 import io.temporal.common.converter.DataConverter
 import io.temporal.common.converter.DefaultDataConverter
 import io.temporal.common.converter.GsonJsonPayloadConverter
-import kotlin.math.ceil
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class SimpleTaskPayload<T> (

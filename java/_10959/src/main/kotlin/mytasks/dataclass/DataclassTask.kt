@@ -1,5 +1,7 @@
 package mytasks.dataclass
 
+import com.google.gson.reflect.TypeToken
+import io.temporal.common.converter.GsonJsonPayloadConverter
 import simpletask.SimpleTask
 import simpletask.SimpleTaskPayload
 
@@ -16,4 +18,15 @@ class DataClassTask: SimpleTask<DataClassTaskInput, DataClassTaskOutput>() {
 
     return DataClassTaskOutput("Hello ${taskPayload.getPayload().input}")
   }
+}
+
+fun main() {
+  val converter = GsonJsonPayloadConverter()
+  val payload = SimpleTaskPayload.Builder<DataClassTaskInput>()
+    .withTaskPayload(DataClassTaskInput("test"))
+    .build()
+  val serialized = converter.toData(payload)
+  val type = object : TypeToken<SimpleTaskPayload<DataClassTaskInput>>() {}.type
+  val res = converter.fromData(serialized.get(), SimpleTaskPayload::class.java, type)
+  println(res)
 }
