@@ -8,15 +8,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.protobuf.ByteString;
 import io.temporal.api.common.v1.Payload;
 import io.temporal.common.converter.DataConverterException;
 import io.temporal.common.converter.EncodingKeys;
 import io.temporal.common.converter.PayloadConverter;
-
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.temporal.workflow.Workflow;
 import io.temporal.workflow.unsafe.WorkflowUnsafe;
 
 import java.io.IOException;
@@ -27,13 +25,20 @@ import java.util.Optional;
 public class MyPayloadConverter implements PayloadConverter {
 
 
-
     static final String METADATA_ENCODING_JSON_NAME = "json/plain";
     static final ByteString METADATA_ENCODING_JSON =
             ByteString.copyFrom(METADATA_ENCODING_JSON_NAME, StandardCharsets.UTF_8);
 
     private final ObjectMapper mapper;
 
+
+    public MyPayloadConverter() {
+        this(newDefaultObjectMapper());
+    }
+
+    public MyPayloadConverter(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
     public static ObjectMapper newDefaultObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -46,14 +51,6 @@ public class MyPayloadConverter implements PayloadConverter {
         mapper.registerModule(new Jdk8Module());
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         return mapper;
-    }
-
-    public MyPayloadConverter() {
-        this(newDefaultObjectMapper());
-    }
-
-    public MyPayloadConverter(ObjectMapper mapper) {
-        this.mapper = mapper;
     }
 
     @Override
@@ -100,7 +97,8 @@ public class MyPayloadConverter implements PayloadConverter {
             t = mapper.readValue(content.getData().toByteArray(), reference);
 
 
-                     WorkflowUnsafe.deadlockDetectorOff(
+            //this is added to debug the code at runtime and don't trigger the deadlock detector
+            WorkflowUnsafe.deadlockDetectorOff(
                     () -> {
 
                         try {
