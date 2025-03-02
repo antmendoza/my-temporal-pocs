@@ -1,30 +1,13 @@
-/*
- *  Copyright (c) 2020 Temporal Technologies, Inc. All Rights Reserved
- *
- *  Copyright 2012-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Modifications copyright (C) 2017 Uber Technologies, Inc.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not
- *  use this file except in compliance with the License. A copy of the License is
- *  located at
- *
- *  http://aws.amazon.com/apache2.0
- *
- *  or in the "license" file accompanying this file. This file is distributed on
- *  an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied. See the License for the specific language governing
- *  permissions and limitations under the License.
- */
-
-package io.temporal.samples.hello;
+package io.temporal.samples.hello.new_;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.client.WorkflowStub;
 import io.temporal.common.converter.DefaultDataConverter;
+import io.temporal.samples.hello.*;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
@@ -36,7 +19,7 @@ import io.temporal.workflow.WorkflowMethod;
 import java.time.Duration;
 
 
-public class HelloActivityRunner {
+public class HelloDynamicActivityMain {
 
     //public static final DefaultDataConverter dataConverter = new DefaultDataConverter().withPayloadConverterOverrides(new GsonJsonPayloadConverter());
 
@@ -63,14 +46,14 @@ public class HelloActivityRunner {
                 WorkerOptions.newBuilder().build());
 
 
-        worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
-        worker.registerActivitiesImplementations(new ActivityImpl());
+        worker.registerWorkflowImplementationTypes(HelloDynamicActivityTest.WorkflowsImpl.class);
+        worker.registerActivitiesImplementations(new   MyDynamicActivityComplexType());
 
         factory.start();
 
-        GreetingWorkflow workflow =
-                client.newWorkflowStub(
-                        GreetingWorkflow.class,
+        WorkflowStub workflow =
+                client.newUntypedWorkflowStub(
+                        MyWorkflow.class.getSimpleName(),
                         WorkflowOptions.newBuilder()
                                 .setWorkflowId(WORKFLOW_ID)
                                 .setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
@@ -78,7 +61,9 @@ public class HelloActivityRunner {
                                 .build());
 
 
-        String greeting = workflow.getGreeting("World");
+
+        workflow.start("hello");
+        String greeting = workflow.getResult(String.class);
 
         // Display workflow execution results
         System.out.println(greeting);
@@ -95,7 +80,7 @@ public class HelloActivityRunner {
     }
 
     // Define the workflow implementation which implements our getGreeting workflow method.
-    public static class GreetingWorkflowImpl implements GreetingWorkflow {
+    public static class GreetingWorkflowImpl implements HelloActivityRunner.GreetingWorkflow {
 
 
         private final TestActivity2<MyRequest2, MyRequest2> activities =
@@ -111,3 +96,4 @@ public class HelloActivityRunner {
         }
     }
 }
+

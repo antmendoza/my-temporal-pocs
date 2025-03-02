@@ -1,5 +1,6 @@
 package mytasks.dataclass
 
+import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import io.temporal.common.converter.GsonJsonPayloadConverter
 import simpletask.SimpleTask
@@ -10,7 +11,7 @@ data class DataClassTaskInput(
 )
 
 data class DataClassTaskOutput(
-  val output: String,
+  @SerializedName("output")  val output: String,
 )
 
 class DataClassTask: SimpleTask<DataClassTaskInput, DataClassTaskOutput>() {

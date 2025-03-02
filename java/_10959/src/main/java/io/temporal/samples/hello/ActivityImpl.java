@@ -2,9 +2,9 @@ package io.temporal.samples.hello;
 
 import io.temporal.activity.Activity;
 
-public class ActivityImpl implements TestActivity<MyRequest, MyRequest> {
+public class ActivityImpl implements TestActivity2<MyRequest2, MyRequest2> {
     @Override
-    public MyRequest activity1(MyRequest input) {
+    public MyRequest2 activity1(MyRequest2 input) {
         final String hello = Activity.getExecutionContext().getInfo().getActivityType() + "-" + input;
 
         for (int i = 0; i < 2; i++) {

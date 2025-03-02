@@ -42,12 +42,12 @@ public class HelloActivityTest_activity {
 
 
 
-        final AtomicReference<MyRequest> result = new AtomicReference<>();
+        final AtomicReference<MyRequest2> result = new AtomicReference<>();
         CompletableFuture.runAsync(
                 () -> {
-                    TestActivity<MyRequest, MyRequest> activity = testEnvironment.newActivityStub(TestActivity.class);
-                    MyRequest myRequest = activity.activity1(new MyRequest("input1", "type1"));
-                    result.set(myRequest);
+                    TestActivity2<MyRequest2, MyRequest2> activity = testEnvironment.newActivityStub(TestActivity2.class);
+                    MyRequest2 myRequest2 = activity.activity1(new MyRequest2("input1", "type1"));
+                    result.set(myRequest2);
                 });
 
         completableFuture.get();

@@ -8,14 +8,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.protobuf.ByteString;
 import io.temporal.api.common.v1.Payload;
 import io.temporal.common.converter.DataConverterException;
 import io.temporal.common.converter.EncodingKeys;
 import io.temporal.common.converter.PayloadConverter;
-
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.temporal.workflow.unsafe.WorkflowUnsafe;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -25,13 +25,20 @@ import java.util.Optional;
 public class MyPayloadConverter implements PayloadConverter {
 
 
-
     static final String METADATA_ENCODING_JSON_NAME = "json/plain";
     static final ByteString METADATA_ENCODING_JSON =
             ByteString.copyFrom(METADATA_ENCODING_JSON_NAME, StandardCharsets.UTF_8);
 
     private final ObjectMapper mapper;
 
+
+    public MyPayloadConverter() {
+        this(newDefaultObjectMapper());
+    }
+
+    public MyPayloadConverter(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
     public static ObjectMapper newDefaultObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -44,14 +51,6 @@ public class MyPayloadConverter implements PayloadConverter {
         mapper.registerModule(new Jdk8Module());
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         return mapper;
-    }
-
-    public MyPayloadConverter() {
-        this(newDefaultObjectMapper());
-    }
-
-    public MyPayloadConverter(ObjectMapper mapper) {
-        this.mapper = mapper;
     }
 
     @Override
@@ -85,20 +84,36 @@ public class MyPayloadConverter implements PayloadConverter {
             return null;
         }
         try {
-            @SuppressWarnings("deprecation")
 
             //The problem is that this is K or T and not a concrete class
             JavaType reference = mapper.getTypeFactory().constructType(valueType, valueClass);
 
-            // To handle generics we need something like this , but cleaner, this is only a POC
-            if(valueClass == Object.class){
-                //We need to indicate the concrete class or interface, otherwise it will be converted to a Map
-                reference = mapper.getTypeFactory().constructType(MyRequest.class);
-            }
-            final T t = mapper.readValue(content.getData().toByteArray(), reference);
+            System.out.println("Reference: " + reference);
+
+            System.out.println("valueClass: " + valueClass);
+
+            System.out.println("valueType: " + valueType);
+            final T t;
+            t = mapper.readValue(content.getData().toByteArray(), reference);
+
+
+            //this is added to debug the code at runtime and don't trigger the deadlock detector
+            WorkflowUnsafe.deadlockDetectorOff(
+                    () -> {
+
+                        try {
+                            Object a = mapper.readValue(content.getData().toByteArray(), reference);
+                            System.out.println("a: " + a);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+
+                    });
 
             return t;
-        } catch (IOException e) {
+
+        } catch (Exception e) {
             throw new DataConverterException(e);
         }
     }
