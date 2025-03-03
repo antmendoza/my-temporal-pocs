@@ -19,7 +19,7 @@ class PrimitiveTaskTest {
       .withTaskPayload("Test")
       .build()
 
-    val result = testEnv.taskStub().taskExecutionLogic(payload)
+    val result = testEnv.executeSimpleTask(payload, String::class.java, String::class.java)
 
     Assert.assertEquals("Hello Test", result)
   }

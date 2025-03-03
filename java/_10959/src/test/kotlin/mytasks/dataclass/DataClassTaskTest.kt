@@ -17,8 +17,8 @@ class DataClassTaskTest {
       .withTaskPayload(DataClassTaskInput("Test"))
       .build()
 
-    testEnv.taskStub().taskExecutionLogic(payload)
+    val result = testEnv.executeSimpleTask(payload, DataClassTaskOutput::class.java, DataClassTaskOutput::class.java)
 
-    //Assert.assertEquals("Hello Test", result.output)
+    Assert.assertEquals("Hello Test", result.output)
   }
 }

@@ -49,7 +49,7 @@ class SimpleWorkflow : DynamicWorkflow {
       cashPayload.getActivityName(),
       Any::class.java,
       cashPayload,
-    ) as JacksonTaskOutput
+    )
 
 
     return activityResult
