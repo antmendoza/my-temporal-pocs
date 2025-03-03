@@ -12,7 +12,6 @@ fun main() {
       temporalTargetEndpoint = "localhost:7233",
       temporalNamespace = "default",
       taskQueue = "jackson-task-queue",
-      dataConverter = dataConverter,
     )
   )
 

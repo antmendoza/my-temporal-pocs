@@ -1,7 +1,6 @@
 package mytasks.jackson
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import simpletask.SimpleTask
 import simpletask.SimpleTaskPayload
 

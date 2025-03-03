@@ -97,8 +97,8 @@ import org.slf4j.LoggerFactory;
  * definition on the worker meets ReplayWorkflowContext which contains information from the
  * WorkflowTask
  */
-final class SyncWorkflowContext implements WorkflowContext, WorkflowOutboundCallsInterceptor {
-    private static final Logger log = LoggerFactory.getLogger(SyncWorkflowContext.class);
+final class SyncWorkflowContext__ implements WorkflowContext, WorkflowOutboundCallsInterceptor {
+    private static final Logger log = LoggerFactory.getLogger(SyncWorkflowContext__.class);
 
     private final String namespace;
     private final WorkflowExecution workflowExecution;
@@ -132,7 +132,7 @@ final class SyncWorkflowContext implements WorkflowContext, WorkflowOutboundCall
     private Map<Long, SignalHandlerInfo> runningSignalHandlers = new HashMap<>();
     @Nullable private String currentDetails;
 
-    public SyncWorkflowContext(
+    public SyncWorkflowContext__(
             @Nonnull String namespace,
             @Nonnull WorkflowExecution workflowExecution,
             SignalDispatcher signalDispatcher,
@@ -1451,7 +1451,7 @@ final class SyncWorkflowContext implements WorkflowContext, WorkflowOutboundCall
     private static final class InitialWorkflowInboundCallsInterceptor
             extends BaseRootWorkflowInboundCallsInterceptor {
 
-        public InitialWorkflowInboundCallsInterceptor(SyncWorkflowContext workflowContext) {
+        public InitialWorkflowInboundCallsInterceptor(SyncWorkflowContext__ workflowContext) {
             super(workflowContext);
         }
 
