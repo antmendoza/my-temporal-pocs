@@ -33,6 +33,16 @@ abstract class SimpleTask<T, K: Any> {
     namespace = simpleTaskTemporalConfig.temporalNamespace
   }
 
+  fun buildSimpleTask(
+    simpleTaskClientManager: SimpleTaskClientManager,
+    simpleTaskWorkerManager: SimpleTaskWorkerManager,
+    namespace: String = "default",
+  ) {
+    this.simpleTaskWorkerManager = simpleTaskWorkerManager
+    this.simpleTaskClientManager = simpleTaskClientManager
+    this.namespace = namespace
+  }
+
   open fun getSimpleTaskName(): String {
     return this.javaClass.name
   }
@@ -68,6 +78,24 @@ abstract class SimpleTask<T, K: Any> {
       generateWorkflowId(params.workflowId),
       generateWorkflowType(params.workflowType),
       params.resultClass,
+      params.simpleTaskWorkflowConfig,
+    )
+  }
+
+  fun start(params: StartSimpleTaskParams<T, K>) {
+    this.simpleTaskClientManager.start(
+      params.payload,
+      generateWorkflowId(params.workflowId),
+      generateWorkflowType(params.workflowType),
+      params.simpleTaskWorkflowConfig,
+    )
+  }
+
+  fun startDelayed(params: StartSimpleTaskParams<T, K>) {
+    this.simpleTaskClientManager.startDelayed(
+      params.payload,
+      generateWorkflowId(params.workflowId),
+      generateWorkflowType(params.workflowType),
       params.simpleTaskWorkflowConfig,
     )
   }

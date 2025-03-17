@@ -12,6 +12,8 @@ import io.temporal.common.converter.GsonJsonPayloadConverter
 class SimpleTaskPayload<T> (
   @JsonProperty("payload") private var payload: T,
   @JsonProperty("activityName") private val activityName: String? = "dynamicActivity",
+  @JsonProperty("delayMilliseconds") private val delayMilliseconds: Long = 0,
+  @JsonProperty("version") private val version: String = "1",
 ) {
   @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@modelClass")
   fun getPayload(): T {
@@ -25,10 +27,20 @@ class SimpleTaskPayload<T> (
     return "dynamicActivity"
   }
 
+  fun getDelayMilliseconds(): Long {
+    return delayMilliseconds
+  }
+
+  fun getVersion(): String {
+    return version
+  }
+
 
   data class Builder<T>(
     var payload: T? = null,
     var activityName: String = "dynamicActivity",
+    var delayMilliseconds: Long = 0,
+    var version: String = "1",
   ) {
 
     /**
@@ -49,6 +61,10 @@ class SimpleTaskPayload<T> (
      */
     fun withActivityName(activityName: String) = apply { this.activityName = activityName }
 
+    fun withDelayMilliseconds(delayMilliseconds: Long) = apply { this.delayMilliseconds = delayMilliseconds }
+
+    fun withVersion(version: String) = apply { this.version = version }
+
     fun build(): SimpleTaskPayload<T> {
       if (payload == null) {
         throw Exception("Task payload cannot be null")
@@ -57,6 +73,8 @@ class SimpleTaskPayload<T> (
       return SimpleTaskPayload(
         payload = payload!!,
         activityName = activityName,
+        delayMilliseconds = delayMilliseconds,
+        version = version,
       )
     }
   }
