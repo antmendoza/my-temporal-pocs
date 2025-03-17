@@ -1,4 +1,4 @@
-package com.antmendoza.temporal.workflow;
+package com.temporal.workflow;
 
 import io.temporal.workflow.QueryMethod;
 import io.temporal.workflow.WorkflowInterface;

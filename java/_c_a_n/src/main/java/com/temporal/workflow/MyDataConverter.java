@@ -1,18 +1,17 @@
-package com.antmendoza.temporal.workflow;
+package com.temporal.workflow;
 
 import io.temporal.api.common.v1.Payload;
 import io.temporal.api.common.v1.Payloads;
-import io.temporal.common.converter.DataConverter;
 import io.temporal.common.converter.DataConverterException;
 import io.temporal.workflow.unsafe.WorkflowUnsafe;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-public class SlowDataConverter implements DataConverter{
+public class MyDataConverter implements io.temporal.common.converter.DataConverter {
 
 
-    final int millis = 5;
+    final int millis = 10;
 
 
     @Override

@@ -1,4 +1,4 @@
-package com.antmendoza.temporal.workflow;
+package com.temporal.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Workflow;

@@ -17,10 +17,10 @@
  *  permissions and limitations under the License.
  */
 
-package com.antmendoza.temporal;
+package com.temporal;
 
-import com.antmendoza.temporal.workflow.MyWorkflowCAN;
-import com.antmendoza.temporal.workflow.MyWorkflowRunForever;
+import com.temporal.workflow.MyWorkflowCAN;
+import com.temporal.workflow.MyWorkflowRunForever;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.WorkflowIdConflictPolicy;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
@@ -32,7 +32,7 @@ import io.temporal.client.WorkflowStub;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
-import static com.antmendoza.temporal.MyWorker.getWorkflowClient;
+import static com.temporal.MyWorker.getWorkflowClient;
 
 
 public class Starter {
@@ -65,11 +65,7 @@ public class Starter {
 
     }
 
-    /**
-     * Start hundreds of workflows and query one of them periodically
-     * @param client
-     * @param workflowIdentifier
-     */
+
     private static void executeAndQueryWorkflow(final WorkflowClient client, final String workflowIdentifier) {
 
         for (int i = 0; i < 5; i++) {

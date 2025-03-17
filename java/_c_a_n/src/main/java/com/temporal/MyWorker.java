@@ -1,9 +1,9 @@
-package com.antmendoza.temporal;
+package com.temporal;
 
-import com.antmendoza.temporal.workflow.MyActivityImpl;
-import com.antmendoza.temporal.workflow.MyWorkflowCANImpl;
-import com.antmendoza.temporal.workflow.MyWorkflowRunForeverImpl;
-import com.antmendoza.temporal.workflow.SlowDataConverter;
+import com.temporal.workflow.MyActivityImpl;
+import com.temporal.workflow.MyWorkflowCANImpl;
+import com.temporal.workflow.MyWorkflowRunForeverImpl;
+import com.temporal.workflow.MyDataConverter;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -14,7 +14,7 @@ import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 
 
-import static com.antmendoza.temporal.Starter.TASK_QUEUE;
+import static com.temporal.Starter.TASK_QUEUE;
 
 
 public class MyWorker {
@@ -60,7 +60,7 @@ public class MyWorker {
                 WorkflowClient.newInstance(
                         service, WorkflowClientOptions.newBuilder()
                                 //Data converter simulating time consuming operation
-                                .setDataConverter(new SlowDataConverter())
+                                .setDataConverter(new MyDataConverter())
                                 .build());
         return client;
     }
