@@ -19,7 +19,7 @@ public class WorkerSsl_local_2 {
                 "WorkerSsl_" + port)
         );
 
-        metricsScope.tagged(Map.of("my_worker_id", port + "_")).gauge("my_metric_name").update(0);
+        metricsScope.tagged(Map.of("my_worker_id", port + "_")).gauge("my_metric_name").update(1);
 
 
     }
