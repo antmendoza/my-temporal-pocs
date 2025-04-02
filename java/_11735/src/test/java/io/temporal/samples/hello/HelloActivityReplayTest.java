@@ -22,6 +22,7 @@ package io.temporal.samples.hello;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
+import io.temporal.client.WorkflowUpdateStage;
 import io.temporal.internal.common.WorkflowExecutionHistory;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.testing.WorkflowReplayer;
@@ -61,9 +62,30 @@ public class HelloActivityReplayTest {
                         .newWorkflowStub(
                                 GreetingWorkflow.class,
                                 WorkflowOptions.newBuilder().setTaskQueue(testWorkflowRule.getTaskQueue()).build());
-        WorkflowExecution execution = WorkflowStub.fromTyped(workflow).start("Hello");
+        final WorkflowStub workflowStub = WorkflowStub.fromTyped(workflow);
+
+
+
+        WorkflowExecution execution = workflowStub.start("Hello");
         // wait until workflow completes
-        WorkflowStub.fromTyped(workflow).getResult(String.class);
+
+        workflowStub
+                .startUpdate("updateMethod",
+                        WorkflowUpdateStage.ACCEPTED,
+                        String.class, "1");
+
+        workflowStub
+                .startUpdate("updateMethod",
+                        WorkflowUpdateStage.ACCEPTED,
+                        String.class, "2");
+
+        workflowStub
+                .startUpdate("exit",
+                        WorkflowUpdateStage.ACCEPTED,
+                        Void.class);
+
+        workflowStub.getResult(String.class);
+
 
         return new WorkflowExecutionHistory(testWorkflowRule.getHistory(execution)).toJson(true);
     }

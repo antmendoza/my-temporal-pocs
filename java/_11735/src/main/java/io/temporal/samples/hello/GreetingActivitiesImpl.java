@@ -7,8 +7,14 @@ public class GreetingActivitiesImpl implements GreetingActivities {
     private static final Logger log = LoggerFactory.getLogger(GreetingActivitiesImpl.class);
 
     @Override
-    public String composeGreeting(String greeting, String name) {
+    public String sleep5Seconds(String greeting, String name) {
         log.info("Composing greeting...");
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return greeting + " " + name + "!";
     }
 }
