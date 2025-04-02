@@ -19,20 +19,11 @@
 
 package io.temporal.samples.hello;
 
-import io.temporal.activity.ActivityInterface;
-import io.temporal.activity.ActivityMethod;
-import io.temporal.activity.ActivityOptions;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
-import io.temporal.workflow.Workflow;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
-import java.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HelloActivity {
 
@@ -43,49 +34,6 @@ public class HelloActivity {
   static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
 
-  @WorkflowInterface
-  public interface GreetingWorkflow {
-
-
-    @WorkflowMethod
-    String getGreeting(String name);
-  }
-
-
-  @ActivityInterface
-  public interface GreetingActivities {
-
-    // Define your activity method which can be called during workflow execution
-    @ActivityMethod(name = "greet")
-    String composeGreeting(String greeting, String name);
-  }
-
-  // Define the workflow implementation which implements our getGreeting workflow method.
-  public static class GreetingWorkflowImpl implements GreetingWorkflow {
-
-
-    private final GreetingActivities activities =
-        Workflow.newActivityStub(
-            GreetingActivities.class,
-            ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
-
-    @Override
-    public String getGreeting(String name) {
-      return activities.composeGreeting("Hello", name);
-    }
-  }
-
-  public static class GreetingActivitiesImpl implements GreetingActivities {
-    private static final Logger log = LoggerFactory.getLogger(GreetingActivitiesImpl.class);
-
-    @Override
-    public String composeGreeting(String greeting, String name) {
-      log.info("Composing greeting...");
-      return greeting + " " + name + "!";
-    }
-  }
-
-
   public static void main(String[] args) {
 
     WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
@@ -94,7 +42,6 @@ public class HelloActivity {
     WorkerFactory factory = WorkerFactory.newInstance(client);
 
     Worker worker = factory.newWorker(TASK_QUEUE);
-
 
     worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
 
