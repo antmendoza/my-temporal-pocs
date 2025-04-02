@@ -42,16 +42,13 @@ public class TimerWorkflowInterceptor
     @Override
     public WorkflowOutput execute(WorkflowInput input) {
 
-
+        //Send a notification every x seconds if the workflow hasn't completed after x time.
         CancellationScope timerScope = Workflow.newCancellationScope(() ->{
             Async.procedure(this::myFunction);
 
         });
-
         timerScope.run();
-
         final WorkflowOutput execute = super.execute(input);
-
         timerScope.cancel();
         return execute;
 
@@ -59,10 +56,9 @@ public class TimerWorkflowInterceptor
 
 
     private void myFunction() {
-
         Workflow.sleep(1000);
+        //Send notification, schedule activity, etc.
         System.out.println("print something with sleep");
-
         myFunction();
     }
 

@@ -2,15 +2,20 @@ package main
 
 import (
 	"context"
-	helloworld "github.com/temporalio/samples-go"
+	_11121 "github.com/temporalio/samples-go"
 	"log"
+	"os"
 
 	"go.temporal.io/sdk/client"
 )
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.Dial(client.Options{})
+	clientOptions, err := _11121.ParseClientOptionFlags(os.Args[1:])
+	if err != nil {
+		log.Fatalf("Invalid arguments: %v", err)
+	}
+	c, err := client.Dial(clientOptions)
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
@@ -18,10 +23,10 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "hello_world_workflowID",
-		TaskQueue: "hello-world",
+		TaskQueue: "hello-world-mtls",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.Workflow, "Temporal")
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, _11121.Workflow, "Temporal")
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

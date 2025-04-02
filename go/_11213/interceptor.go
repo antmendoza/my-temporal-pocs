@@ -2,7 +2,6 @@ package _11213
 
 import (
 	"context"
-	"go.temporal.io/sdk/activity"
 
 	"go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/log"
@@ -93,24 +92,4 @@ func (w *workflowOutboundInterceptor) GetLogger(ctx workflow.Context) log.Logger
 		}
 	}
 	return logger
-}
-
-func (a *activityInboundInterceptor) ExecuteActivity(ctx context.Context, in *interceptor.ExecuteActivityInput) (interface{}, error) {
-	result, err := a.Next.ExecuteActivity(ctx, in)
-	log_ := activity.GetLogger(ctx)
-
-	if err != nil {
-		log_.Error("Activity execution error", "error", err)
-		log_.Error("Attempt number", "\nN", activity.GetInfo(ctx).Attempt)
-	}
-
-	return result, err
-}
-
-// ExecuteWorkflow implements WorkflowInboundInterceptor.ExecuteWorkflow.
-func (w *workflowInboundInterceptor) ExecuteWorkflow(ctx workflow.Context, in *interceptor.ExecuteWorkflowInput) (interface{}, error) {
-	log_ := workflow.GetLogger(ctx)
-
-	log_.Info("about to run .....")
-	return w.Next.ExecuteWorkflow(ctx, in)
 }
