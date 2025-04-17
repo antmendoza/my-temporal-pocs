@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <temporal-sdk.version>1.27.1</temporal-sdk.version>
+        <temporal-sdk.version>1.29.0</temporal-sdk.version>
         <kotlin.version>2.1.10</kotlin.version>
     </properties>
 

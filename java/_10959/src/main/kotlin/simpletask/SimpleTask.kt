@@ -91,15 +91,6 @@ abstract class SimpleTask<T, K: Any> {
     )
   }
 
-  fun startDelayed(params: StartSimpleTaskParams<T, K>) {
-    this.simpleTaskClientManager.startDelayed(
-      params.payload,
-      generateWorkflowId(params.workflowId),
-      generateWorkflowType(params.workflowType),
-      params.simpleTaskWorkflowConfig,
-    )
-  }
-
   fun generateWorkflowType(workflowType: String?): String {
     if (workflowType != null) return workflowType
 

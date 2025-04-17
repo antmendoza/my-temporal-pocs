@@ -22,14 +22,18 @@ class SimpleTaskClientManager(
     workflowType: String,
     simpleTaskWorkflowConfig: SimpleTaskWorkflowConfig,
     startDelay: Duration,
+    version: String,
   ): WorkflowStub {
-    val workflowOptions =
+    val workflowOptionsBuilder =
       WorkflowOptions.newBuilder()
         .setTaskQueue(taskQueue)
         .setWorkflowId(workflowId)
         .setWorkflowIdReusePolicy(simpleTaskWorkflowConfig.workflowIdReusePolicy)
-        .setStartDelay(startDelay.toJavaDuration())
-        .build()
+
+    if (version != "1") {
+      workflowOptionsBuilder.setStartDelay(startDelay.toJavaDuration())
+    }
+    val workflowOptions = workflowOptionsBuilder.build()
 
     return workflowClient.newUntypedWorkflowStub(workflowType, workflowOptions)
   }
@@ -55,21 +59,10 @@ class SimpleTaskClientManager(
     workflowType: String,
     simpleTaskWorkflowConfig: SimpleTaskWorkflowConfig,
   ): WorkflowStub {
-    val workflowStub = createWorkflowStub(workflowId, workflowType, simpleTaskWorkflowConfig)
-
-    workflowStub.start(payload)
-    return workflowStub
-  }
-
-  fun <T> startDelayed(
-    payload: SimpleTaskPayload<T>,
-    workflowId: String,
-    workflowType: String,
-    simpleTaskWorkflowConfig: SimpleTaskWorkflowConfig,
-  ): WorkflowStub {
     val workflowStub = createDelayedWorkflowStub(
       workflowId, workflowType, simpleTaskWorkflowConfig,
-      payload.getDelayMilliseconds().toDuration(DurationUnit.MILLISECONDS)
+      payload.getDelayMilliseconds().toDuration(DurationUnit.MILLISECONDS),
+      payload.getVersion()
     )
 
     workflowStub.start(payload)

@@ -29,7 +29,7 @@ fun main() {
       resultClass = String::class,
     )
 
-    task.startDelayed(params)
+    task.start(params)
 
     Thread.sleep(7000)
 

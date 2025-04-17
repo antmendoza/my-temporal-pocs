@@ -19,7 +19,8 @@ import simpletask.StartSimpleTaskParams
 import testing.SimpleTaskTestEnvironment
 import java.time.Duration
 import kotlin.test.assertEquals
-
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaDuration
 
 class DelayedTaskTest {
     private lateinit var testWorkflowEnvironment: TestWorkflowEnvironment
@@ -78,10 +79,19 @@ class DelayedTaskTest {
 
     @Test
     fun `with timer in workflow`() {
+        runTest("1")
+    }
+
+    @Test
+    fun `with delayed start`() {
+        runTest("2")
+    }
+
+    fun runTest(version: String) {
         val payload = SimpleTaskPayload.Builder<String>()
           .withTaskPayload("Test")
-          .withDelayMilliseconds(5000)
-          .withVersion("1")
+          .withDelayMilliseconds(20.minutes.inWholeMilliseconds)
+          .withVersion(version)
           .build()
 
         val params = StartSimpleTaskParams(
@@ -91,28 +101,9 @@ class DelayedTaskTest {
         )
 
         task.start(params)
-        testWorkflowEnvironment.sleep(Duration.ofMillis(3000))
+        testWorkflowEnvironment.sleep(15.minutes.toJavaDuration())
         println("Done first sleeping")
-        testWorkflowEnvironment.sleep(Duration.ofMillis(3000))
-    }
-
-    @Test
-    fun `with delayed start`() {
-        val payload = SimpleTaskPayload.Builder<String>()
-          .withTaskPayload("Test")
-          .withDelayMilliseconds(5000)
-          .withVersion("2")
-          .build()
-
-        val params = StartSimpleTaskParams(
-          payload = payload,
-          workflowId = "delayed-task-test",
-          resultClass = String::class
-        )
-
-        task.startDelayed(params)
-        testWorkflowEnvironment.sleep(Duration.ofMillis(3000))
-        println("Done first sleeping")
-        testWorkflowEnvironment.sleep(Duration.ofMillis(3000))
+        testWorkflowEnvironment.sleep(15.minutes.toJavaDuration())
+        println("Done second sleeping")
     }
 }
