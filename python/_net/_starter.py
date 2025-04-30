@@ -16,12 +16,6 @@ from workflow import GreetingWorkflow
 
 
 async def main():
-    # Uncomment the lines below to see logging output
-    # import logging
-
-    #    os.environ["RUST_LOG"] = "temporal_sdk_core=DEBUG"
-
-    #    logging.basicConfig(level=logging.DEBUG)
 
     # runtime = init_runtime_with_prometheus(8086)
 
@@ -36,21 +30,20 @@ async def main():
     )
 
 
+    tasks= []
+    for i in range(200):
+        tasks.append(asyncio.create_task(start_workflow(client, i)))
 
-#    for i in range(20):
-#        asyncio.create_task(start_workflow(client, i))
-#        await asyncio.sleep(0.5)
+#    tasks = [asyncio.create_task(start_workflow(client, i))
+#         for i in range(100)]
 
-    tasks = [asyncio.create_task(start_workflow(client, i))
-         for i in range(20)]
 
     await  asyncio.gather(*tasks)
 
 
+
+
 async def start_workflow(client, i):
-    # While the worker is running, use the client to run the workflow and
-    # print out its result. Note, in many production setups, the client
-    # would be in a completely separate process from the worker.
     workflowId = "hello-activity-workflow-id-" + str(i)
     result = await client.execute_workflow(
         GreetingWorkflow.run,

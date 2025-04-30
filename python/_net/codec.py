@@ -22,15 +22,14 @@ class EncryptionCodec(PayloadCodec):
         self.encryptor = AESGCM(key)
 
     async def encode(self, payloads: Iterable[Payload]) -> List[Payload]:
-        # We blindly encode all payloads with the key and set the metadata
-        # saying which key we used
-
 
         def sleep():
-            time.sleep(1)
+            if random.random() < 0.1:
+                time.sleep(0.4)
 
+        # Simulate blocking work
         #asyncio.get_running_loop().run_in_executor(None, sleep)
-        #sleep()
+        sleep()
 
 
         return [

@@ -57,6 +57,9 @@ async def main():
             activities=[compose_greeting],
             # max_cached_workflows=4,
             # max_concurrent_workflow_tasks=10,
+            max_concurrent_workflow_task_polls=50,
+            nonsticky_to_sticky_poll_ratio=0.5,
+            max_concurrent_activity_task_polls=20,
             max_concurrent_activities=400,
             activity_executor=activity_executor,
         )
