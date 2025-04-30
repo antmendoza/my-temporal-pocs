@@ -1,3 +1,5 @@
+# source https://github.com/temporalio/samples-python/blob/main/encryption/codec.py
+
 import asyncio
 import os
 import random
