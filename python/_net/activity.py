@@ -4,6 +4,7 @@ from temporalio import activity
 
 from test_types import ComposeGreetingInput
 
+print("importando activity")
 
 # Basic activity that logs and does string concatenation
 @activity.defn
