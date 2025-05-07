@@ -28,7 +28,7 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 
-public class Runner {
+public class Runner_2 {
 
     // Define the task queue name
     static final String TASK_QUEUE = "HelloActivityTaskQueue";
@@ -75,10 +75,6 @@ public class Runner {
                         WorkflowUpdateStage.ACCEPTED,
                         String.class, "1");
 
-        workflowStub
-                .startUpdate("getNotification",
-                        WorkflowUpdateStage.ACCEPTED,
-                        String.class, "2");
 
         sleepMs(1000);
 
@@ -91,7 +87,7 @@ public class Runner {
         workflowStub.getResult(String.class);
 
 
-       // System.exit(0);
+        //System.exit(0);
     }
 
     private static void sleepMs(final int millis) {

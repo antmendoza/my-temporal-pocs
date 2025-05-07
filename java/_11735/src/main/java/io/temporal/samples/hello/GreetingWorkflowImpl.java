@@ -3,6 +3,7 @@ package io.temporal.samples.hello;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowLock;
+import io.temporal.workflow.unsafe.WorkflowUnsafe;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,6 +25,10 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
 
 
 
+        if(WorkflowUnsafe.isReplaying()){
+            System.out.println("Replaying workflow...");
+        }
+
         int versionMyChange = Workflow.getVersion("versionMyChange", Workflow.DEFAULT_VERSION, 1);
 
         while (!exit || !list.isEmpty()) {
@@ -43,7 +48,7 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
     }
 
     @Override
-    public String updateMethod(final String name) {
+    public String getNotification(final String name) {
 
         String result;
             list.add(name);
@@ -58,9 +63,12 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
     }
 
     @Override
-    public void exit(final String name) {
-
+    public void aggregateNotification(final String name) {
         this.exit = true;
+    }
 
+    @Override
+    public String my_query() {
+        return "random query";
     }
 }

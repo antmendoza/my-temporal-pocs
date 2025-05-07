@@ -1,8 +1,6 @@
 package io.temporal.samples.hello;
 
-import io.temporal.workflow.UpdateMethod;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.workflow.*;
 
 @WorkflowInterface
 public interface GreetingWorkflow {
@@ -13,8 +11,12 @@ public interface GreetingWorkflow {
 
 
     @UpdateMethod
-    String updateMethod(String name);
+    String getNotification(String name);
 
-    @UpdateMethod
-    void exit(String name);
+    @SignalMethod
+    void aggregateNotification(String name);
+
+
+    @QueryMethod
+    String my_query();
 }
