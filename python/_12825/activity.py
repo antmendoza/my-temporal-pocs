@@ -1,0 +1,16 @@
+import time
+
+from temporalio import activity
+
+@activity.defn
+def compose_greeting(input_data: str) -> str:
+
+    start_time = time.time()
+
+    for i in range(5):
+        # Simulate some work
+       time.sleep(0.1)
+
+    end_time = time.time()
+
+    return f" Activity duration: {end_time - start_time} seconds!"
