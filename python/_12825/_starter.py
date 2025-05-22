@@ -16,7 +16,7 @@ async def main():
     )
 
     tasks = []
-    for i in range(1):
+    for i in range(10):
         tasks.append(asyncio.create_task(start_workflow(client, i)))
 
     #    tasks = [asyncio.create_task(start_workflow(client, i))

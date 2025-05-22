@@ -21,7 +21,7 @@ def init_runtime_with_prometheus(port: int) -> Runtime:
             metrics=PrometheusConfig(
                 bind_address=f"127.0.0.1:{port}",
                 histogram_bucket_overrides={
-                    "temporal_workflow_task_execution_latency":
+                    "temporal_workflow_task_schedule_to_start_latency_bucket":
                         [100, 200, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000],
                 },
             )
@@ -55,6 +55,7 @@ async def main():
             task_queue="hello-activity-task-queue",
             workflows=[GreetingWorkflow],
             activities=[compose_greeting],
+            max_
             # max_cached_workflows=4,
             # max_concurrent_workflow_tasks=10,
             max_concurrent_workflow_task_polls=50,

@@ -2,6 +2,8 @@ import time
 
 from temporalio import activity
 
+print("Activity module loaded")
+
 @activity.defn
 def compose_greeting(input_data: str) -> str:
 

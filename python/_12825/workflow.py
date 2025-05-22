@@ -1,13 +1,25 @@
+import asyncio
 from datetime import timedelta
-from multiprocessing import RawValue
-from typing import Sequence
 
 from temporalio import workflow
 
 
-
 with workflow.unsafe.imports_passed_through():
     from activity import compose_greeting
+
+from datetime import timedelta
+from typing import Any
+from temporalio import workflow
+
+
+with workflow.unsafe.imports_passed_through():
+    from pydantic import BaseModel, Field, field_validator, model_validator  # noqa: F401
+    from temporalio.contrib.pydantic import pydantic_data_converter  # noqa: F401
+
+    import sniffio
+    import logging
+    logger = logging.getLogger(__name__)
+
 
 
 # Basic workflow that logs and invokes an activity
@@ -15,7 +27,10 @@ with workflow.unsafe.imports_passed_through():
 @workflow.defn
 class GreetingWorkflow:
 
+    workflow.logger
+    logger.info("Workflow module loaded")
 
+    f = open("_worker.py", "rb")
 
     def __init__(self):
         self.blocked = True
@@ -25,6 +40,7 @@ class GreetingWorkflow:
 
         workflow.logger.info(f"Running workflow with parameter {request}")
 
+        sniffio.thread_local.names["workflow"] = "workflow"
 
 
 
@@ -34,5 +50,8 @@ class GreetingWorkflow:
                 request+str(i),
                 start_to_close_timeout=timedelta(seconds=20),
             )
+
+            await asyncio.sleep(1)
+
 
         return "seconds_"
