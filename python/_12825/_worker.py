@@ -39,7 +39,7 @@ async def main():
             max_concurrent_activity_task_polls=20,
             max_concurrent_activities=400,
             activity_executor=activity_executor,
-           # interceptors=[ActivityRetryInterceptor()],
+            interceptors=[ActivityRetryInterceptor()],
         )
 
         await worker.run()

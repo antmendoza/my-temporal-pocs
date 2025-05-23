@@ -1,6 +1,7 @@
 import time
 
 from temporalio import activity
+from temporalio.exceptions import ApplicationError
 
 print("Activity module loaded")
 
@@ -15,4 +16,6 @@ def compose_greeting(input_data: str) -> str:
 
     end_time = time.time()
 
-    return f" Activity duration: {end_time - start_time} seconds!"
+    raise ApplicationError("Activity error from activity")
+
+   # return f" Activity duration: {end_time - start_time} seconds!"

@@ -8,7 +8,9 @@ import temporalio.api.common.v1
 import temporalio.client
 import temporalio.converter
 import temporalio.worker
+from blackd import handle
 from temporalio import workflow
+from temporalio.exceptions import ApplicationError
 
 
 class ActivityRetryInterceptor(
@@ -38,6 +40,8 @@ class _ActivityRetryActivityInboundInterceptor(
     async def execute_activity(
             self, input: temporalio.worker.ExecuteActivityInput
     ) -> Any:
+
+        print("ActivityRetryActivityInboundInterceptor execute activity")
         return await self.next.execute_activity(input)
 
 
@@ -119,25 +123,22 @@ class _ActivityRetryWorkflowOutboundInterceptor(
     def start_activity(
             self, input: temporalio.worker.StartActivityInput
     ) -> temporalio.workflow.ActivityHandle:
-        # print something
-
-        loop = asyncio.get_running_loop()
-        task = loop.create_task(self.async_func())
-
-        # Use a callback or wait for result another way (e.g., store it elsewhere)
+        handle = super().start_activity(input)
 
 
-        result_ = lambda fut: (
-            print(fut.result())
-        )
+        def on_activity_done(task: asyncio.Task):
+            try:
+                result = task.result()
+                # Handle success
+            except Exception as e:
+                # Handle failure
+                print("Activity error Exception-----")
+                workflow.wait(lambda: not self.blocked)
 
-        # block until task complte
-        task.add_done_callback(result_)
-        # Wait for the task to complete
 
+        handle.add_done_callback(on_activity_done)
+        return handle
 
-
-        return self.next.start_activity(input)
 
 
     async def start_child_workflow(
