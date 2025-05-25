@@ -41,6 +41,7 @@ class GreetingWorkflow:
 
 
 
+
         try:
             for i in range(1):
                 await workflow.execute_activity(
@@ -48,7 +49,7 @@ class GreetingWorkflow:
                     request+str(i),
                     start_to_close_timeout=timedelta(seconds=20),
                     retry_policy= RetryPolicy(
-                        maximum_attempts=1,
+                        maximum_attempts=2,
                     ),
                 )
 

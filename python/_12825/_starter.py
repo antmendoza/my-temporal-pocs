@@ -33,7 +33,7 @@ async def start_workflow(client, i):
         id=workflowId,
         task_queue="hello-activity-task-queue",
         # task_timeout=timedelta(seconds=120)
-        id_conflict_policy=WorkflowIDReusePolicy.TERMINATE_IF_RUNNING
+        id_reuse_policy=WorkflowIDReusePolicy.TERMINATE_IF_RUNNING
     )
     print(f"completed workflow id : {workflowId}")
 

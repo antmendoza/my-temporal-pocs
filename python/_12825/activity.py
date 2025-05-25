@@ -16,6 +16,7 @@ def compose_greeting(input_data: str) -> str:
 
     end_time = time.time()
 
+    print("Activity function called with input:", input_data)
     raise ApplicationError("Activity error from activity")
 
    # return f" Activity duration: {end_time - start_time} seconds!"

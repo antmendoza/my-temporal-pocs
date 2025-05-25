@@ -11,6 +11,7 @@ import temporalio.worker
 from blackd import handle
 from temporalio import workflow
 from temporalio.exceptions import ApplicationError
+from temporalio.workflow import _Runtime
 
 
 class ActivityRetryInterceptor(
@@ -41,8 +42,13 @@ class _ActivityRetryActivityInboundInterceptor(
             self, input: temporalio.worker.ExecuteActivityInput
     ) -> Any:
 
-        print("ActivityRetryActivityInboundInterceptor execute activity")
-        return await self.next.execute_activity(input)
+        try:
+            print(" 2 ActivityRetryActivityInboundInterceptor execute activity")
+            return await self.next.execute_activity(input)
+        except Exception as e:
+            print(" 3 ActivityRetryActivityInboundInterceptor execute activity error")
+            raise e
+
 
 
 class _ActivityRetryWorkflowInboundInterceptor(
@@ -91,14 +97,15 @@ class _ActivityRetryWorkflowOutboundInterceptor(
 
     def __init__(self, next: temporalio.worker.WorkflowOutboundInterceptor) -> None:
         self.next = next
-        self.blocked = True
+        self.done = False
 
 
     def initialize_handlers(self):
-        def unblock() -> None:
-            self.next.start_activity()
-            self.blocked = False
-        workflow.set_signal_handler("my_signal", unblock)
+        pass
+#        def unblock() -> None:
+#            self.next.start_activity()
+#            self.done = False
+#        workflow.set_signal_handler("my_signal", unblock)
 
 
 
@@ -120,25 +127,36 @@ class _ActivityRetryWorkflowOutboundInterceptor(
         await workflow.wait_condition(lambda: not self.blocked)
 
 
+
     def start_activity(
             self, input: temporalio.worker.StartActivityInput
     ) -> temporalio.workflow.ActivityHandle:
+
         handle = super().start_activity(input)
 
-
         def on_activity_done(task: asyncio.Task):
-            try:
-                result = task.result()
-                # Handle success
-            except Exception as e:
-                # Handle failure
-                print("Activity error Exception-----")
-                workflow.wait(lambda: not self.blocked)
+            async def callback():
+                try:
+                    await task
+                except Exception as e:
+                    print("Activity error Exception-----")
+                    await workflow.wait_condition(lambda: not self.done)
 
+            asyncio.create_task(callback())
 
         handle.add_done_callback(on_activity_done)
+
         return handle
 
+    async def _handle_result_async(self, task: asyncio.Task):
+        try:
+            result = await task
+            # Handle success
+        except Exception as e:
+            # Handle failure
+            print("Activity error Exception-----")
+            blocked = True
+            await workflow.wait_condition(lambda: not blocked)
 
 
     async def start_child_workflow(
