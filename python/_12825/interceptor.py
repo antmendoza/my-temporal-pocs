@@ -8,10 +8,7 @@ import temporalio.api.common.v1
 import temporalio.client
 import temporalio.converter
 import temporalio.worker
-from blackd import handle
 from temporalio import workflow
-from temporalio.exceptions import ApplicationError
-from temporalio.workflow import _Runtime
 
 
 class ActivityRetryInterceptor(
@@ -50,17 +47,13 @@ class _ActivityRetryActivityInboundInterceptor(
             raise e
 
 
-
 class _ActivityRetryWorkflowInboundInterceptor(
     temporalio.worker.WorkflowInboundInterceptor
 ):
 
-
     def __init__(self, next: temporalio.worker.WorkflowInboundInterceptor) -> None:
         self.outbound_interceptor = None
         self.next = next
-
-
 
     def init(self, outbound: temporalio.worker.WorkflowOutboundInterceptor) -> None:
         self.outbound_interceptor = _ActivityRetryWorkflowOutboundInterceptor(outbound)
@@ -69,7 +62,6 @@ class _ActivityRetryWorkflowInboundInterceptor(
     async def execute_workflow(
             self, input: temporalio.worker.ExecuteWorkflowInput
     ) -> Any:
-
         self.outbound_interceptor.initialize_handlers()
         return await self.next.execute_workflow(input)
 
@@ -94,39 +86,32 @@ class _ActivityRetryWorkflowOutboundInterceptor(
     temporalio.worker.WorkflowOutboundInterceptor
 ):
 
-
     def __init__(self, next: temporalio.worker.WorkflowOutboundInterceptor) -> None:
         self.next = next
         self.done = False
 
-
     def initialize_handlers(self):
         pass
-#        def unblock() -> None:
-#            self.next.start_activity()
-#            self.done = False
-#        workflow.set_signal_handler("my_signal", unblock)
 
-
+    #        def unblock() -> None:
+    #            self.next.start_activity()
+    #            self.done = False
+    #        workflow.set_signal_handler("my_signal", unblock)
 
     async def signal_child_workflow(
             self, input: temporalio.worker.SignalChildWorkflowInput
     ) -> None:
         return await self.next.signal_child_workflow(input)
 
-
     async def signal_external_workflow(
             self, input: temporalio.worker.SignalExternalWorkflowInput
     ) -> None:
         return await self.next.signal_external_workflow(input)
 
-
     async def async_func(
             self
     ):
         await workflow.wait_condition(lambda: not self.blocked)
-
-
 
     def start_activity(
             self, input: temporalio.worker.StartActivityInput
@@ -136,9 +121,17 @@ class _ActivityRetryWorkflowOutboundInterceptor(
 
         def on_activity_done(task: asyncio.Task):
             async def callback():
-                try:
-                    await task
-                except Exception as e:
+            #     try:
+            #         await task
+            #     except Exception as e:
+            #         print("Activity error Exception-----")
+            #         await workflow.wait_condition(lambda: not self.done)
+            #
+            # asyncio.create_task(callback())
+
+                if task.done():
+                    result = task.result()
+                if exc := task.exception():
                     print("Activity error Exception-----")
                     await workflow.wait_condition(lambda: not self.done)
 
@@ -148,22 +141,10 @@ class _ActivityRetryWorkflowOutboundInterceptor(
 
         return handle
 
-    async def _handle_result_async(self, task: asyncio.Task):
-        try:
-            result = await task
-            # Handle success
-        except Exception as e:
-            # Handle failure
-            print("Activity error Exception-----")
-            blocked = True
-            await workflow.wait_condition(lambda: not blocked)
-
-
     async def start_child_workflow(
             self, input: temporalio.worker.StartChildWorkflowInput
     ) -> temporalio.workflow.ChildWorkflowHandle:
         return await self.next.start_child_workflow(input)
-
 
     def start_local_activity(
             self, input: temporalio.worker.StartLocalActivityInput
