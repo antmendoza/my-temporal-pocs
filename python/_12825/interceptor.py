@@ -121,21 +121,21 @@ class _ActivityRetryWorkflowOutboundInterceptor(
 
         def on_activity_done(task: asyncio.Task):
             async def callback():
-            #     try:
-            #         await task
-            #     except Exception as e:
-            #         print("Activity error Exception-----")
-            #         await workflow.wait_condition(lambda: not self.done)
-            #
-            # asyncio.create_task(callback())
-
-                if task.done():
-                    result = task.result()
-                if exc := task.exception():
+                try:
+                    await task
+                except Exception as e:
                     print("Activity error Exception-----")
                     await workflow.wait_condition(lambda: not self.done)
 
             asyncio.create_task(callback())
+
+            #     if task.done():
+            #         result = task.result()
+            #     if exc := task.exception():
+            #         print("Activity error Exception-----")
+            #         await workflow.wait_condition(lambda: not self.done)
+            #
+            # asyncio.create_task(callback())
 
         handle.add_done_callback(on_activity_done)
 
