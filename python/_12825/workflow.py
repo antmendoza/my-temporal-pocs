@@ -38,10 +38,6 @@ class GreetingWorkflow:
 
         print(f"Running workflow with parameter {request}")
 
-
-
-
-
         try:
             for i in range(1):
                 await workflow.execute_activity(
@@ -56,18 +52,7 @@ class GreetingWorkflow:
                 await asyncio.sleep(1)
 
         except ActivityError:
-            print("Workflow ActivityError-----")
+            print("Workflow-ActivityError-----")
             raise
-
-        except Exception:
-            print("Workflow Exception-----")
-            raise
-
-        except BaseException:
-            print("Workflow BaseException-----")
-            raise
-
-
-
 
         return "seconds_"

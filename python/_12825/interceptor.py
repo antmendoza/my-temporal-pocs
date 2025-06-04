@@ -119,27 +119,20 @@ class _ActivityRetryWorkflowOutboundInterceptor(
 
         handle = super().start_activity(input)
 
-        def on_activity_done(task: asyncio.Task):
-            async def callback():
+        async def my_activity_wrapper():
+            try:
+                return await handle
+            except Exception as e:
+                print("Activity error Exception-----")
                 try:
-                    await task
-                except Exception as e:
-                    print("Activity error Exception-----")
-                    await workflow.wait_condition(lambda: not self.done)
+                    await workflow.wait_condition(lambda: self.done, timeout=5)
+                except asyncio.TimeoutError as timeoutError:
+                    pass
 
-            asyncio.create_task(callback())
+                raise e
 
-            #     if task.done():
-            #         result = task.result()
-            #     if exc := task.exception():
-            #         print("Activity error Exception-----")
-            #         await workflow.wait_condition(lambda: not self.done)
-            #
-            # asyncio.create_task(callback())
+        return workflow.ActivityHandle(my_activity_wrapper())
 
-        handle.add_done_callback(on_activity_done)
-
-        return handle
 
     async def start_child_workflow(
             self, input: temporalio.worker.StartChildWorkflowInput
