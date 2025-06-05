@@ -90,6 +90,11 @@ class _ActivityRetryWorkflowOutboundInterceptor(
         self.next = next
         self.done = False
 
+        # def unblock() -> None:
+        #     self.blocked = False
+        #
+        # workflow.set_signal_handler("my_random_signal", unblock)
+
     def initialize_handlers(self):
         pass
 
