@@ -40,10 +40,8 @@ class _ActivityRetryActivityInboundInterceptor(
     ) -> Any:
 
         try:
-            print(" 2 ActivityRetryActivityInboundInterceptor execute activity")
             return await self.next.execute_activity(input)
         except Exception as e:
-            print(" 3 ActivityRetryActivityInboundInterceptor execute activity error")
             raise e
 
 
@@ -130,14 +128,15 @@ class _ActivityRetryWorkflowOutboundInterceptor(
             except Exception as e:
                 print("Activity error Exception-----")
                 try:
-                    await workflow.wait_condition(lambda: self.done, timeout=5)
+                    await workflow.wait_condition(lambda: self.done, timeout=5,
+                                                  timeout_summary="workflow await_condition timeout in interceptor")
+
                 except asyncio.TimeoutError as timeoutError:
                     pass
 
                 raise e
 
         return workflow.ActivityHandle(my_activity_wrapper())
-
 
     async def start_child_workflow(
             self, input: temporalio.worker.StartChildWorkflowInput

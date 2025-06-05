@@ -5,7 +5,7 @@ from temporalio.client import Client
 from temporalio.runtime import Runtime, TelemetryConfig, PrometheusConfig
 from temporalio.worker import Worker
 
-from activity import compose_greeting
+from activity import activity_KO, activity_OK
 from interceptor import ActivityRetryInterceptor
 from workflow import GreetingWorkflow
 
@@ -31,7 +31,7 @@ async def main():
             client,
             task_queue="hello-activity-task-queue",
             workflows=[GreetingWorkflow],
-            activities=[compose_greeting],
+            activities=[activity_KO, activity_OK],
             max_cached_workflows=4,
             # max_concurrent_workflow_tasks=10,
             max_concurrent_workflow_task_polls=50,
