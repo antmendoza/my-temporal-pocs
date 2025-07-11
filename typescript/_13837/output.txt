@@ -1,0 +1,34 @@
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 1 a
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 1 b
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 1 c
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 1 d
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 1 e
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 3 a
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 3 b
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 3 c
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 3 d
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandomLocal start 3 e
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 3 e
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 1 a
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 1 d
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 1 b
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 1 c
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 3 b
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 1 e
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 3 d
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 3 c
+[ExampleWorkflow(example-workflow-1752147587894)] sleepRandom end 3 a
+[ExampleWorkflow(example-workflow-1752147587894)] greet 1
+Hello, 1!
+[ExampleWorkflow(example-workflow-1752147587894)] greet 3
+Hello, 3!
+
+
+
+
+sleepRandomLocal-1, sleepRandomLocal-2, sleepRandomLocal-3, sleepRandomLocal-4, sleepRandomLocal-5, sleepRandomLocal-6, sleepRandomLocal-7, sleepRandomLocal-8, sleepRandomLocal-9, sleepRandomLocal-10, sleepRandom-11, sleepRandom-12, sleepRandom-13, sleepRandom-14, sleepRandom-15, sleepRandom-16, sleepRandom-17, sleepRandom-18, sleepRandom-19, sleepRandom-20, greet-21, greet-22
+sleepRandomLocal-1, sleepRandomLocal-2, sleepRandomLocal-3, sleepRandomLocal-4, sleepRandomLocal-5, sleepRandomLocal-6, sleepRandomLocal-7, sleepRandomLocal-8, sleepRandomLocal-9, sleepRandomLocal-10, sleepRandom-11, sleepRandom-12, sleepRandom-13, sleepRandom-14, sleepRandom-15, sleepRandom-16, sleepRandom-17, sleepRandom-18, sleepRandom-19
+
+
+
+

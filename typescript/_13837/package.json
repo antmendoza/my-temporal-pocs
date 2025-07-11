@@ -1,0 +1,26 @@
+{
+  "name": "temporal-nondeterministic-no-command-scheduled",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Temporal workflow project",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev:worker": "pnpm --filter worker dev",
+    "dev:client": "pnpm --filter client dev",
+    "dev:temporal": "temporal server start-dev",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "eslint": "^8.38.0",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "@temporalio/common": "^1.12.1"
+  }
+}
