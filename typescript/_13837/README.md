@@ -24,17 +24,17 @@ Activities are scheduled in the following order according the information captur
 
 > Search for `globalThis.activities.push(input.activityType+"-"+input.seq)`
 
-`sleepRandomLocal-1, sleepRandomLocal-2, sleepRandomLocal-3, sleepRandomLocal-4, sleepRandomLocal-5, sleepRandomLocal-6, sleepRandomLocal-7, sleepRandomLocal-8, sleepRandomLocal-9, sleepRandomLocal-10, sleepRandom-11, sleepRandom-12, sleepRandom-13, sleepRandom-14, sleepRandom-15, sleepRandom-16, sleepRandom-17, sleepRandom-18, sleepRandom-19, sleepRandom-20, greet-21, greet-22`
+`sleepRandomLocal-1 a, sleepRandomLocal-1 b, sleepRandomLocal-1 c, sleepRandomLocal-1 d, sleepRandomLocal-1 e, sleepRandomLocal-3 a, sleepRandomLocal-3 b, sleepRandomLocal-3 c, sleepRandomLocal-3 d, sleepRandomLocal-3 e, sleepRandom-1 c, sleepRandom-1 a, sleepRandom-3 e, sleepRandom-3 d, sleepRandom-1 b, sleepRandom-3 a, sleepRandom-1 e, sleepRandom-3 c, sleepRandom-3 b, sleepRandom-1 d, greet-undefined, greet-undefined`
 
 and during replay the order is similar
 
-`sleepRandomLocal-1, sleepRandomLocal-2, sleepRandomLocal-3, sleepRandomLocal-4, sleepRandomLocal-5, sleepRandomLocal-6, sleepRandomLocal-7, sleepRandomLocal-8, sleepRandomLocal-9, sleepRandomLocal-10, sleepRandom-11, sleepRandom-12, sleepRandom-13, sleepRandom-14, sleepRandom-15, sleepRandom-16, sleepRandom-17, sleepRandom-18, sleepRandom-19`
+`sleepRandomLocal-1 a, sleepRandomLocal-1 b, sleepRandomLocal-1 c, sleepRandomLocal-1 d, sleepRandomLocal-1 e, sleepRandomLocal-3 a, sleepRandomLocal-3 b, sleepRandomLocal-3 c, sleepRandomLocal-3 d, sleepRandomLocal-3 e, sleepRandom-1 a, sleepRandom-1 b, sleepRandom-1 c, sleepRandom-1 d, sleepRandom-1 e, sleepRandom-3 a, sleepRandom-3 b, sleepRandom-3 c, sleepRandom-3 d`
 
 Then the SDK fails the workflow task with NDE, event 38
 
 ```
-2025-07-10T12:04:18.434072Z  WARN temporal_sdk_core::worker::workflow: Failing workflow task run_id=0197f438-d72b-7013-8318-f07bddaa695c failure=Failure { failure: Some(Failure { message: "[TMPRL1100] Nondeterminism error: No command scheduled for event 
-HistoryEvent(id: 38, ActivityTaskScheduled)", source: "", stack_trace: "", encoded_attributes: None, cause: None, failure_info: Some(ApplicationFailureInfo(ApplicationFailureInfo { r#type: "", non_retryable: false, details: None, next_retry_delay: None, category: Unspecified })) }), force_cause: NonDeterministicError }
+2025-07-15T08:54:54.526968Z  WARN temporal_sdk_core::worker::workflow: Failing workflow task run_id=01980d4b-3cd8-7271-abfb-0c98f28d3e91 failure=Failure { failure: Some(Failure { message: "[TMPRL1100] Nondeterminism error: No command scheduled for event HistoryEvent(id: 38, ActivityTaskScheduled)", source: "", stack_trace: "", encoded_attributes: None, cause: None, failure_info: 
+Some(ApplicationFailureInfo(ApplicationFailureInfo { r#type: "", non_retryable: false, details: None, next_retry_delay: None, category: Unspecified })) }), force_cause: NonDeterministicError }
 ```
 
 ![img.png](img.png)

@@ -25,17 +25,3 @@ export async function sleepRandomLocal(
   await sleep(duration);
 }
 
-
-
-
-
-
-
-export async function sleepRandom_2(
-    startMilliseconds: number,
-    endMilliseconds: number
-): Promise<void> {
-  const duration =
-      Math.random() * (endMilliseconds - startMilliseconds) + startMilliseconds;
-  await sleep(duration);
-}
