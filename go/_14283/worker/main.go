@@ -1,9 +1,9 @@
 package main
 
 import (
-	_11121 "github.com/temporalio/samples-go"
+	_14283 "github.com/temporalio/samples-go"
 	"log"
-	"os"
+	"time"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
@@ -11,23 +11,23 @@ import (
 
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
-	clientOptions, err := _11121.ParseClientOptionFlags(os.Args[1:])
-	if err != nil {
-		log.Fatalf("Invalid arguments: %v", err)
-	}
-	c, err := client.Dial(clientOptions)
+	c, err := client.Dial(client.Options{
+		HostPort: client.DefaultHostPort,
+	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
-	w := worker.New(c, "hello-world-mtls", worker.Options{})
+	w := worker.New(c, "greetings-local", worker.Options{})
 
-	w.RegisterWorkflow(_11121.Workflow)
-	w.RegisterActivity(_11121.Activity)
+	w.RegisterWorkflow(_14283.GreetingSample)
+	activities := &_14283.Activities{Name: "Temporal", Greeting: "Hello"}
+	w.RegisterActivity(activities)
 
-	err = w.Run(worker.InterruptCh())
-	if err != nil {
-		log.Fatalln("Unable to start worker", err)
-	}
+	w.Start()
+	time.Sleep(4 * time.Second)
+
+	w.Stop()
+	
 }

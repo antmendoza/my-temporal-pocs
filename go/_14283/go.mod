@@ -5,7 +5,7 @@ go 1.21
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
 require (
-	go.temporal.io/sdk v1.33.0
+	go.temporal.io/sdk v1.35.0
 	go.temporal.io/sdk/contrib/tools/workflowcheck v0.2.0
 )
 

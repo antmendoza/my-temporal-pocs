@@ -1,6 +1,9 @@
-package greetingslocal
+package _14283
 
-import "fmt"
+import (
+	"log"
+	"time"
+)
 
 type Activities struct {
 	Name     string
@@ -13,12 +16,18 @@ func (a *Activities) GetName() (string, error) {
 }
 
 // GetGreeting Activity.
-func (a *Activities) GetGreeting() (string, error) {
-	return a.Greeting, nil
+func (a *Activities) GetGreeting(i int) (string, error) {
+
+	log.Println("GetGreeting called with:", i)
+
+	time.Sleep(time.Duration(i) * time.Second)
+	return "done", nil
+	//	return "", temporal.NewCanceledError("")
 }
 
 // SayGreeting Activity.
-func (a *Activities) SayGreeting(greeting string, name string) (string, error) {
-	result := fmt.Sprintf("Greeting: %s %s!\n", greeting, name)
-	return result, nil
+func (a *Activities) SayGreeting() (string, error) {
+
+	time.Sleep(3 * time.Second)
+	return "result", nil
 }
