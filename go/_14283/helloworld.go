@@ -16,7 +16,7 @@ func GreetingSample(ctx workflow.Context) (st string, err error) {
 
 	var a *Activities
 	var result1 string
-	err = workflow.ExecuteLocalActivity(ctxLA, a.GetGreeting, 10).Get(ctxLA, &result1)
+	err = workflow.ExecuteLocalActivity(ctxLA, a.GetGreeting, 6).Get(ctxLA, &result1)
 	if err != nil {
 		return
 	}

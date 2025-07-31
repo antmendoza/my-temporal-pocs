@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	_14283 "github.com/temporalio/samples-go"
-	"log"
-
 	"github.com/pborman/uuid"
+	_14283 "github.com/temporalio/samples-go"
 	"go.temporal.io/sdk/client"
+	"log"
 )
 
 func main() {
@@ -22,6 +21,7 @@ func main() {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "greetings_" + uuid.New(),
 		TaskQueue: "greetings-local",
+		//		WorkflowTaskTimeout: 20 * time.Second,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, _14283.GreetingSample)

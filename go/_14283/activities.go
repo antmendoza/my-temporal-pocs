@@ -1,6 +1,7 @@
 package _14283
 
 import (
+	"context"
 	"log"
 	"time"
 )
@@ -14,15 +15,37 @@ type Activities struct {
 func (a *Activities) GetName() (string, error) {
 	return a.Name, nil
 }
+func (a *Activities) GetGreeting(ctx context.Context, t int) (string, error) {
+	log.Println("GetGreeting called with:", t)
 
-// GetGreeting Activity.
-func (a *Activities) GetGreeting(i int) (string, error) {
+	// Get the worker stop channel
+	//stopCh := activity.GetWorkerStopChannel(ctx)
 
-	log.Println("GetGreeting called with:", i)
+	for i := 0; i < 100; i++ {
+		select {
 
-	time.Sleep(time.Duration(i) * time.Second)
-	return "done", nil
-	//	return "", temporal.NewCanceledError("")
+		case <-ctx.Done():
+			log.Println("Context cancelled.")
+			return "cancelled", ctx.Err()
+
+		case <-time.After(1 * time.Second):
+			log.Printf("Tick %d/%d\n", i+1, t)
+
+			//		if i == t-1 { // fixed condition: i runs 0..t-1
+			//			log.Println("Returning early from GetGreeting")
+			//		return "done", nil
+			//			}
+
+			//		case <-stopCh:
+			//			log.Println("Worker is stopping (graceful exit).")
+
+			//			time.Sleep(10 * time.Second)
+			//			return "stopped by worker", nil
+
+		}
+	}
+
+	return "end", nil
 }
 
 // SayGreeting Activity.
