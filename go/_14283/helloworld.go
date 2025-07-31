@@ -14,8 +14,14 @@ func GreetingSample(ctx workflow.Context) (st string, err error) {
 
 	ctxLA := workflow.WithLocalActivityOptions(ctx, ao)
 
+	//cancellable context
+	//	ctxLA, cancel := workflow.WithCancel(ctxLA)
+
 	var a *Activities
 	var result1 string
+
+	//	cancel()
+
 	err = workflow.ExecuteLocalActivity(ctxLA, a.GetGreeting, 6).Get(ctxLA, &result1)
 	if err != nil {
 		return

@@ -2,6 +2,7 @@ package _14283
 
 import (
 	"context"
+	"go.temporal.io/sdk/activity"
 	"log"
 	"time"
 )
@@ -19,7 +20,7 @@ func (a *Activities) GetGreeting(ctx context.Context, t int) (string, error) {
 	log.Println("GetGreeting called with:", t)
 
 	// Get the worker stop channel
-	//stopCh := activity.GetWorkerStopChannel(ctx)
+	stopCh := activity.GetWorkerStopChannel(ctx)
 
 	for i := 0; i < 100; i++ {
 		select {
@@ -36,11 +37,10 @@ func (a *Activities) GetGreeting(ctx context.Context, t int) (string, error) {
 			//		return "done", nil
 			//			}
 
-			//		case <-stopCh:
-			//			log.Println("Worker is stopping (graceful exit).")
+		case <-stopCh:
 
-			//			time.Sleep(10 * time.Second)
-			//			return "stopped by worker", nil
+			log.Println("Worker is stopping .")
+			time.Sleep(1 * time.Second) // Simulate work
 
 		}
 	}
