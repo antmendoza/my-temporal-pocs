@@ -29,8 +29,8 @@ public class GrpcLoggingInterceptor implements ClientInterceptor {
                 //        message != null ? message.getClass().getName() : "null");
 
                 if (message.getClass() == PollActivityTaskQueueRequest.class) {
-                    PollActivityTaskQueueRequest requst = (PollActivityTaskQueueRequest) message;
-                    DoubleValue getMaxTasksPerSecond = requst.getTaskQueueMetadata().getMaxTasksPerSecond();
+                    PollActivityTaskQueueRequest request = (PollActivityTaskQueueRequest) message;
+                    DoubleValue getMaxTasksPerSecond = request.getTaskQueueMetadata().getMaxTasksPerSecond();
 
                     // Log only if the value has changed
                     if (
@@ -38,7 +38,12 @@ public class GrpcLoggingInterceptor implements ClientInterceptor {
                         System.out.printf("[%s]  MaxTasksPerSecond changed: %s -> %s%n",
                                 Instant.now(),
                                 LastMaxTasksPerSecond,
-                                getMaxTasksPerSecond);
+                                getMaxTasksPerSecond != null && getMaxTasksPerSecond.getValue() > 0 ? getMaxTasksPerSecond.getValue() : "----");
+                        System.out.printf("[%s]  message: %s%n",
+                                Instant.now(),
+                                message);
+
+
                     }
                     LastMaxTasksPerSecond = getMaxTasksPerSecond;
 

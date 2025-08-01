@@ -83,7 +83,7 @@ public class Runner {
             factory.start();
 
 
-            sleep(60_000);
+            sleep(10_000);
             factory.suspendPolling();
             factory.shutdown();
             factory.awaitTermination(10, TimeUnit.SECONDS);
@@ -115,7 +115,7 @@ public class Runner {
         Worker worker = factory.newWorker(TASK_QUEUE,
                 WorkerOptions
                         .newBuilder()
-                        .setMaxTaskQueueActivitiesPerSecond(maxTaskQueueActivitiesPerSecond)
+                        //.setMaxTaskQueueActivitiesPerSecond(maxTaskQueueActivitiesPerSecond)
                         .setMaxConcurrentActivityExecutionSize(500)
                         .setMaxConcurrentWorkflowTaskExecutionSize(500)
                         .setMaxConcurrentActivityTaskPollers(10)
