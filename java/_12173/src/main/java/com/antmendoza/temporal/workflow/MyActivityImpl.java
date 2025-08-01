@@ -16,7 +16,7 @@ public class MyActivityImpl implements MyActivity {
 
             while (true) {
 
-                System.out.println("Current second: " + iteration + " , Current count: " + this.currentCount + ", Total count: " + this.totalCount);
+                System.out.println("Current second: " + iteration + " , Activities per second: " + this.currentCount + ", Total activities (since started): " + this.totalCount);
                 iteration ++;
                 this.resetCurrentCount();
                 try {

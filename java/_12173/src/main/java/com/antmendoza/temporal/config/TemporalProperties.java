@@ -25,6 +25,10 @@ public class TemporalProperties {
 
             this.temporalLocalServer = Boolean.parseBoolean(prop.getProperty("temporal_local_server"));
 
+            if (this.temporalLocalServer) {
+                return;
+            }
+
             if (prop.getProperty("temporal_namespace") != null) {
                 this.temporalNamespace = prop.getProperty("temporal_namespace");
             }

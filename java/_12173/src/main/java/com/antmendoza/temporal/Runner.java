@@ -19,10 +19,12 @@
 
 package com.antmendoza.temporal;
 
+import com.antmendoza.temporal.config.GrpcLoggingInterceptor;
 import com.antmendoza.temporal.config.SslContextBuilderProvider;
 import com.antmendoza.temporal.workflow.MyActivityImpl;
 import com.antmendoza.temporal.workflow.MyWorkflow1;
 import com.antmendoza.temporal.workflow.MyWorkflow1Impl;
+import io.grpc.ClientInterceptor;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
@@ -37,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Runner {
 
-    public static final String TASK_QUEUE = "MyTaskQueue_";
+    public static final String TASK_QUEUE = "MyTaskQueue_2";
 
 
     public static void main(String[] args) throws InterruptedException {
@@ -45,8 +47,12 @@ public class Runner {
         SslContextBuilderProvider sslContextBuilderProvider = new SslContextBuilderProvider();
 
 
+        ClientInterceptor loggingInterceptor = new GrpcLoggingInterceptor();
+
         final WorkflowServiceStubsOptions.Builder builder = WorkflowServiceStubsOptions.newBuilder()
-                .setTarget(sslContextBuilderProvider.properties.getTemporalStarterTargetEndpoint());
+                .setTarget(sslContextBuilderProvider.properties.getTemporalStarterTargetEndpoint())
+                .addGrpcClientInterceptor(loggingInterceptor);
+
 
         if (sslContextBuilderProvider.getSslContext() != null) {
             builder.setSslContext(sslContextBuilderProvider.getSslContext());
@@ -65,6 +71,10 @@ public class Runner {
         WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
 
 
+        //create grpc interceptor
+        //WorkflowClientInterceptor interceptor = new MyWorkflowClientInterceptor();
+
+
         //Start worker
         CompletableFuture.runAsync(() -> {
 
@@ -74,16 +84,15 @@ public class Runner {
 
 
             sleep(60_000);
-            //factory.suspendPolling();
+            factory.suspendPolling();
             factory.shutdown();
-            factory.awaitTermination(5, TimeUnit.SECONDS);
+            factory.awaitTermination(10, TimeUnit.SECONDS);
 
-            factory = startWorkerWithMaxTaskQueueActivitiesPerSecond(client, 10, myActivity);
+            factory = startWorkerWithMaxTaskQueueActivitiesPerSecond(client, 0, myActivity);
             factory.start();
 
 
         });
-
 
 
         WorkflowOptions workflowOptions =
@@ -93,9 +102,11 @@ public class Runner {
 
 
         MyWorkflow1 workflow = client.newWorkflowStub(MyWorkflow1.class, workflowOptions);
-        workflow.run(10, 0);
+        workflow.run(20, 0);
 
-        System.exit(0);
+        // System.exit(0);
+        sleep(500_000);
+
 
     }
 
@@ -107,8 +118,8 @@ public class Runner {
                         .setMaxTaskQueueActivitiesPerSecond(maxTaskQueueActivitiesPerSecond)
                         .setMaxConcurrentActivityExecutionSize(500)
                         .setMaxConcurrentWorkflowTaskExecutionSize(500)
-                        .setMaxConcurrentActivityTaskPollers(100)
-                        .setMaxConcurrentWorkflowTaskPollers(100)
+                        .setMaxConcurrentActivityTaskPollers(10)
+                        .setMaxConcurrentWorkflowTaskPollers(10)
                         .build());
         worker.registerWorkflowImplementationTypes(MyWorkflow1Impl.class);
         worker.registerActivitiesImplementations(myActivity);
