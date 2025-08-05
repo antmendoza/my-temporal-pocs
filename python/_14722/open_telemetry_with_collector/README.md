@@ -26,10 +26,10 @@ Start one worker
 ps aux | grep worker.py
 
 pkill -f worker.py
-export PROMETHEUS_PORT=9091
 export WORKER_ID=100_WORKER___1 
 poetry run python3 worker.py
 ```
+export PROMETHEUS_PORT=9091
 
 
 
@@ -39,7 +39,7 @@ Start 50K workflows
 export WORKER_ID=CLIENT
 
 # Set the number of workflows to run
-export WORKFLOW_COUNT=500
+export WORKFLOW_COUNT=5
 poetry run python3 starter.py
 ```
 

@@ -11,6 +11,8 @@ services:
       - prometheus
     networks:
       - temporal_network
+    env_file:
+      - .env
 
 
   prometheus:

@@ -6,21 +6,15 @@ from datetime import timedelta
 from temporalio import activity, workflow
 from temporalio.client import Client
 from temporalio.contrib.opentelemetry import TracingInterceptor
-from temporalio.runtime import OpenTelemetryConfig, Runtime, TelemetryConfig, OpenTelemetryMetricTemporality, \
-    PrometheusConfig
+from temporalio.runtime import OpenTelemetryConfig, Runtime, TelemetryConfig, PrometheusConfig, \
+    OpenTelemetryMetricTemporality
 from temporalio.worker import Worker
-from temporalio.workflow import metric_meter
 
 
 @workflow.defn
 class GreetingWorkflow:
     @workflow.run
     async def run(self, name: str) -> str:
-
-        counter = workflow.metric_meter().create_counter("greeting_started");
-        counter.with_additional_attributes({"name": "my"}).add(1)
-
-
         seconds_ = await workflow.execute_activity(compose_greeting, name,
                                                    start_to_close_timeout=timedelta(seconds=60), )
 
@@ -31,7 +25,7 @@ class GreetingWorkflow:
 @activity.defn
 async def compose_greeting(name: str) -> str:
     ## calculate random number smaller than 10
-    random_number = random.randint(1,10)
+    random_number = random.randint(1, 10)
     await asyncio.sleep(random_number)
     return f"Hello, {name}!"
 
@@ -46,9 +40,9 @@ def init_runtime_with_telemetry() -> Runtime:
         return Runtime(
             telemetry=TelemetryConfig(
                 metrics=PrometheusConfig(
-                    bind_address= "127.0.0.1:" + prometheus_port,
+                    bind_address="127.0.0.1:" + prometheus_port,
                     histogram_bucket_overrides={
-           #             "temporal_activity_schedule_to_start_latency": [1, 10, 30, 60, 120, 300, 600, 1800, 3600]
+                        #             "temporal_activity_schedule_to_start_latency": [1, 10, 30, 60, 120, 300, 600, 1800, 3600]
                     }
                 ),
                 global_tags={"anything": "worker_" + prometheus_port},
@@ -62,8 +56,8 @@ def init_runtime_with_telemetry() -> Runtime:
             telemetry=TelemetryConfig(
                 metrics=OpenTelemetryConfig(
                     url="http://localhost:4317",
-                    metric_periodicity=timedelta(seconds=1),
-                    metric_temporality=OpenTelemetryMetricTemporality.DELTA
+                                        metric_periodicity=timedelta(seconds=1),
+                                        metric_temporality=OpenTelemetryMetricTemporality.DELTA
                 ),
                 global_tags={"anything": "worker_" + WORKER_ID,
                              "env": "worker_" + WORKER_ID,
@@ -91,7 +85,7 @@ async def main():
             task_queue="open_telemetry-task-queue",
             workflows=[GreetingWorkflow],
             activities=[compose_greeting],
-            max_concurrent_activities=100,
+            #            max_concurrent_activities=100,
     ):
         # Wait until interrupted
         print("Worker started, ctrl+c to exit")

@@ -17,7 +17,15 @@ exporters:
   datadog/exporter:
     api:
       site: datadoghq.com
-      key: ${DD_API_KEY}
+      key: ${DATADOG_API_KEY}
+#    metrics:
+#      sums:
+#        cumulative_monotonic_mode: "to_delta"
+#      summaries:
+#        mode: "gauges"
+#    traces: {}
+
+
 
   prometheusremotewrite:
     endpoint: "http://prometheus:9090/api/v1/write"
