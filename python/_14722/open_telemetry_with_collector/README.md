@@ -26,7 +26,7 @@ Start one worker
 ps aux | grep worker.py
 
 pkill -f worker.py
-
+export PROMETHEUS_PORT=9091
 export WORKER_ID=100_WORKER___1 
 poetry run python3 worker.py
 ```

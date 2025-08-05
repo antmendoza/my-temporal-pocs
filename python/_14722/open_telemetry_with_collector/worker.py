@@ -9,12 +9,18 @@ from temporalio.contrib.opentelemetry import TracingInterceptor
 from temporalio.runtime import OpenTelemetryConfig, Runtime, TelemetryConfig, OpenTelemetryMetricTemporality, \
     PrometheusConfig
 from temporalio.worker import Worker
+from temporalio.workflow import metric_meter
 
 
 @workflow.defn
 class GreetingWorkflow:
     @workflow.run
     async def run(self, name: str) -> str:
+
+        counter = workflow.metric_meter().create_counter("greeting_started");
+        counter.with_additional_attributes({"name": "my"}).add(1)
+
+
         seconds_ = await workflow.execute_activity(compose_greeting, name,
                                                    start_to_close_timeout=timedelta(seconds=60), )
 
