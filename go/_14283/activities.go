@@ -22,6 +22,16 @@ func (a *Activities) GetGreeting(ctx context.Context, t int) (string, error) {
 	// Get the worker stop channel
 	stopCh := activity.GetWorkerStopChannel(ctx)
 
+	if false {
+
+		for i := 0; i < 100; i++ {
+
+			time.Sleep(1000 * time.Millisecond) // Simulate work
+
+		}
+		return "", nil
+	}
+
 	for i := 0; i < 100; i++ {
 		select {
 
