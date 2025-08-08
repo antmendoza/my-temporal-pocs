@@ -15,8 +15,28 @@ public class MyWorkflowImpl implements MyWorkflow {
     @Override
     public String getGreeting(String name) {
 
+
+
+
+        Workflow.sleep(Duration.ofSeconds(2));
+
+
+        int a = Workflow.getVersion("v2", 2, 3);
+
+        System.out.println(">>>>> " + a);
+
+//        Workflow.getVersion("v3", 2, 3);
+
+        Workflow.sleep(Duration.ofSeconds(20));
+
+//
         final String hello = activities.composeGreeting("Hello", name);
 
         return hello;
+    }
+
+    @Override
+    public String getGreetingQuery(String name) {
+        return "";
     }
 }

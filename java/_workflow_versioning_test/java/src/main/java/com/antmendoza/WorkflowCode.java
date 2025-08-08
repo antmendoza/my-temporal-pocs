@@ -47,10 +47,10 @@ public class WorkflowCode {
                                 .setTaskQueue(TASK_QUEUE)
                                 .build());
 
-        String greeting = workflow.getGreeting("World");
+        //String greeting = workflow.getGreeting("World");
 
         // Display workflow execution results
-        System.out.println(greeting);
+       // System.out.println(greeting);
         // System.exit(0);
     }
 
