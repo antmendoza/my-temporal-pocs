@@ -27,16 +27,15 @@ public class EarlyReturnRunner {
 
     // sleep(3000);
 
-//    runner.makeGetSystemInfoCall(client);
+    //    runner.makeGetSystemInfoCall(client);
 
-//    runner.makeCountWorkflowsCall(client);
+    //    runner.makeCountWorkflowsCall(client);
 
     runner.runWorkflowWithUpdateWithStart(client, "first workflow");
     runner.runWorkflowWithUpdateWithStart(client, "second workflow");
     runner.runWorkflowWithUpdateWithStart(client, "third workflow");
 
     System.exit(0);
-
   }
 
   private static void sleep(int millis) {
@@ -124,16 +123,16 @@ public class EarlyReturnRunner {
           new InspectWorkflowHistory(client, options.getWorkflowId())
               .getFirstWorkflowTaskLatencyMillis();
 
-
       System.out.println(" >  first workflow task latency");
       System.out.println("   > " + latencyMillis + " ms : ->  WorkflowHistory Latency");
-      System.out.println("   > " + grpcLoggingInterceptor.getTimeFirstWorkflowTaskExecution().toEpochMilli()
+      System.out.println(
+          "   > "
+              + grpcLoggingInterceptor.getTimeFirstWorkflowTaskExecution().toEpochMilli()
               + " ms : ->  Latency measured in GrpcInterceptor (from PollWorkflowTaskResponse to RespondWorkflowTaskCompleted)");
 
     } catch (Exception e) {
       System.err.println("Transaction initialization failed: " + e.getMessage());
     }
-
   }
 
   // Build WorkflowOptions with task queue and unique ID

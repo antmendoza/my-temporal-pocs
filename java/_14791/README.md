@@ -10,14 +10,14 @@
 
 ```
 
-The code run the workflow [TransactionWorkflowImpl.java](src/main/java/io/temporal/samples/earlyreturn/TransactionWorkflowImpl.java) several times, 
+The code runs the workflow [TransactionWorkflowImpl.java](src/main/java/io/temporal/samples/earlyreturn/TransactionWorkflowImpl.java) several times, 
 and measures the time it takes to complete the first workflow task for each workflow execution.
 
 There are two measurements:
-- From Workflow history, which includes network latency
+- Inspecting the Workflow History, which includes network latency
   - [InspectWorkflowHistory.java](src/main/java/io/temporal/samples/earlyreturn/InspectWorkflowHistory.java)
 
-- Interceptors from when the worker polls the task (PollWorkflowTaskQueueResponse) to when the worker responds with RespondWorkflowTaskCompleted.
-this does not include network latency and other computation time after the interceptor.
+- GRPC Interceptor: from when the worker polls the task (PollWorkflowTaskQueueResponse) to when the worker responds with RespondWorkflowTaskCompleted.
+This does not include network latency and other computation time after the interceptor.
   - See [GrpcLoggingInterceptor.java](src/main/java/io/temporal/samples/earlyreturn/GrpcLoggingInterceptor.java)
   
