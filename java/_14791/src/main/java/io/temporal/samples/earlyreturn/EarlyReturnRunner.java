@@ -31,9 +31,9 @@ public class EarlyReturnRunner {
 
     //    runner.makeCountWorkflowsCall(client);
 
-    runner.runWorkflowWithUpdateWithStart(client, "first workflow");
-    runner.runWorkflowWithUpdateWithStart(client, "second workflow");
-    runner.runWorkflowWithUpdateWithStart(client, "third workflow");
+    runner.runWorkflowWithUpdateWithStart(client, "first_workflow");
+    runner.runWorkflowWithUpdateWithStart(client, "second_workflow");
+    runner.runWorkflowWithUpdateWithStart(client, "third_workflow");
 
     System.exit(0);
   }
