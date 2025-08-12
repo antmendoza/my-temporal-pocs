@@ -24,7 +24,7 @@ public class Start_plus_Update {
 
     WorkflowOptions workflowOptions =
         WorkflowOptions.newBuilder()
-            .setWorkflowId("tracingWorkflow")
+            .setWorkflowId("startPlusUpdateWorkflow")
             .setWorkflowIdConflictPolicy(WorkflowIdConflictPolicy.WORKFLOW_ID_CONFLICT_POLICY_FAIL)
             .setTaskQueue(TASK_QUEUE_NAME)
             .build();

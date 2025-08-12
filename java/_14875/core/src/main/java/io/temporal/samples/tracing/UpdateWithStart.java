@@ -24,7 +24,7 @@ public class UpdateWithStart {
 
     WorkflowOptions workflowOptions =
         WorkflowOptions.newBuilder()
-            .setWorkflowId("tracingWorkflow")
+            .setWorkflowId("updateWithStartWorkflow")
             .setWorkflowIdConflictPolicy(WorkflowIdConflictPolicy.WORKFLOW_ID_CONFLICT_POLICY_FAIL)
             .setTaskQueue(TASK_QUEUE_NAME)
             .build();

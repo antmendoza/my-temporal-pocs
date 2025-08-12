@@ -26,7 +26,7 @@ public class SignalWithStart {
 
     WorkflowOptions workflowOptions =
         WorkflowOptions.newBuilder()
-            .setWorkflowId("tracingWorkflow")
+            .setWorkflowId("signalWithStartWorkflow")
             .setTaskQueue(TASK_QUEUE_NAME)
             .build();
 
