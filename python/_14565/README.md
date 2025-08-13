@@ -1,4 +1,4 @@
-# Pause and retry activities
+
 
 ## Install dependencies
 
@@ -6,7 +6,6 @@
 ```bash
 uv python install 3.13
 uv sync
-uv sync --group encryption
 ```
 
 ## running the example

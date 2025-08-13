@@ -43,8 +43,6 @@ class GreetingWorkflow:
                 self.this_request.immediate_runs,
                 id=f"child-workflow-{self.this_request.current_run}",
             )
-            # Note: Consider decrementing self.immediate_runs if repeated execution is intended.
-            break
 
         await workflow.execute_local_activity(
             activity_OK,
