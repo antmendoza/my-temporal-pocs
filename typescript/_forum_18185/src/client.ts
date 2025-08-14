@@ -12,7 +12,7 @@ async function run() {
   });
 
   const handle = await client.workflow.start(runSimpleDAG, {
-    taskQueue: 'hello-world',
+    taskQueue: 'default',
     workflowId: 'workflow-' + nanoid(),
   });
   console.log(`Started workflow ${handle.workflowId}`);

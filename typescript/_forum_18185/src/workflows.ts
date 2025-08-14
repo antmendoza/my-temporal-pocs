@@ -3,7 +3,13 @@ import { proxyActivities } from '@temporalio/workflow';
 import type * as activities from './activities';
 
 const { alpha, beta, gamma, delta, epsilon } = proxyActivities<typeof activities>({
-  startToCloseTimeout: '1 minute'
+  startToCloseTimeout: '10 minutes',
+  scheduleToStartTimeout: '10 minutes',
+  scheduleToCloseTimeout: '10 minutes',
+  taskQueue: 'default',
+  retry: {
+    maximumInterval: '10 minutes',
+  },
 });
 
 
