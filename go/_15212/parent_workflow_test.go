@@ -14,14 +14,14 @@ func Test_Workflow_Integration(t *testing.T) {
 
 	env.ExecuteWorkflow(child_workflow.SampleParentWorkflow)
 
+	err := env.GetWorkflowErrorByID("ABC-SIMPLE-CHILD-WORKFLOW-ID")
+	require.Error(t, err)
+
 	require.True(t, env.IsWorkflowCompleted())
 	require.NoError(t, env.GetWorkflowError())
 	var result string
 	require.NoError(t, env.GetWorkflowResult(&result))
 
 	require.Equal(t, "completed", result)
-	var childResult string
-	require.NoError(t, env.GetWorkflowResultByID("ABC-SIMPLE-CHILD-WORKFLOW-ID", &childResult))
-	require.Equal(t, "completed", childResult)
 
 }

@@ -13,7 +13,7 @@ func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 		ParentClosePolicy: enumspb.PARENT_CLOSE_POLICY_REQUEST_CANCEL,
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
-
+	
 	childWorkflow := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, "World")
 	// Wait for child to start
 	_ = childWorkflow.GetChildWorkflowExecution().Get(ctx, nil)
