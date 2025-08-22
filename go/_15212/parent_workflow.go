@@ -13,10 +13,15 @@ func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 		ParentClosePolicy: enumspb.PARENT_CLOSE_POLICY_REQUEST_CANCEL,
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
+
+	err_ := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, "World").Get(ctx, nil)
+	//	// Wait for child to start
+	//	_ = childWorkflow.GetChildWorkflowExecution().Get(ctx, nil)
 	
-	childWorkflow := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, "World")
-	// Wait for child to start
-	_ = childWorkflow.GetChildWorkflowExecution().Get(ctx, nil)
+	if err_ != nil {
+		logger.Error("Child workflow failed.", "Error", err_)
+		//return "", err_
+	}
 
 	result := "completed"
 	logger.Info("Parent execution completed.", "Result", result)
