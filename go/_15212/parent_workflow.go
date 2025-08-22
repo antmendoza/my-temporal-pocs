@@ -17,7 +17,7 @@ func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 	err_ := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, "World").Get(ctx, nil)
 	//	// Wait for child to start
 	//	_ = childWorkflow.GetChildWorkflowExecution().Get(ctx, nil)
-	
+
 	if err_ != nil {
 		logger.Error("Child workflow failed.", "Error", err_)
 		//return "", err_

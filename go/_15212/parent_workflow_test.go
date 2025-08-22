@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func Test_Workflow_Integration(t *testing.T) {
+func Test_Workflow_Mocked(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 	env.RegisterWorkflow(child_workflow.SampleChildWorkflow)
