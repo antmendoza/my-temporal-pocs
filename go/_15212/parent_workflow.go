@@ -22,5 +22,3 @@ func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 	logger.Info("Parent execution completed.", "Result", result)
 	return result, nil
 }
-
-// @@@SNIPEND
