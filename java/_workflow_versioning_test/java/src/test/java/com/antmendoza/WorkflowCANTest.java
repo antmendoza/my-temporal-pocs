@@ -76,6 +76,8 @@ public class WorkflowCANTest {
                 e -> e.getStatus() == WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED).count());
 
 
+        //TODO Challenge is how to mock Workflow.getInfo().iscontinuedAsNew() for testing purposes
+
     }
 
 
@@ -92,7 +94,9 @@ public class WorkflowCANTest {
         @Override
         public String greet(String name) {
 
-            if (name != null) {
+            if (name != null
+                    || Workflow.getInfo().isContinueAsNewSuggested()) {
+                //TODO Challenge is how to mock Workflow.getInfo().isContinueAsNewSuggested() for testing purposes
                 Workflow.continueAsNew(null);
             }
             return "done";
