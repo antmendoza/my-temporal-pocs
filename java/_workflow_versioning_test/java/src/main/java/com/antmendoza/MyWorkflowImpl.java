@@ -15,11 +15,7 @@ public class MyWorkflowImpl implements MyWorkflow {
     @Override
     public String getGreeting(String name) {
 
-
-
-
         Workflow.sleep(Duration.ofSeconds(2));
-
 
         int a = Workflow.getVersion("v2", 2, 3);
 
@@ -32,6 +28,11 @@ public class MyWorkflowImpl implements MyWorkflow {
 //
         final String hello = activities.composeGreeting("Hello", name);
 
+
+
+        if(name.equals("World")) {
+            throw new RuntimeException("Simulated failure");
+        }
         return hello;
     }
 
