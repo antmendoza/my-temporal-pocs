@@ -35,9 +35,6 @@ public class WorkflowCANTest {
     @Test
     public void replayWorkflowExecution() throws Exception {
 
-        final Class<WorkflowCANImpl> workflowImplementationType =
-                WorkflowCANImpl.class;
-
 
         testWorkflowRule
                 .getWorker()
@@ -76,8 +73,6 @@ public class WorkflowCANTest {
                 e -> e.getStatus() == WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED).count());
 
 
-        //TODO Challenge is how to mock Workflow.getInfo().iscontinuedAsNew() for testing purposes
-
     }
 
 
@@ -94,9 +89,11 @@ public class WorkflowCANTest {
         @Override
         public String greet(String name) {
 
+            boolean continueAsNewSuggested = Workflow.getInfo().isContinueAsNewSuggested();
             if (name != null
-                    || Workflow.getInfo().isContinueAsNewSuggested()) {
+                    || continueAsNewSuggested) {
                 //TODO Challenge is how to mock Workflow.getInfo().isContinueAsNewSuggested() for testing purposes
+                // https://docs.temporal.io/develop/java/continue-as-new#how-to-test
                 Workflow.continueAsNew(null);
             }
             return "done";
