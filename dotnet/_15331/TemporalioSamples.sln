@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1A647B41-53D0-4638-AE5A-6630BAAE45FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNet", "AspNet", "{E431D279-E02B-4670-B934-3DB9F15D8CCC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemporalioSamples.AspNet.Web", "src\AspNet\Web\TemporalioSamples.AspNet.Web.csproj", "{31EC2647-6A5A-42D1-B7B5-02804B340726}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemporalioSamples.AspNet.Worker", "src\AspNet\Worker\TemporalioSamples.AspNet.Worker.csproj", "{AFFA4143-DC28-4FBE-A33B-D6414F541EA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Polling", "Polling", "{AE21E7F4-B114-4761-81B1-8FA63E9F6BB8}"
+	ProjectSection(SolutionItems) = preProject
+		src\Polling\Screenshot 2025-08-28 at 15.08.25.png = src\Polling\Screenshot 2025-08-28 at 15.08.25.png
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemporalioSamples.Polling.PeriodicSequence", "src\Polling\PeriodicSequence\TemporalioSamples.Polling.PeriodicSequence.csproj", "{11A5854B-EE6E-4752-9C46-F466503D853B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemporalioSamples.OpenTelemetry.DotNetMetrics", "src\OpenTelemetry\DotNetMetrics\TemporalioSamples.OpenTelemetry.DotNetMetrics.csproj", "{6E32CC8F-7008-42A5-96A7-F182B9A6DC03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemporalioSamples.OpenTelemetry.CoreSdkForwarding", "src\OpenTelemetry\CoreSdkForwarding\TemporalioSamples.OpenTelemetry.CoreSdkForwarding.csproj", "{785AA9A8-C440-4A62-B778-FD52423A6EDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{31EC2647-6A5A-42D1-B7B5-02804B340726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31EC2647-6A5A-42D1-B7B5-02804B340726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31EC2647-6A5A-42D1-B7B5-02804B340726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31EC2647-6A5A-42D1-B7B5-02804B340726}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFFA4143-DC28-4FBE-A33B-D6414F541EA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFFA4143-DC28-4FBE-A33B-D6414F541EA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFFA4143-DC28-4FBE-A33B-D6414F541EA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFFA4143-DC28-4FBE-A33B-D6414F541EA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A5854B-EE6E-4752-9C46-F466503D853B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A5854B-EE6E-4752-9C46-F466503D853B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A5854B-EE6E-4752-9C46-F466503D853B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A5854B-EE6E-4752-9C46-F466503D853B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDFAD7B0-FC43-4ECD-9E36-1023322294C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDFAD7B0-FC43-4ECD-9E36-1023322294C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDFAD7B0-FC43-4ECD-9E36-1023322294C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDFAD7B0-FC43-4ECD-9E36-1023322294C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E32CC8F-7008-42A5-96A7-F182B9A6DC03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E32CC8F-7008-42A5-96A7-F182B9A6DC03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E32CC8F-7008-42A5-96A7-F182B9A6DC03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E32CC8F-7008-42A5-96A7-F182B9A6DC03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{785AA9A8-C440-4A62-B778-FD52423A6EDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{785AA9A8-C440-4A62-B778-FD52423A6EDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{785AA9A8-C440-4A62-B778-FD52423A6EDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{785AA9A8-C440-4A62-B778-FD52423A6EDF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E431D279-E02B-4670-B934-3DB9F15D8CCC} = {1A647B41-53D0-4638-AE5A-6630BAAE45FC}
+		{31EC2647-6A5A-42D1-B7B5-02804B340726} = {E431D279-E02B-4670-B934-3DB9F15D8CCC}
+		{AFFA4143-DC28-4FBE-A33B-D6414F541EA4} = {E431D279-E02B-4670-B934-3DB9F15D8CCC}
+		{AE21E7F4-B114-4761-81B1-8FA63E9F6BB8} = {1A647B41-53D0-4638-AE5A-6630BAAE45FC}
+		{11A5854B-EE6E-4752-9C46-F466503D853B} = {AE21E7F4-B114-4761-81B1-8FA63E9F6BB8}
+	EndGlobalSection
+EndGlobal
