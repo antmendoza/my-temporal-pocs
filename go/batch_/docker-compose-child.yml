@@ -1,5 +1,0 @@
-version: "3.7"
-services:
-  snyk_worker_child:
-    image: antmendoza/snyk_worker_child
-    pull_policy: always
