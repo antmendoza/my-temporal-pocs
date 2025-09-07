@@ -109,7 +109,11 @@ public class HelloActivity {
 
     public static void main(String[] args) throws InterruptedException {
 
-        WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+        WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(
+                io.temporal.serviceclient.WorkflowServiceStubsOptions.newBuilder()
+                        .setGrpcClientInterceptors(java.util.Collections.singletonList(
+                                new LoggingInterceptor()))
+                        .build());
 
         WorkflowClient client = WorkflowClient.newInstance(service);
 
