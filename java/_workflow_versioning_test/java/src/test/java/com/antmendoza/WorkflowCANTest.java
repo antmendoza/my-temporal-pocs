@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 public class WorkflowCANTest {
@@ -33,12 +34,12 @@ public class WorkflowCANTest {
     }
 
     @Test
-    public void replayWorkflowExecution() throws Exception {
+    public void replayWorkflowExecution() {
 
 
         testWorkflowRule
                 .getWorker()
-                .registerWorkflowImplementationTypes(WorkflowCANImpl.class);
+                .registerWorkflowImplementationTypes(WorkflowCANImplTest.class);
 
         testWorkflowRule.getTestEnvironment().start();
 
@@ -47,10 +48,14 @@ public class WorkflowCANTest {
                         .getWorkflowClient()
                         .newWorkflowStub(
                                 WorkflowCAN.class,
-                                WorkflowOptions.newBuilder().setTaskQueue(testWorkflowRule.getTaskQueue()).build());
+                                WorkflowOptions.newBuilder()
+                                        .setTaskQueue(testWorkflowRule.getTaskQueue()).build());
 
 
-        WorkflowExecution execution1 = WorkflowStub.fromTyped(workflow1).start("World");
+        WorkflowExecution execution1 = WorkflowStub.fromTyped(workflow1).start(new WorkflowInput(
+                "start",
+                50,
+                0));
 
         // wait until workflow completes
         String result1 = WorkflowStub.fromTyped(workflow1).getResult(String.class);
@@ -80,23 +85,51 @@ public class WorkflowCANTest {
     public interface WorkflowCAN {
 
         @WorkflowMethod
-        public String greet(String name);
+        public String greet(WorkflowInput workflowInput);
 
     }
 
 
-    public static class WorkflowCANImpl implements WorkflowCAN {
+    public static class WorkflowCANImplTest extends WorkflowCANImpl {
         @Override
-        public String greet(String name) {
+        public boolean isContinueAsNewSuggested() {
+            return Workflow.getInfo().getHistoryLength() > 150;
+        }
+    }
 
-            boolean continueAsNewSuggested = Workflow.getInfo().isContinueAsNewSuggested();
-            if (name != null
-                    || continueAsNewSuggested) {
-                //TODO Challenge is how to mock Workflow.getInfo().isContinueAsNewSuggested() for testing purposes
+    public static class WorkflowCANImpl implements WorkflowCAN {
+
+        @Override
+        public String greet(WorkflowInput workflowInput) {
+
+
+            for (int i = workflowInput.getCurrentRecord(); i < workflowInput.getRecordsToProcess(); i++) {
+
+
+                Workflow.sleep(100); //simulating processing time
+
+                //TODO Challenge is mocking Workflow.getInfo().isContinueAsNewSuggested()
                 // https://docs.temporal.io/develop/java/continue-as-new#how-to-test
-                Workflow.continueAsNew(null);
+
+                if (isContinueAsNewSuggested()) {
+                    Workflow.continueAsNew(
+                            new WorkflowInput(
+                                    workflowInput.getName(), //this will stop further CAN
+                                    workflowInput.getRecordsToProcess(),
+                                    i
+                            ));
+                }
+
             }
+
+
             return "done";
+
+
+        }
+
+        public boolean isContinueAsNewSuggested() {
+            return Workflow.getInfo().isContinueAsNewSuggested();
         }
     }
 
