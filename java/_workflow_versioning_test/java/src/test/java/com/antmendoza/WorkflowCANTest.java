@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 public class WorkflowCANTest {
@@ -34,7 +33,7 @@ public class WorkflowCANTest {
     }
 
     @Test
-    public void replayWorkflowExecution() {
+    public void testCAN() {
 
 
         testWorkflowRule
@@ -100,7 +99,7 @@ public class WorkflowCANTest {
     public static class WorkflowCANImpl implements WorkflowCAN {
 
         @Override
-        public String greet(WorkflowInput workflowInput) {
+        public final String greet(WorkflowInput workflowInput) {
 
 
             for (int i = workflowInput.getCurrentRecord(); i < workflowInput.getRecordsToProcess(); i++) {
