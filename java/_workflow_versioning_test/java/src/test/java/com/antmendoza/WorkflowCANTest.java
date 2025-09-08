@@ -6,6 +6,8 @@ import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.api.workflowservice.v1.ListClosedWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
+import io.temporal.common.interceptors.WorkflowInboundCallsInterceptorBase;
+import io.temporal.common.interceptors.WorkflowOutboundCallsInterceptor;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
@@ -75,6 +77,10 @@ public class WorkflowCANTest {
 
         Assert.assertEquals(1, executionsList.stream().filter(
                 e -> e.getStatus() == WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED).count());
+
+
+        //TODO we can use WorkflowInboundCallsInterceptorBase/WorkflowOutboundCallsInterceptor
+        // to assert CAN input
 
 
     }
