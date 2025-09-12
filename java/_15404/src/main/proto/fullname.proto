@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package io.temporal.samples.proto;
+
+option java_package = "io.temporal.samples.proto";
+option java_multiple_files = true;
+
+message FullName {
+  string name = 1;
+  string surname = 2;
+}
+

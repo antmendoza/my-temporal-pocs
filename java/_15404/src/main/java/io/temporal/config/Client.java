@@ -20,9 +20,13 @@ public class Client {
 
     WorkflowClientOptions clientOptions =
         WorkflowClientOptions.newBuilder()
-            .setNamespace(sslContextBuilderProvider.properties.getTemporalNamespace())
+            .setNamespace(getTemporalNamespace())
             .build();
     return WorkflowClient.newInstance(service, clientOptions);
+  }
+
+  public String getTemporalNamespace() {
+    return sslContextBuilderProvider.properties.getTemporalNamespace();
   }
 
   public WorkflowServiceStubs getWorkflowServiceStubs() {
