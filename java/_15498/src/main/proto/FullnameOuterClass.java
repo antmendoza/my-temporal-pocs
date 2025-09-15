@@ -5,8 +5,8 @@
 
 package io.temporal.samples.proto;
 
-public final class Fullname {
-  private Fullname() {}
+public final class FullnameOuterClass {
+  private FullnameOuterClass() {}
   static {
     com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
       com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
@@ -14,7 +14,7 @@ public final class Fullname {
       /* minor= */ 29,
       /* patch= */ 3,
       /* suffix= */ "",
-      Fullname.class.getName());
+      FullnameOuterClass.class.getName());
   }
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
@@ -26,10 +26,10 @@ public final class Fullname {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_temporal_samples_proto_FullName_descriptor;
+    internal_static_io_temporal_samples_proto_Fullname_descriptor;
   static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_io_temporal_samples_proto_FullName_fieldAccessorTable;
+      internal_static_io_temporal_samples_proto_Fullname_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -40,7 +40,7 @@ public final class Fullname {
   static {
     java.lang.String[] descriptorData = {
       "\n\016fullname.proto\022\031io.temporal.samples.pr" +
-      "oto\")\n\010FullName\022\014\n\004name\030\001 \001(\t\022\017\n\007surname" +
+      "oto\")\n\010Fullname\022\014\n\004name\030\001 \001(\t\022\017\n\007surname" +
       "\030\002 \001(\tB\035\n\031io.temporal.samples.protoP\001b\006p" +
       "roto3"
     };
@@ -48,11 +48,11 @@ public final class Fullname {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_io_temporal_samples_proto_FullName_descriptor =
+    internal_static_io_temporal_samples_proto_Fullname_descriptor =
       getDescriptor().getMessageTypes().get(0);
-    internal_static_io_temporal_samples_proto_FullName_fieldAccessorTable = new
+    internal_static_io_temporal_samples_proto_Fullname_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_io_temporal_samples_proto_FullName_descriptor,
+        internal_static_io_temporal_samples_proto_Fullname_descriptor,
         new java.lang.String[] { "Name", "Surname", });
     descriptor.resolveAllFeaturesImmutable();
   }

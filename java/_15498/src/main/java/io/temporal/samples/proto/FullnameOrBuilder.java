@@ -5,8 +5,8 @@
 
 package io.temporal.samples.proto;
 
-public interface FullNameOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:io.temporal.samples.proto.FullName)
+public interface FullnameOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:io.temporal.samples.proto.Fullname)
     com.google.protobuf.MessageOrBuilder {
 
   /**

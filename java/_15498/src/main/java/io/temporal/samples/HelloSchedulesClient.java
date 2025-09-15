@@ -8,6 +8,8 @@ import io.temporal.client.WorkflowOptions;
 import io.temporal.client.schedules.*;
 import io.temporal.config.Client;
 import io.temporal.samples.proto.FullName;
+import io.temporal.samples.proto.FullNameOrBuilder;
+import io.temporal.samples.proto.Fullname;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
 public class HelloSchedulesClient {
@@ -36,7 +38,7 @@ public class HelloSchedulesClient {
         WorkflowOptions.newBuilder().setWorkflowId(WORKFLOW_ID).setTaskQueue(TASK_QUEUE).build();
 
     // Build a custom protobuf message with two fields (name, surname)
-    FullName inputProto = FullName.newBuilder().setName("Jane").setSurname("Doe").build();
+    Fullname inputProto = Fullname.newBuilder().setName("Jane").setSurname("Doe").build();
 
     ScheduleActionStartWorkflow action =
         ScheduleActionStartWorkflow.newBuilder()
