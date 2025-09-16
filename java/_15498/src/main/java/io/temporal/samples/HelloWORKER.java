@@ -30,7 +30,7 @@ public class HelloWORKER {
   public interface GreetingWorkflow {
 
     @WorkflowMethod
-    String getGreeting(io.temporal.samples.proto.FullName fullName);
+    String getGreeting(io.temporal.samples.proto.Fullname fullName);
 
     @QueryMethod
     String myQuery();
@@ -51,26 +51,9 @@ public class HelloWORKER {
             ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(20)).build());
 
     @Override
-    public String getGreeting(io.temporal.samples.proto.FullName fullName) {
+    public String getGreeting(io.temporal.samples.proto.Fullname fullName) {
 
-      if (WorkflowUnsafe.isReplaying()) {
-        System.out.println("workflow replaying");
-      }
-
-      WorkflowUnsafe.deadlockDetectorOff(
-          () -> {
-            if (!WorkflowUnsafe.isReplaying()) {
-              System.out.println("Deadlock detected");
-              try {
-                Thread.sleep(3_000);
-              } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-              }
-              System.out.println("Before responding with workflow task completed");
-            }
-          });
-
-      Workflow.sleep(Duration.ofSeconds(10));
+      Workflow.sleep(Duration.ofSeconds(1));
 
       // Use the provided protobuf fields to compose a response
       String who = (fullName.getName() + " " + fullName.getSurname()).trim();
@@ -116,14 +99,13 @@ public class HelloWORKER {
 
     WorkflowClient.start(
         workflow::getGreeting,
-        io.temporal.samples.proto.FullName.newBuilder()
+        io.temporal.samples.proto.Fullname.newBuilder()
             .setName("John")
             .setSurname("Smith")
             .build());
 
     Worker worker_1 =
         factory_1.newWorker(TASK_QUEUE, WorkerOptions.newBuilder()
-                        .seconcu()
                 .setIdentity("worker1").build());
     worker_1.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
     worker_1.registerActivitiesImplementations(new GreetingActivitiesImpl());

@@ -3,14 +3,13 @@ package io.temporal.samples;
 import static io.temporal.samples.HelloWORKER.TASK_QUEUE;
 import static io.temporal.samples.HelloWORKER.WORKFLOW_ID;
 
-import io.temporal.api.enums.v1.ScheduleOverlapPolicy;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.schedules.*;
 import io.temporal.config.Client;
-import io.temporal.samples.proto.FullName;
-import io.temporal.samples.proto.FullNameOrBuilder;
 import io.temporal.samples.proto.Fullname;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+
+import java.util.List;
 
 public class HelloSchedulesClient {
 
@@ -49,16 +48,13 @@ public class HelloSchedulesClient {
 
     // Define the schedule we want to create
     Schedule schedule =
-        Schedule.newBuilder().setAction(action).setSpec(ScheduleSpec.newBuilder().build()).build();
+        Schedule.newBuilder().setAction(action).setSpec(ScheduleSpec.newBuilder()
+                        .setCronExpressions(List.of("*/1 * * * *"))
+                .build()).build();
 
     // Create a schedule on the server
-    ScheduleHandle handle =
-        scheduleClient.createSchedule(SCHEDULE_ID, schedule, ScheduleOptions.newBuilder().build());
+    scheduleClient.createSchedule(SCHEDULE_ID, schedule, ScheduleOptions.newBuilder().build());
 
-    // Manually trigger the schedule once
-    handle.trigger(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_ALLOW_ALL);
-
-    // Delete the schedule once the sample is done
-    System.exit(0);
+   System.exit(0);
   }
 }
