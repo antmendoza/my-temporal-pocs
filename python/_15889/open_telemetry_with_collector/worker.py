@@ -105,7 +105,7 @@ def init_otel_logging(collector_endpoint: str = "http://localhost:4317") -> None
 async def main():
     runtime = init_runtime_with_telemetry()
     # Send application logs to the OTLP collector (Datadog via collector)
-    init_otel_logging(collector_endpoint=os.getenv("OTLP_LOGS_ENDPOINT", "http://localhost:4317"))
+   # init_otel_logging(collector_endpoint=os.getenv("OTLP_LOGS_ENDPOINT", "http://localhost:4317"))
 
     # Connect client
     client = await Client.connect(
