@@ -42,11 +42,20 @@ poetry run python3 starter.py
 ```
 
 
-### View logs in Datadog
+## View logs in Datadog
 
 
-Go to https://app.datadoghq.com/logs 
+### file based logs
 
+![Screenshot 2025-09-18 at 13.03.28.png](Screenshot%202025-09-18%20at%2013.03.28.png)
+
+ each individual log entry
+
+![Screenshot 2025-09-18 at 13.03.21.png](Screenshot%202025-09-18%20at%2013.03.21.png)
+
+
+
+### otel configuration
 ![Screenshot 2025-09-18 at 11.50.56.png](Screenshot%202025-09-18%20at%2011.50.56.png)
 
 
