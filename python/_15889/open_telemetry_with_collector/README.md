@@ -33,13 +33,13 @@ export PROMETHEUS_PORT=9091
 
 
 
-Start 50K workflows
+Start x workflows
 
 ``` bash
 export WORKER_ID=CLIENT
 
 # Set the number of workflows to run
-export WORKFLOW_COUNT=20000
+export WORKFLOW_COUNT=1
 poetry run python3 starter.py
 ```
 

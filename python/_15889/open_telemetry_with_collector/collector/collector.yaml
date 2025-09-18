@@ -44,5 +44,5 @@ service:
 
     logs:
       receivers: [otlp]
-      #processors: [batch]
-      exporters: [debug]
+      processors: [batch]
+      exporters: [datadog/exporter, debug]

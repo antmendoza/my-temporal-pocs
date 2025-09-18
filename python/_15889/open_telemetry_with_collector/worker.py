@@ -1,8 +1,14 @@
 import asyncio
 import os
 import random
+import logging
 from datetime import timedelta
 
+from opentelemetry._logs import set_logger_provider
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs._internal.export import BatchLogRecordProcessor
+from opentelemetry.sdk.resources import Resource
 from temporalio import activity, workflow
 from temporalio.client import Client
 from temporalio.contrib.opentelemetry import TracingInterceptor
@@ -72,8 +78,34 @@ def init_runtime_with_telemetry() -> Runtime:
         )
 
 
+def init_otel_logging(collector_endpoint: str = "http://localhost:4317") -> None:
+    """Configure OpenTelemetry logging to export to an OTLP gRPC collector.
+
+    This sends Python logs to the local Datadog-enabled collector on port 4317.
+    """
+    # Basic resource so logs are attributed in Datadog
+    resource = Resource.create({
+        "service.name": os.getenv("OTEL_SERVICE_NAME", "temporal-worker"),
+        "service.version": os.getenv("OTEL_SERVICE_VERSION", "1.0.0"),
+        "deployment.environment": os.getenv("OTEL_ENV", "dev"),
+    })
+
+    logger_provider = LoggerProvider(resource=resource)
+    exporter = OTLPLogExporter(endpoint=collector_endpoint, insecure=True)
+    logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
+    set_logger_provider(logger_provider)
+
+    # Bridge Python logging to OTel
+    handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.addHandler(handler)
+
+
 async def main():
     runtime = init_runtime_with_telemetry()
+    # Send application logs to the OTLP collector (Datadog via collector)
+    init_otel_logging(collector_endpoint=os.getenv("OTLP_LOGS_ENDPOINT", "http://localhost:4317"))
 
     # Connect client
     client = await Client.connect(
