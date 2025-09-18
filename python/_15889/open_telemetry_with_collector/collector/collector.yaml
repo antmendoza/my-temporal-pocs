@@ -4,6 +4,15 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:4317
 
+
+  filelog:
+    include:
+      - /var/log/app/*.log
+    #https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver#multiline-configuration
+    multiline:
+      line_start_pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}'
+
+
 processors:
   batch:
     send_batch_max_size: 1000
@@ -43,6 +52,6 @@ service:
       exporters: [prometheusremotewrite, datadog/exporter]
 
     logs:
-      receivers: [otlp]
+      receivers: [otlp, filelog]
       processors: [batch]
       exporters: [datadog/exporter, debug]

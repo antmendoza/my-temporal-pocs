@@ -2,6 +2,7 @@ import asyncio
 import os
 import random
 import logging
+from logging.handlers import RotatingFileHandler
 from datetime import timedelta
 
 from opentelemetry._logs import set_logger_provider
@@ -104,8 +105,21 @@ def init_otel_logging(collector_endpoint: str = "http://localhost:4317") -> None
 
 async def main():
     runtime = init_runtime_with_telemetry()
-    # Send application logs to the OTLP collector (Datadog via collector)
-   # init_otel_logging(collector_endpoint=os.getenv("OTLP_LOGS_ENDPOINT", "http://localhost:4317"))
+    # Write logs to local file; collector tails this file via filelog receiver
+    log_path = os.getenv("FILE_LOG_PATH", "./logs/worker.log")
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    handler = RotatingFileHandler(log_path, maxBytes=10 * 1024 * 1024, backupCount=5)
+    handler.setFormatter(logging.Formatter(
+        fmt="%(asctime)s %(levelname)s %(name)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    ))
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.addHandler(handler)
+
+
+    #Send application logs to the OTLP collector (Datadog via collector)
+    # init_otel_logging(collector_endpoint=os.getenv("OTLP_LOGS_ENDPOINT", "http://localhost:4317"))
 
     # Connect client
     client = await Client.connect(
