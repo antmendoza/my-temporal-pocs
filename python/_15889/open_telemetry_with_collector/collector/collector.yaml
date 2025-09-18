@@ -1,0 +1,48 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  batch:
+    send_batch_max_size: 1000
+    send_batch_size: 10
+    timeout: 10s
+
+#  cumulativetodelta:
+
+
+exporters:
+  datadog/exporter:
+    api:
+      site: datadoghq.com
+      key: ${DATADOG_API_KEY}
+#    metrics:
+#      sums:
+#        cumulative_monotonic_mode: "to_delta"
+#      summaries:
+#        mode: "gauges"
+#    traces: {}
+
+
+
+  prometheusremotewrite:
+    endpoint: "http://prometheus:9090/api/v1/write"
+
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheusremotewrite, datadog/exporter]
+
+    logs:
+      receivers: [otlp]
+      #processors: [batch]
+      exporters: [debug]
