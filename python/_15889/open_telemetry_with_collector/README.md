@@ -20,7 +20,7 @@ docker-compose up
 
 
 
-Start one worker
+### Start one worker
 
 ``` bash
 ps aux | grep worker.py
@@ -29,11 +29,9 @@ pkill -f worker.py
 export WORKER_ID=100_WORKER___1 
 poetry run python3 worker.py
 ```
-export PROMETHEUS_PORT=9091
 
 
-
-Start x workflows
+### Start x workflows
 
 ``` bash
 export WORKER_ID=CLIENT
@@ -44,7 +42,13 @@ poetry run python3 starter.py
 ```
 
 
-## references
-https://docs.datadoghq.com/opentelemetry/guide/otlp_delta_temporality/
+### View logs in Datadog
 
+
+Go to https://app.datadoghq.com/logs 
+
+![Screenshot 2025-09-18 at 11.50.56.png](Screenshot%202025-09-18%20at%2011.50.56.png)
+
+
+![Screenshot 2025-09-18 at 11.51.17.png](Screenshot%202025-09-18%20at%2011.51.17.png)
 
