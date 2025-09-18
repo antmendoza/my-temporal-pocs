@@ -2,7 +2,10 @@
 
 
 ``` bash
-poetry install --with open_telemetry
+poetry install --with open_telemetry 
+poetry install --with python-json-logger
+
+
 ```
 
 Before starting the collector, edit the [collector.yaml](collector%2Fcollector.yaml) file to add the dd api_key

@@ -9,8 +9,8 @@ receivers:
     include:
       - /var/log/app/*.log
     #https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver#multiline-configuration
-    multiline:
-      line_start_pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}'
+   # multiline:
+   #   line_start_pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}'
 
 
 processors:

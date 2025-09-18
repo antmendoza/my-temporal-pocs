@@ -16,6 +16,8 @@ from temporalio.contrib.opentelemetry import TracingInterceptor
 from temporalio.runtime import OpenTelemetryConfig, Runtime, TelemetryConfig, PrometheusConfig, \
     OpenTelemetryMetricTemporality
 from temporalio.worker import Worker
+from pythonjsonlogger import json
+
 
 
 @workflow.defn
@@ -103,16 +105,26 @@ def init_otel_logging(collector_endpoint: str = "http://localhost:4317") -> None
     root_logger.addHandler(handler)
 
 
+class CustomFormatter(logging.Formatter):
+    def format(self, record):
+        msg = super().format(record)
+        return msg.replace("\n", " | ")
+
 async def main():
     runtime = init_runtime_with_telemetry()
     # Write logs to local file; collector tails this file via filelog receiver
     log_path = os.getenv("FILE_LOG_PATH", "./logs/worker.log")
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
     handler = RotatingFileHandler(log_path, maxBytes=10 * 1024 * 1024, backupCount=5)
-    handler.setFormatter(logging.Formatter(
+    handler.setFormatter(CustomFormatter(
         fmt="%(asctime)s %(levelname)s %(name)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     ))
+
+
+    handler.setFormatter(json.JsonFormatter())
+
+
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
     root_logger.addHandler(handler)
