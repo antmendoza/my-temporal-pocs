@@ -1,20 +1,21 @@
 package main
 
 import (
-	"log"
-
 	codecserver "github.com/temporalio/samples-go/codec-server"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
+	"log"
+	"os"
 )
 
 func main() {
-	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.Dial(client.Options{
-		// Set DataConverter here so that workflow and activity inputs/results will
-		// be compressed as required.
-		DataConverter: codecserver.DataConverter,
-	})
+
+	clientOptions, err := codecserver.ParseClientOptionFlags(os.Args[1:])
+	if err != nil {
+		log.Fatalf("Invalid arguments: %v", err)
+	}
+	c, err := client.Dial(clientOptions)
+
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}

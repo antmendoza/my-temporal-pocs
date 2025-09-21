@@ -1,20 +1,22 @@
 package main
 
 import (
-    "context"
-    "log"
+	"context"
+	"log"
+	"os"
 
-    codecserver "github.com/temporalio/samples-go/codec-server"
-    "go.temporal.io/sdk/client"
+	codecserver "github.com/temporalio/samples-go/codec-server"
+	"go.temporal.io/sdk/client"
 )
 
 func main() {
-	// The client is a heavyweight object that should be created once per process.
-	c, err := client.Dial(client.Options{
-		// Set DataConverter here to ensure that workflow inputs and results are
-		// encoded as required.
-		DataConverter: codecserver.DataConverter,
-	})
+
+	clientOptions, err := codecserver.ParseClientOptionFlags(os.Args[1:])
+	if err != nil {
+		log.Fatalf("Invalid arguments: %v", err)
+	}
+	c, err := client.Dial(clientOptions)
+
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
@@ -25,15 +27,15 @@ func main() {
 		TaskQueue: "codecserver",
 	}
 
-    // Build protobuf input with two fields: input1, input2
-    payload := &codecserver.Input{Input1: "foo", Input2: "bar"}
+	// Build protobuf input with two fields: input1, input2
+	payload := &codecserver.Input{Input1: "foo", Input2: "bar"}
 
-    we, err := c.ExecuteWorkflow(
-        context.Background(),
-        workflowOptions,
-        codecserver.Workflow,
-        payload,
-    )
+	we, err := c.ExecuteWorkflow(
+		context.Background(),
+		workflowOptions,
+		codecserver.Workflow,
+		payload,
+	)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

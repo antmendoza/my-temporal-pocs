@@ -18,9 +18,9 @@ import (
 var logger log.Logger
 
 // newCORSHTTPHandler wraps a HTTP handler with CORS support
-func newCORSHTTPHandler(web string, next http.Handler) http.Handler {
+func newCORSHTTPHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", web)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Headers", "Authorization,Content-Type,X-Namespace")
 
@@ -53,7 +53,6 @@ func newPayloadCodecNamespacesHTTPHandler(encoders map[string][]converter.Payloa
 
 	codecHandlers := make(map[string]http.Handler, len(encoders))
 	for namespace, codecChain := range encoders {
-		fmt.Printf("Handling namespace: %s\n", namespace)
 
 		handler := converter.NewPayloadCodecHTTPHandler(codecChain...)
 		if provider != nil {
@@ -118,10 +117,8 @@ func main() {
 
 	handler := newPayloadCodecNamespacesHTTPHandler(codecs, provider)
 
-	if webFlag != "" {
-		fmt.Printf("CORS enabled for Origin: %s\n", webFlag)
-		handler = newCORSHTTPHandler(webFlag, handler)
-	}
+	//enable CORS for any web URL
+	handler = newCORSHTTPHandler(handler)
 
 	srv := &http.Server{
 		Addr:    "0.0.0.0:" + strconv.Itoa(portFlag),
@@ -139,7 +136,7 @@ func main() {
 		_ = srv.Close()
 	case err := <-errCh:
 		if err != http.ErrServerClosed {
-				logger.Fatal("error from HTTP server", tag.Error(err))
+			logger.Fatal("error from HTTP server", tag.Error(err))
 		}
 	}
 }
