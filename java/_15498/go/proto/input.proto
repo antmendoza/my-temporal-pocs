@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package codecserver;
+
+option go_package = "./codecserver";
+
+// Input represents the workflow input payload.
+message Input {
+  string input1 = 1;
+  string input2 = 2;
+}
+

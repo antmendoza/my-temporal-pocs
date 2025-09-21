@@ -12,7 +12,7 @@ import (
 // Workflow is a standard workflow definition.
 // Note that the Workflow and Activity don't need to care that
 // their inputs/results are being encoded.
-func Workflow(ctx workflow.Context, input string) (string, error) {
+func Workflow(ctx workflow.Context, input *Input) (string, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
@@ -52,9 +52,15 @@ func Workflow(ctx workflow.Context, input string) (string, error) {
 	return result, nil
 }
 
-func Activity(ctx context.Context, input string) (string, error) {
+func Activity(ctx context.Context, input *Input) (string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Activity", "input", input)
 
-	return "Received " + input, nil
+	var in1, in2 string
+	if input != nil {
+		in1 = input.Input1
+		in2 = input.Input2
+	}
+
+	return "Received input1=" + in1 + ", input2=" + in2, nil
 }

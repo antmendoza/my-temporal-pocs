@@ -14,6 +14,14 @@ Configuring OIDC is outside the scope of this sample, but please see the [server
    ```bash
    go run starter/main.go
    ```
+   
+   Note: A protobuf schema for the workflow input is defined at `proto/input.proto` (message `Input` with fields `input1` and `input2`). If you have `protoc-gen-go` installed, you can generate Go types with:
+   
+   ```bash
+   protoc --go_out=. proto/input.proto
+   ```
+   
+   Then replace usages of `structpb.Struct` with the generated `pb.Input` type.
 5) Run the following command to start the remote codec server.
    The `-web` flag is needed for Temporal UI for CORS.
    ```bash

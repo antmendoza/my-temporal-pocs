@@ -1,11 +1,11 @@
 package main
 
 import (
-	"context"
-	"log"
+    "context"
+    "log"
 
-	codecserver "github.com/temporalio/samples-go/codec-server"
-	"go.temporal.io/sdk/client"
+    codecserver "github.com/temporalio/samples-go/codec-server"
+    "go.temporal.io/sdk/client"
 )
 
 func main() {
@@ -25,13 +25,15 @@ func main() {
 		TaskQueue: "codecserver",
 	}
 
-	// The workflow input "My Compressed Friend" will be encoded by the codec before being sent to Temporal
-	we, err := c.ExecuteWorkflow(
-		context.Background(),
-		workflowOptions,
-		codecserver.Workflow,
-		"Plain text input",
-	)
+    // Build protobuf input with two fields: input1, input2
+    payload := &codecserver.Input{Input1: "foo", Input2: "bar"}
+
+    we, err := c.ExecuteWorkflow(
+        context.Background(),
+        workflowOptions,
+        codecserver.Workflow,
+        payload,
+    )
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
