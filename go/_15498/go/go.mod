@@ -1,6 +1,6 @@
 module github.com/temporalio/samples-go/codec-server
 
-go 1.23.2
+go 1.25.0
 
 require (
 	github.com/golang/snappy v0.0.4
@@ -8,6 +8,7 @@ require (
 	go.temporal.io/api v1.51.0
 	go.temporal.io/sdk v1.36.0
 	go.temporal.io/server v1.27.0
+	google.golang.org/protobuf v1.36.6
 )
 
 require (
@@ -79,7 +80,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20250218202821-56aae31c358a // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250218202821-56aae31c358a // indirect
 	google.golang.org/grpc v1.70.0 // indirect
-	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/validator.v2 v2.0.1 // indirect
