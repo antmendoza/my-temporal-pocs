@@ -100,6 +100,7 @@ public class HelloActivity {
             Workflow.sleep(20_000);
 
 
+
             return "done";
 
         }
@@ -113,14 +114,19 @@ public class HelloActivity {
         public void signal() {
             logger.info("Signal received ...");
 
+
+            //another approach is setting a variable to true and moving the workflow
+            //await to the main workflow method.
+            //this.signaled = true;
+            //and then in the main workflow method:
+            //Workflow.await(() -> promise != null && this.signaled);
             Workflow.await(() -> promise != null);
 
             logger.info(" promise: " + promise);
 
-            promise.complete(null);
             logger.info("Processing signal ...");
+            promise.complete(null);
 
-            activities.sleep_time(1_000);
 
         }
 
