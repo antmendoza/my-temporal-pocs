@@ -74,7 +74,7 @@ class ContextWorklfowInterceptor
       headers: injectContextHeader(input.headers, getContext()),
     });
 
-    return await this.checkAndRetryWithNewToken(input, promise,next, (err) => {
+    return await this.checkAndRetryWithNewToken(input, promise, next, (err) => {
       //console.error(err);
     });
   }
@@ -147,46 +147,32 @@ class ContextWorklfowInterceptor
     next(input);
   }
 
+  private async checkAndRetryWithNewToken(
+    input: ActivityInput,
+    p: Promise<unknown>,
+    next: Next<WorkflowOutboundCallsInterceptor, 'scheduleActivity'>,
+    onFail: (err: unknown) => void
+  ): Promise<unknown> {
+    try {
+      return await p;
+    } catch (e) {
+      if (e instanceof ActivityFailure && e.cause?.message == 'AuthError') {
+        console.log('retrying to get new token');
 
+        //call generateNewEncryptedToken to get new token
+        await generateNewEncryptedToken();
 
+        const newInput: ActivityInput = {
+          ...input,
+          headers: injectContextHeader(input.headers, getContext()),
+        };
 
-  private async checkAndRetryWithNewToken<T>(
-  input: ActivityInput,
-  p: Promise<T>,
-  next: Next<WorkflowOutboundCallsInterceptor, 'scheduleActivity'>,
-  onFail: (err: unknown) => void
-): Promise<T> {
-
-
-  try {
-    return await p;
-  } catch (e) {
-    if (e instanceof ActivityFailure && e.cause?.message == 'AuthError') {
-      console.log('retrying to get new token');
-      //call generateNewEncryptedToken to get new token
-      await generateNewEncryptedToken();
-
-      const activity = input.activityType;
-
-
-      //change args to [true] to avoid AuthError, only for demo purpose
-      const args = [false];
-
-      const newInput: ActivityInput = {
-        ...input,
-        activityType: activity,
-        args,
-        headers: injectContextHeader(input.headers, getContext()),
-      };
-
-      // @ts-ignore
-      return this.scheduleActivity(newInput, next);
-
+        return await this.scheduleActivity(newInput, next);
+      }
+      onFail(e);
+      throw e;
     }
-    onFail(e);
-    throw e;
   }
-}
 }
 
 export const interceptors = (): WorkflowInterceptors => {
@@ -198,10 +184,7 @@ export const interceptors = (): WorkflowInterceptors => {
   };
 };
 
-
 async function tokenToContext<T>(p: Promise<T>, onFail: (err: unknown) => void): Promise<T> {
-
-
   void p.then((result) => {
     const token = result as string;
     getContext().authToken = token;

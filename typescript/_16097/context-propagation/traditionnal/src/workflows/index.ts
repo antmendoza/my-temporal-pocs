@@ -12,10 +12,7 @@ const { generateNewEncryptedToken } = proxyLocalActivities<typeof activities>({
 export async function sampleWorkflow(): Promise<void> {
   await throwError(false);
 
-  await throwError(true).catch(e => {
-    // log.error("Caught error: " + e);
-  })
+  await throwError(true);
 
-  await throwError(false);
   //  log.info( clientContext + " | " + afterUpdatingContextInWorkflow + " | " + withContextValue + " | " + await extractAuthTokenFromContext());
 }
