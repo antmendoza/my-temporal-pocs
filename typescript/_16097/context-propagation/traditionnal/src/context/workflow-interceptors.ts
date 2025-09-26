@@ -162,12 +162,11 @@ class ContextWorklfowInterceptor
         //call generateNewEncryptedToken to get new token
         await generateNewEncryptedToken();
 
-        const newInput: ActivityInput = {
+        //retry the original activity with new token in context
+        return await this.scheduleActivity({
           ...input,
           headers: injectContextHeader(input.headers, getContext()),
-        };
-
-        return await this.scheduleActivity(newInput, next);
+        }, next);
       }
       onFail(e);
       throw e;

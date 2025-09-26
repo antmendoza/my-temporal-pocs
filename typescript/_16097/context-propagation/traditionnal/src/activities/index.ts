@@ -15,7 +15,11 @@ export async function generateNewEncryptedToken(): Promise<string> {
   return 'new_token_' + token;
 }
 
-export async function throwError(throw_: boolean): Promise<void> {
-  if (!throw_) return;
-  throw ApplicationFailure.nonRetryable('AuthError', 'AuthError');
+export async function throwErrorIfTokenIncludesInitial(): Promise<void> {
+
+  if(getContext().authToken?.includes("initial")) {
+    throw ApplicationFailure.nonRetryable('AuthError', 'AuthError');
+  }
+
+  return;
 }
