@@ -2,7 +2,7 @@ import { Headers, defaultPayloadConverter } from '@temporalio/common';
 
 // Must be JSON serializable
 export interface PropagatedContext {
-  customer?: string;
+  authToken?: string;
 }
 
 const CONTEXT_HEADER_NAME = 'Context';

@@ -1,43 +1,21 @@
-import { log, proxyActivities, proxyLocalActivities, workflowInfo } from '@temporalio/workflow';
+import { proxyActivities, proxyLocalActivities } from '@temporalio/workflow';
 import type * as activities from '../activities';
-import { getContext, withContext } from '../context/workflow-interceptors';
 
-
-const { extractCustomerNameFromContext,
-  throwError,
-} = proxyActivities<typeof activities>({
+const { extractAuthTokenFromContext, throwError } = proxyActivities<typeof activities>({
   startToCloseTimeout: '5 minutes',
 });
 
-
-
-
-const {
-  newEncryptedToken
-} = proxyLocalActivities<typeof activities>({
+const { generateNewEncryptedToken } = proxyLocalActivities<typeof activities>({
   startToCloseTimeout: '5 seconds',
 });
 
 export async function sampleWorkflow(): Promise<void> {
+  await throwError(false);
 
-  const customer = getContext().customer;
-  console.log("Log from workflow with customer: " + customer );
+  await throwError(true).catch(e => {
+    // log.error("Caught error: " + e);
+  })
 
-  const clientContext = await extractCustomerNameFromContext();
-
-  getContext().customer = "UpdatedCustomerInWorkflow";
-  const afterUpdatingContextInWorkflow = await extractCustomerNameFromContext();
-
-  const withContextValue=  await withContext({ customer: 'vip-123' }, async () => { return await extractCustomerNameFromContext(); })
-
-  log.info( clientContext + " | " + afterUpdatingContextInWorkflow + " | " + withContextValue + " | " + await extractCustomerNameFromContext());
-
-  await newEncryptedToken();
-
-  log.info( clientContext + " | " + afterUpdatingContextInWorkflow + " | " + withContextValue + " | " + await extractCustomerNameFromContext());
-
-  await throwError(true)
-
-
-  log.info( clientContext + " | " + afterUpdatingContextInWorkflow + " | " + withContextValue + " | " + await extractCustomerNameFromContext());
+  await throwError(false);
+  //  log.info( clientContext + " | " + afterUpdatingContextInWorkflow + " | " + withContextValue + " | " + await extractAuthTokenFromContext());
 }

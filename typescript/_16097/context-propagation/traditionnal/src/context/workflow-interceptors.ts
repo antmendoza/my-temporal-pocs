@@ -1,4 +1,5 @@
 import {
+  ActivityFailure,
   ActivityInput,
   AsyncLocalStorage,
   ContinueAsNewInput,
@@ -6,8 +7,8 @@ import {
   GetLogAttributesInput,
   GetMetricTagsInput,
   LocalActivityInput,
-  Next,
-  QueryInput,
+  Next, proxyActivities, proxyLocalActivities,
+  QueryInput, scheduleActivity,
   SignalInput,
   StartChildWorkflowExecutionInput,
   UpdateInput,
@@ -15,12 +16,21 @@ import {
   WorkflowInboundCallsInterceptor,
   WorkflowInterceptors,
   WorkflowInternalsInterceptor,
-  WorkflowOutboundCallsInterceptor,
+  WorkflowOutboundCallsInterceptor
 } from '@temporalio/workflow';
 import { MetricTags } from '@temporalio/common';
 import { extractContextHeader, injectContextHeader, PropagatedContext } from './context-type';
+import { ApplicationFailure } from '@temporalio/workflow';
+import type * as activities from '../activities';
 
 const contextStorage = new AsyncLocalStorage<PropagatedContext>();
+
+
+const {
+  generateNewEncryptedToken
+} = proxyLocalActivities<typeof activities>({
+  startToCloseTimeout: '5 seconds',
+});
 
 export function withContext<Ret>(
   extraContext: PropagatedContext | undefined,
@@ -72,10 +82,22 @@ class ContextWorklfowInterceptor
     input: ActivityInput,
     next: Next<WorkflowOutboundCallsInterceptor, 'scheduleActivity'>
   ): Promise<unknown> {
-    return await next({
+
+
+    const promise = next({
       ...input,
       headers: injectContextHeader(input.headers, getContext()),
     });
+
+
+    return checkAndRetryWithNewToken(input, promise, (err) => {
+      console.error(err);
+    });
+
+    return await promise;
+
+
+
   }
 
   async scheduleLocalActivity(
@@ -87,9 +109,14 @@ class ContextWorklfowInterceptor
       headers: injectContextHeader(input.headers, getContext()),
     });
 
-    return refreshToken(p, (err) => {
-      console.error('Local activity failed, refreshing context', err);
-    });
+    if (input.activityType == "generateNewEncryptedToken") {
+      return tokenToContext(p, (err) => {
+        console.error('Local activity failed, refreshing context', err);
+      });
+    }
+
+    return await p;
+
   }
 
   async startChildWorkflowExecution(
@@ -112,10 +139,6 @@ class ContextWorklfowInterceptor
     });
   }
 
-  // Note that we do not propagate context to signals sent from this workflow, as this might create
-  // confusion in some cases (i.e. in the signal handler of the target workflow, context values
-  // coming from _this workflow_ would override context values defined when that workflow was sent).
-  // If that's the intended behavior, simply add intercept the signalWorkflow method.
 
   getLogAttributes(
     input: GetLogAttributesInput,
@@ -133,12 +156,7 @@ class ContextWorklfowInterceptor
   }
 
   dispose(input: DisposeInput, next: Next<WorkflowInternalsInterceptor, 'dispose'>): void {
-    // This is very important. Due to how node implements AsyncLocalStorage, the storage is not tied
-    // to the present execution context, and will survive eviction of this workflow out of the
-    // worker's workflow cache, causing memory leaks. Always disable AsyncLocalStorage you created
-    // yourself when the workflow is disposed.
     contextStorage.disable();
-
     next(input);
   }
 }
@@ -152,12 +170,36 @@ export const interceptors = (): WorkflowInterceptors => {
   };
 };
 
-function refreshToken<T>(p: Promise<T>, onFail: (e: unknown) => void): Promise<T> {
+
+
+function checkAndRetryWithNewToken<T>(input: ActivityInput, p: Promise<T>, onFail: (e: unknown) => void): Promise<T> {
+
+  return p.catch(async (e) => {
+    if (e instanceof ActivityFailure && e.cause?.message == 'AuthError') {
+      console.log('retrying with new token');
+
+      const activity = input.activityType;
+
+      //call generateNewEncryptedToken to get new token
+      await generateNewEncryptedToken();
+
+
+      //retry original activity with new token in context
+      //TODO
+
+    }
+    onFail(e);
+    throw e;
+  });
+}
+
+
+function tokenToContext<T>(p: Promise<T>, onFail: (e: unknown) => void): Promise<T> {
 
   void p.then((result => {
     const token = result as string;
-    getContext().customer = token;
-    return token.substring(0, 5)+ "***";
+    getContext().authToken = token;
+    return token;
   }));
 
   return p.catch((e) => {

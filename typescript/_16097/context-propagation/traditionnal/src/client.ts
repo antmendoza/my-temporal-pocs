@@ -18,7 +18,7 @@ async function run() {
     interceptors: { workflow: [clientInterceptor], schedule: [clientInterceptor] },
   });
 
-  await withContext({ customer: 'Acme Inc.' }, async () => {
+  await withContext({ authToken: 'Acme Inc.' }, async () => {
     await client.workflow.execute(sampleWorkflow, {
       taskQueue: 'context-propagation',
       workflowId: 'workflow-' + nanoid(),

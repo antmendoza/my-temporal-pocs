@@ -2,13 +2,13 @@ import { ApplicationFailure, log } from '@temporalio/activity';
 import { getContext } from '../context/context-injection';
 import { uuid4 } from '@temporalio/workflow';
 
-export async function extractCustomerNameFromContext(): Promise<string> {
+export async function extractAuthTokenFromContext(): Promise<string> {
   const propagatedContext = getContext();
-  log.info(`Log from activity with customer ${propagatedContext.customer ?? 'unknown'}`);
-  return `Hello, ${propagatedContext.customer}!`;
+  log.info(`Log from activity with authToken ${propagatedContext.authToken ?? 'unknown'}`);
+  return `Hello, ${propagatedContext.authToken}!`;
 }
 
-export async function newEncryptedToken(): Promise<string> {
+export async function generateNewEncryptedToken(): Promise<string> {
   const token = uuid4();
   log.info(`newEncryptedToken ${token}`);
 
@@ -17,5 +17,5 @@ export async function newEncryptedToken(): Promise<string> {
 
 export async function throwError(throw_: boolean): Promise<void> {
   if (!throw_) return;
-  throw ApplicationFailure.nonRetryable('This is a non-retryable error from activity', 'AuthError');
+  throw ApplicationFailure.nonRetryable('AuthError', 'AuthError');
 }
