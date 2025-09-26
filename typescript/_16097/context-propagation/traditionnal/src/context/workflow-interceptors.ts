@@ -7,8 +7,9 @@ import {
   GetLogAttributesInput,
   GetMetricTagsInput,
   LocalActivityInput,
-  Next, proxyActivities, proxyLocalActivities,
-  QueryInput, scheduleActivity,
+  Next,
+  proxyLocalActivities,
+  QueryInput,
   SignalInput,
   StartChildWorkflowExecutionInput,
   UpdateInput,
@@ -16,19 +17,15 @@ import {
   WorkflowInboundCallsInterceptor,
   WorkflowInterceptors,
   WorkflowInternalsInterceptor,
-  WorkflowOutboundCallsInterceptor
+  WorkflowOutboundCallsInterceptor,
 } from '@temporalio/workflow';
 import { MetricTags } from '@temporalio/common';
 import { extractContextHeader, injectContextHeader, PropagatedContext } from './context-type';
-import { ApplicationFailure } from '@temporalio/workflow';
 import type * as activities from '../activities';
 
 const contextStorage = new AsyncLocalStorage<PropagatedContext>();
 
-
-const {
-  generateNewEncryptedToken
-} = proxyLocalActivities<typeof activities>({
+const { generateNewEncryptedToken } = proxyLocalActivities<typeof activities>({
   startToCloseTimeout: '5 seconds',
 });
 
@@ -49,6 +46,38 @@ class ContextWorklfowInterceptor
   implements WorkflowInboundCallsInterceptor, WorkflowOutboundCallsInterceptor, WorkflowInternalsInterceptor
 {
   private executionContext: PropagatedContext | undefined;
+
+  async scheduleLocalActivity(
+    input: LocalActivityInput,
+    next: Next<WorkflowOutboundCallsInterceptor, 'scheduleLocalActivity'>
+  ): Promise<unknown> {
+    const p = next({
+      ...input,
+      headers: injectContextHeader(input.headers, getContext()),
+    });
+
+    if (input.activityType == 'generateNewEncryptedToken') {
+      return await tokenToContext(p, (err) => {
+        //console.error(err);
+      });
+    }
+
+    return await p;
+  }
+
+  async scheduleActivity(
+    input: ActivityInput,
+    next: Next<WorkflowOutboundCallsInterceptor, 'scheduleActivity'>
+  ): Promise<unknown> {
+    const promise = next({
+      ...input,
+      headers: injectContextHeader(input.headers, getContext()),
+    });
+
+    return await this.checkAndRetryWithNewToken(input, promise,next, (err) => {
+      //console.error(err);
+    });
+  }
 
   async execute(input: WorkflowExecuteInput, next: Next<WorkflowInboundCallsInterceptor, 'execute'>): Promise<unknown> {
     this.executionContext = extractContextHeader(input.headers);
@@ -78,47 +107,6 @@ class ContextWorklfowInterceptor
     return withContext({ ...this.executionContext, ...inboundContext }, () => next(input));
   }
 
-  async scheduleActivity(
-    input: ActivityInput,
-    next: Next<WorkflowOutboundCallsInterceptor, 'scheduleActivity'>
-  ): Promise<unknown> {
-
-
-    const promise = next({
-      ...input,
-      headers: injectContextHeader(input.headers, getContext()),
-    });
-
-
-    return checkAndRetryWithNewToken(input, promise, (err) => {
-      console.error(err);
-    });
-
-    return await promise;
-
-
-
-  }
-
-  async scheduleLocalActivity(
-    input: LocalActivityInput,
-    next: Next<WorkflowOutboundCallsInterceptor, 'scheduleLocalActivity'>
-  ): Promise<unknown> {
-    const p = next({
-      ...input,
-      headers: injectContextHeader(input.headers, getContext()),
-    });
-
-    if (input.activityType == "generateNewEncryptedToken") {
-      return tokenToContext(p, (err) => {
-        console.error('Local activity failed, refreshing context', err);
-      });
-    }
-
-    return await p;
-
-  }
-
   async startChildWorkflowExecution(
     input: StartChildWorkflowExecutionInput,
     next: Next<WorkflowOutboundCallsInterceptor, 'startChildWorkflowExecution'>
@@ -139,7 +127,6 @@ class ContextWorklfowInterceptor
     });
   }
 
-
   getLogAttributes(
     input: GetLogAttributesInput,
     next: Next<WorkflowOutboundCallsInterceptor, 'getLogAttributes'>
@@ -159,6 +146,39 @@ class ContextWorklfowInterceptor
     contextStorage.disable();
     next(input);
   }
+
+
+
+
+  private async checkAndRetryWithNewToken<T>(
+  input: ActivityInput,
+  p: Promise<T>,
+  next: Next<WorkflowOutboundCallsInterceptor, 'scheduleActivity'>,
+  onFail: (err: unknown) => void
+): Promise<T> {
+
+
+  try {
+    return await p;
+  } catch (e) {
+    if (e instanceof ActivityFailure && e.cause?.message == 'AuthError') {
+      console.log('retrying to get new token');
+      //call generateNewEncryptedToken to get new token
+      await generateNewEncryptedToken();
+
+      const activity = input.activityType;
+
+      const args = input.args ?? [];
+
+//      return this.scheduleActivity(
+ //       input,
+ //       next
+ //     );
+    }
+    onFail(e);
+    throw e;
+  }
+}
 }
 
 export const interceptors = (): WorkflowInterceptors => {
@@ -171,39 +191,19 @@ export const interceptors = (): WorkflowInterceptors => {
 };
 
 
-
-function checkAndRetryWithNewToken<T>(input: ActivityInput, p: Promise<T>, onFail: (e: unknown) => void): Promise<T> {
-
-  return p.catch(async (e) => {
-    if (e instanceof ActivityFailure && e.cause?.message == 'AuthError') {
-      console.log('retrying with new token');
-
-      const activity = input.activityType;
-
-      //call generateNewEncryptedToken to get new token
-      await generateNewEncryptedToken();
+async function tokenToContext<T>(p: Promise<T>, onFail: (err: unknown) => void): Promise<T> {
 
 
-      //retry original activity with new token in context
-      //TODO
-
-    }
-    onFail(e);
-    throw e;
-  });
-}
-
-
-function tokenToContext<T>(p: Promise<T>, onFail: (e: unknown) => void): Promise<T> {
-
-  void p.then((result => {
+  void p.then((result) => {
     const token = result as string;
     getContext().authToken = token;
     return token;
-  }));
+  });
 
-  return p.catch((e) => {
+  try {
+    return await p;
+  } catch (e) {
     onFail(e);
     throw e;
-  });
+  }
 }

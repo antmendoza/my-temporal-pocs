@@ -12,7 +12,7 @@ export async function generateNewEncryptedToken(): Promise<string> {
   const token = uuid4();
   log.info(`newEncryptedToken ${token}`);
 
-  return token;
+  return 'new_token_' + token;
 }
 
 export async function throwError(throw_: boolean): Promise<void> {

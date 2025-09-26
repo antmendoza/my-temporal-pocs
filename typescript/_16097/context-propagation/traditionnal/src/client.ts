@@ -3,6 +3,7 @@ import { Connection, Client } from '@temporalio/client';
 import { sampleWorkflow } from './workflows';
 import { ContextClientInterceptor } from './context/client-interceptors';
 import { withContext } from './context/context-injection';
+import { uuid4 } from '@temporalio/workflow';
 
 async function run() {
   const connection = await Connection.connect({
@@ -18,7 +19,7 @@ async function run() {
     interceptors: { workflow: [clientInterceptor], schedule: [clientInterceptor] },
   });
 
-  await withContext({ authToken: 'Acme Inc.' }, async () => {
+  await withContext({ authToken: 'initial_token_'+uuid4() }, async () => {
     await client.workflow.execute(sampleWorkflow, {
       taskQueue: 'context-propagation',
       workflowId: 'workflow-' + nanoid(),
