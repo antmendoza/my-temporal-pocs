@@ -168,12 +168,20 @@ class ContextWorklfowInterceptor
 
       const activity = input.activityType;
 
-      const args = input.args ?? [];
 
-//      return this.scheduleActivity(
- //       input,
- //       next
- //     );
+      //change args to [true] to avoid AuthError, only for demo purpose
+      const args = [false];
+
+      const newInput: ActivityInput = {
+        ...input,
+        activityType: activity,
+        args,
+        headers: injectContextHeader(input.headers, getContext()),
+      };
+
+      // @ts-ignore
+      return this.scheduleActivity(newInput, next);
+
     }
     onFail(e);
     throw e;
