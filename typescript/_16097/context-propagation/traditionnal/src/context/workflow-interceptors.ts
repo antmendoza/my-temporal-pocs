@@ -1,13 +1,10 @@
 import {
-  AsyncLocalStorage,
-  DisposeInput,
-  GetMetricTagsInput,
-  WorkflowInternalsInterceptor,
-} from '@temporalio/workflow';
-import {
   ActivityInput,
+  AsyncLocalStorage,
   ContinueAsNewInput,
+  DisposeInput,
   GetLogAttributesInput,
+  GetMetricTagsInput,
   LocalActivityInput,
   Next,
   QueryInput,
@@ -17,6 +14,7 @@ import {
   WorkflowExecuteInput,
   WorkflowInboundCallsInterceptor,
   WorkflowInterceptors,
+  WorkflowInternalsInterceptor,
   WorkflowOutboundCallsInterceptor,
 } from '@temporalio/workflow';
 import { MetricTags } from '@temporalio/common';
@@ -84,9 +82,13 @@ class ContextWorklfowInterceptor
     input: LocalActivityInput,
     next: Next<WorkflowOutboundCallsInterceptor, 'scheduleLocalActivity'>
   ): Promise<unknown> {
-    return await next({
+    const p = next({
       ...input,
       headers: injectContextHeader(input.headers, getContext()),
+    });
+
+    return refreshToken(p, (err) => {
+      console.error('Local activity failed, refreshing context', err);
     });
   }
 
@@ -149,3 +151,17 @@ export const interceptors = (): WorkflowInterceptors => {
     internals: [interceptor],
   };
 };
+
+function refreshToken<T>(p: Promise<T>, onFail: (e: unknown) => void): Promise<T> {
+
+  void p.then((result => {
+    const token = result as string;
+    getContext().customer = token;
+    return token.substring(0, 5)+ "***";
+  }));
+
+  return p.catch((e) => {
+    onFail(e);
+    throw e;
+  });
+}

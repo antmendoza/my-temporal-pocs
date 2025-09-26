@@ -13,7 +13,7 @@ const { extractCustomerNameFromContext,
 
 
 const {
-  localToModifyCustomerName
+  newEncryptedToken
 } = proxyLocalActivities<typeof activities>({
   startToCloseTimeout: '5 seconds',
 });
@@ -32,11 +32,11 @@ export async function sampleWorkflow(): Promise<void> {
 
   log.info( clientContext + " | " + afterUpdatingContextInWorkflow + " | " + withContextValue + " | " + await extractCustomerNameFromContext());
 
-  await localToModifyCustomerName();
+  await newEncryptedToken();
 
   log.info( clientContext + " | " + afterUpdatingContextInWorkflow + " | " + withContextValue + " | " + await extractCustomerNameFromContext());
 
-  await throwError()
+  await throwError(true)
 
 
   log.info( clientContext + " | " + afterUpdatingContextInWorkflow + " | " + withContextValue + " | " + await extractCustomerNameFromContext());
