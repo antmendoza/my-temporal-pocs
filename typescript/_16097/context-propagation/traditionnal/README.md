@@ -8,5 +8,12 @@
 1. In another shell, `npm run workflow` to run the Workflow.
 
 
+The code use context propagation to pass a token to activities. If the activity throws an `AuthError`, the workflow interceptor will catch it, generate a new token, store it, and retry the activity.
 
-![img.png](img.png)
+Relevant code:
+- [WorkflowOutBoundCallsInterceptor.scheduleLocalActivity](./src/context/workflow-interceptors.ts#L50)
+- [WorkflowOutBoundCallsInterceptor.scheduleActivity](./src/context/workflow-interceptors.ts#L68)
+- [WorkflowOutBoundCallsInterceptor.handleAuthError](./src/context/workflow-interceptors.ts#L150)
+
+
+- ![img.png](img.png)

@@ -74,7 +74,7 @@ class ContextWorklfowInterceptor
       headers: injectContextHeader(input.headers, getContext()),
     });
 
-    return await this.checkAndRetryWithNewToken(input, promise, next, (err) => {
+    return await this.handleAuthError(input, promise, next, (err) => {
       //console.error(err);
     });
   }
@@ -147,7 +147,7 @@ class ContextWorklfowInterceptor
     next(input);
   }
 
-  private async checkAndRetryWithNewToken(
+  private async handleAuthError(
     input: ActivityInput,
     p: Promise<unknown>,
     next: Next<WorkflowOutboundCallsInterceptor, 'scheduleActivity'>,
