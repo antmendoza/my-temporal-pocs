@@ -1,6 +1,7 @@
 import {
   ActivityFailure,
   ActivityInput,
+  ApplicationFailure,
   AsyncLocalStorage,
   ContinueAsNewInput,
   DisposeInput,
@@ -42,10 +43,11 @@ export function getContext(): PropagatedContext {
   return contextStorage.getStore() ?? {};
 }
 
-class ContextWorklfowInterceptor
+class ContextWorkflowInterceptor
   implements WorkflowInboundCallsInterceptor, WorkflowOutboundCallsInterceptor, WorkflowInternalsInterceptor
 {
   private executionContext: PropagatedContext | undefined;
+  private retries: number = 0;
 
   async scheduleLocalActivity(
     input: LocalActivityInput,
@@ -154,19 +156,29 @@ class ContextWorklfowInterceptor
     onFail: (err: unknown) => void
   ): Promise<unknown> {
     try {
-      return await p;
+      const result = await p;
+      this.retries = 0;
+      return result;
     } catch (e) {
       if (e instanceof ActivityFailure && e.cause?.message == 'AuthError') {
+        if (this.retries > 5) {
+          throw ApplicationFailure.nonRetryable(`Too many retries [${this.retries}], with invalid token`, 'AuthError');
+        }
+
+        this.retries++;
         console.log('retrying to get new token');
 
         //call generateNewEncryptedToken to get new token
         await generateNewEncryptedToken();
 
         //retry the original activity with new token in context
-        return await this.scheduleActivity({
-          ...input,
-          headers: injectContextHeader(input.headers, getContext()),
-        }, next);
+        return await this.scheduleActivity(
+          {
+            ...input,
+            headers: injectContextHeader(input.headers, getContext()),
+          },
+          next
+        );
       }
       onFail(e);
       throw e;
@@ -175,7 +187,7 @@ class ContextWorklfowInterceptor
 }
 
 export const interceptors = (): WorkflowInterceptors => {
-  const interceptor = new ContextWorklfowInterceptor();
+  const interceptor = new ContextWorkflowInterceptor();
   return {
     inbound: [interceptor],
     outbound: [interceptor],
