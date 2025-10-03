@@ -113,6 +113,7 @@ public class HelloActivityReplayTest {
                     .build());
 
     WorkflowStub.fromTyped(workflow).start("Hello");
+
     // wait until workflow completes
     WorkflowStub.fromTyped(workflow).getResult(String.class);
   }
@@ -124,8 +125,12 @@ public class HelloActivityReplayTest {
             HelloActivity.GreetingActivities.class,
             LocalActivityOptions.newBuilder()
                 .setStartToCloseTimeout(Duration.ofSeconds(2))
+
+                    //This is the only difference
                 .setDoNotIncludeArgumentsIntoMarker(true)
-                .build());
+
+
+                    .build());
 
     @Override
     public String getGreeting(String name) {
