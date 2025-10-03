@@ -28,32 +28,33 @@ import io.temporal.internal.common.WorkflowExecutionHistory;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.testing.WorkflowReplayer;
 import io.temporal.workflow.Workflow;
+import java.time.Duration;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.time.Duration;
-
 public class HelloActivityReplayTest {
 
-    @Rule
-    public TestWorkflowRule testWorkflowRule =
-            TestWorkflowRule.newBuilder()
-                    // This use temporal service, Temporal has to be running in localhost:7233
-                    .setUseExternalService(true)
-                    .setNamespace("default")
-                    .setDoNotStart(true)
-                    .build();
+  @Rule
+  public TestWorkflowRule testWorkflowRule =
+      TestWorkflowRule.newBuilder()
+          // This use temporal service, Temporal has to be running in localhost:7233
+          .setUseExternalService(true)
+          .setNamespace("default")
+          .setDoNotStart(true)
+          .build();
 
-    @Test
-    public void replayWorkflowExecutionSameImplementation() throws Exception {
+  @Test
+  public void replayWorkflowExecutionSameImplementation() throws Exception {
 
-        final String eventHistory = executeWorkflow(HelloActivity.GreetingWorkflowImpl.class);
+    executeWorkflow(HelloActivity.GreetingWorkflowImpl.class);
 
-        // write json to file
-        //    Path path = Path.of("src/test/resources/HelloActivityHistory.json");
+    String eventHistoryAsString = getEventHistoryAsString();
 
-        // Ensure parent directories exist
-        //    Files.createDirectories(path.getParent());
+    // write json to file
+    //    Path path = Path.of("src/test/resources/HelloActivityHistory.json");
+
+    // Ensure parent directories exist
+    //    Files.createDirectories(path.getParent());
 
     /*   Files.writeString(
                path,
@@ -64,67 +65,73 @@ public class HelloActivityReplayTest {
        );
     */
 
-        WorkflowReplayer.replayWorkflowExecution(
-                eventHistory, HelloActivity.GreetingWorkflowImpl.class);
-    }
+    WorkflowReplayer.replayWorkflowExecution(
+        eventHistoryAsString, HelloActivity.GreetingWorkflowImpl.class);
+  }
 
-    @Test
-    public void replayWorkflowExecutionDifferentImplementation() throws Exception {
+  // This test execute the workflow with one implementation (GreetingWorkflowImpl) and
+  // replay the even history with a different implementation (GreetingWorkflowImplTest),
+  @Test
+  public void replayWorkflowExecutionDifferentImplementation() throws Exception {
 
-        // We are executing the workflow with one implementation (GreetingWorkflowImpl) and
-        // to replay the even history with a different implementation (GreetingWorkflowImplTest),
-        final String eventHistory = executeWorkflow(GreetingWorkflowImplTest.class);
+    executeWorkflow(GreetingWorkflowImplTest.class);
 
-        WorkflowReplayer.replayWorkflowExecution(
-                eventHistory, HelloActivity.GreetingWorkflowImpl.class);
-    }
+    String eventHistoryAsString = getEventHistoryAsString();
 
-    private String executeWorkflow(
-            Class<? extends HelloActivity.GreetingWorkflow> workflowImplementationType) {
+    WorkflowReplayer.replayWorkflowExecution(
+        eventHistoryAsString, HelloActivity.GreetingWorkflowImpl.class);
+  }
 
+  private String getEventHistoryAsString() {
+    return new WorkflowExecutionHistory(
+            testWorkflowRule.getHistory(
+                WorkflowExecution.newBuilder().setWorkflowId(HelloActivity.WORKFLOW_ID).build()))
+        .toJson(true);
+  }
+
+  private void executeWorkflow(
+      Class<? extends HelloActivity.GreetingWorkflow> workflowImplementationType) {
+
+    testWorkflowRule
+        .getWorker()
+        .registerActivitiesImplementations(new HelloActivity.GreetingActivitiesImpl());
+
+    testWorkflowRule.getWorker().registerWorkflowImplementationTypes(workflowImplementationType);
+
+    testWorkflowRule.getTestEnvironment().start();
+
+    HelloActivity.GreetingWorkflow workflow =
         testWorkflowRule
-                .getWorker()
-                .registerActivitiesImplementations(new HelloActivity.GreetingActivitiesImpl());
+            .getWorkflowClient()
+            .newWorkflowStub(
+                HelloActivity.GreetingWorkflow.class,
+                WorkflowOptions.newBuilder()
+                    .setWorkflowId(HelloActivity.WORKFLOW_ID)
+                    .setTaskQueue(testWorkflowRule.getTaskQueue())
+                    .setWorkflowIdReusePolicy(
+                        WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
+                    .build());
 
-        testWorkflowRule.getWorker().registerWorkflowImplementationTypes(workflowImplementationType);
+    WorkflowStub.fromTyped(workflow).start("Hello");
+    // wait until workflow completes
+    WorkflowStub.fromTyped(workflow).getResult(String.class);
+  }
 
-        testWorkflowRule.getTestEnvironment().start();
+  public static class GreetingWorkflowImplTest implements HelloActivity.GreetingWorkflow {
 
-        HelloActivity.GreetingWorkflow workflow =
-                testWorkflowRule
-                        .getWorkflowClient()
-                        .newWorkflowStub(
-                                HelloActivity.GreetingWorkflow.class,
-                                WorkflowOptions.newBuilder()
-                                        .setWorkflowId(HelloActivity.WORKFLOW_ID)
-                                        .setTaskQueue(testWorkflowRule.getTaskQueue())
-                                        .setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
-                                        .build());
-        WorkflowExecution execution = WorkflowStub.fromTyped(workflow).start("Hello");
-        // wait until workflow completes
-        WorkflowStub.fromTyped(workflow).getResult(String.class);
+    private final HelloActivity.GreetingActivities activities =
+        Workflow.newLocalActivityStub(
+            HelloActivity.GreetingActivities.class,
+            LocalActivityOptions.newBuilder()
+                .setStartToCloseTimeout(Duration.ofSeconds(2))
+                .setDoNotIncludeArgumentsIntoMarker(true)
+                .build());
 
-        return new WorkflowExecutionHistory(
-                testWorkflowRule.getHistory(
-                        WorkflowExecution.newBuilder().setWorkflowId(HelloActivity.WORKFLOW_ID).build()))
-                .toJson(true);
+    @Override
+    public String getGreeting(String name) {
+
+      // This is a blocking call that returns only after the activity has completed.
+      return activities.composeGreeting("Hello", name);
     }
-
-    public static class GreetingWorkflowImplTest implements HelloActivity.GreetingWorkflow {
-
-        private final HelloActivity.GreetingActivities activities =
-                Workflow.newLocalActivityStub(
-                        HelloActivity.GreetingActivities.class,
-                        LocalActivityOptions.newBuilder()
-                                .setStartToCloseTimeout(Duration.ofSeconds(2))
-                                .setDoNotIncludeArgumentsIntoMarker(true)
-                                .build());
-
-        @Override
-        public String getGreeting(String name) {
-
-            // This is a blocking call that returns only after the activity has completed.
-            return activities.composeGreeting("Hello", name);
-        }
-    }
+  }
 }
