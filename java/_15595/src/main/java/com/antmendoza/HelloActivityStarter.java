@@ -19,14 +19,12 @@
 
 package com.antmendoza;
 
+import static com.antmendoza.HelloActivity.TASK_QUEUE;
+import static com.antmendoza.HelloActivity.WORKFLOW_ID;
+
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.worker.Worker;
-import io.temporal.worker.WorkerFactory;
-
-import static com.antmendoza.HelloActivity.TASK_QUEUE;
-import static com.antmendoza.HelloActivity.WORKFLOW_ID;
 
 /** Sample Temporal Workflow Definition that executes a single Activity. */
 public class HelloActivityStarter {
@@ -45,8 +43,6 @@ public class HelloActivityStarter {
      */
     WorkflowClient client = WorkflowClient.newInstance(service);
 
-
-
     // Create the workflow client stub. It is used to start our workflow execution.
     HelloActivity.GreetingWorkflow workflow =
         client.newWorkflowStub(
@@ -55,7 +51,6 @@ public class HelloActivityStarter {
                 .setWorkflowId(WORKFLOW_ID)
                 .setTaskQueue(TASK_QUEUE)
                 .build());
-
 
     String greeting = workflow.getGreeting("World");
 

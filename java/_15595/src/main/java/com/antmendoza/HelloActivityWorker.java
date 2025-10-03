@@ -19,14 +19,12 @@
 
 package com.antmendoza;
 
+import static com.antmendoza.HelloActivity.TASK_QUEUE;
+
 import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
-
-import static com.antmendoza.HelloActivity.TASK_QUEUE;
-import static com.antmendoza.HelloActivity.WORKFLOW_ID;
 
 /** Sample Temporal Workflow Definition that executes a single Activity. */
 public class HelloActivityWorker {
@@ -74,7 +72,5 @@ public class HelloActivityWorker {
      * The started workers then start polling for workflows and activities.
      */
     factory.start();
-
-
   }
 }
