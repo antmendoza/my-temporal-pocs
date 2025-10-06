@@ -1,209 +1,163 @@
 package io.temporal.samples.hello;
 
-import io.temporal.activity.*;
+import io.temporal.activity.ActivityInterface;
+import io.temporal.activity.ActivityMethod;
+import io.temporal.activity.ActivityOptions;
+import io.temporal.api.common.v1.Payload;
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.common.RetryOptions;
+import io.temporal.common.context.ContextPropagator;
+import io.temporal.common.converter.DataConverter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
-import io.temporal.workflow.*;
-
+import io.temporal.workflow.Workflow;
+import io.temporal.workflow.WorkflowInterface;
+import io.temporal.workflow.WorkflowMethod;
 import java.time.Duration;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class HelloActivity {
 
+    // Define the task queue name
     static final String TASK_QUEUE = "HelloActivityTaskQueue";
 
+    // Define our workflow unique id
     static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
+    @WorkflowInterface
+    public interface GreetingWorkflow {
 
+        @WorkflowMethod
+        String run();
+    }
 
     @ActivityInterface
-    public interface MyActivities {
+    public interface GreetingActivities {
 
-        @ActivityMethod
-        String sleep_time(int ms);
-
-        @ActivityMethod
-        String start_workflow(int ms);
+        @ActivityMethod(name = "greet")
+        String extractContext();
     }
 
+    public static class GreetingWorkflowImpl implements GreetingWorkflow {
 
-
-    @WorkflowInterface
-    public static interface MyWorkflow {
-        @WorkflowMethod
-        String run(String name);
-
-        @UpdateMethod
-        String update();
-
-        @SignalMethod
-        void signal();
-    }
-    // Define the workflow implementation which implements our getGreeting workflow method.
-    public static class MyWorkflowImpl implements MyWorkflow {
-
-
-        private final Logger logger = Workflow.getLogger(MyWorkflowImpl.class.getName());
-
-
-        private final MyActivities activities = Workflow.newActivityStub(
-                MyActivities.class,
-                ActivityOptions.newBuilder()
-                        .setTaskQueue(TASK_QUEUE)
-                        .setStartToCloseTimeout(
-                                Duration.ofMillis(15_000)
-                        )
-                        .setRetryOptions(RetryOptions.newBuilder()
-                                .setBackoffCoefficient(1)
-                                .setInitialInterval(Duration.ofSeconds(5))
-                                .build())
-                        .build());
-
-        private final MyActivities localActivity = Workflow.newLocalActivityStub(
-                MyActivities.class,
-                LocalActivityOptions.newBuilder()
-                        .setStartToCloseTimeout(
-                                //setting to a very large value for demo purpose.
-                                Duration.ofMillis(100_000)
-                        )
-                        .setRetryOptions(RetryOptions.newBuilder()
-                                .setBackoffCoefficient(1)
-                                .build())
-                        .build());
-
-
-
-
-        private CompletablePromise<String> promise = null;
-
-        public String run(String name) {
-
-
-            Async.function(() -> {
-                localActivity.start_workflow(10_000);
-                promise = Workflow.newPromise();
-                return promise;
-            });
-
-
-            localActivity.sleep_time(400);
-            localActivity.sleep_time(400);
-
-
-            //artificially sleep the workflow to allow the local activity to complete.
-            Workflow.sleep(20_000);
-
-
-
-            return "done";
-
-        }
+        private final GreetingActivities activities =
+                Workflow.newActivityStub(
+                        GreetingActivities.class,
+                        ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(2)).build());
 
         @Override
-        public String update() {
-            return null;
+        public String run() {
+            return activities.extractContext();
         }
-
-        @Override
-        public void signal() {
-            logger.info("Signal received ...");
-
-
-            //another approach is setting a variable to true and moving the workflow
-            //await to the main workflow method.
-            //this.signaled = true;
-            //and then in the main workflow method:
-            //Workflow.await(() -> promise != null && this.signaled);
-            Workflow.await(() -> promise != null);
-
-            logger.info(" promise: " + promise);
-
-            logger.info("Processing signal ...");
-            promise.complete(null);
-
-
-        }
-
-
     }
 
-    public static class MyActivitiesImpl implements MyActivities {
-        private static final Logger log = LoggerFactory.getLogger("-");
+    /** Simple activity implementation, that concatenates two strings. */
+    public static class GreetingActivitiesImpl implements GreetingActivities {
 
         @Override
-        public String sleep_time(int ms) {
-
-            try {
-                Thread.sleep(ms);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            return "";
+        public String extractContext() {
+            return MDC.get("my-context");
         }
-
-        @Override
-        public String start_workflow(int ms) {
-
-            log.info("start_workflow activity: Starting a new workflow from activity...");
-
-            sleep_time(ms);
-
-            log.info("start_workflow activity: About to complete ...");
-
-            return "";
-        }
-
-
     }
+
     public static void main(String[] args) {
 
         WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-        WorkflowClient client = WorkflowClient.newInstance(service);
+        WorkflowClient client =
+                WorkflowClient.newInstance(
+                        service,
+                        WorkflowClientOptions.newBuilder()
+                                .setContextPropagators(Collections.singletonList(new MDCContextPropagator()))
+                                .build());
 
         WorkerFactory factory = WorkerFactory.newInstance(client);
 
         Worker worker = factory.newWorker(TASK_QUEUE);
 
-        worker.registerWorkflowImplementationTypes(MyWorkflowImpl.class);
+        worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
 
-        worker.registerActivitiesImplementations(new MyActivitiesImpl());
+        worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
 
         factory.start();
 
+        MDC.put("my-context", "hello from context propagator");
+
         // Create the workflow client stub. It is used to start our workflow execution.
-        MyWorkflow workflow =
+        GreetingWorkflow workflow =
                 client.newWorkflowStub(
-                        MyWorkflow.class,
+                        GreetingWorkflow.class,
                         WorkflowOptions.newBuilder()
                                 .setWorkflowId(WORKFLOW_ID)
                                 .setTaskQueue(TASK_QUEUE)
                                 .build());
 
+        String greeting = workflow.run();
 
-        WorkflowClient.start(workflow::run, "World");
-
-
-        // wait for a few seconds to let the local activity start and start the external workflow
-        try {
-            Thread.sleep(2_000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        // send a signal to the workflow
-        workflow.signal();
-
-        // wait for workflow completion
-        client.newUntypedWorkflowStub(WORKFLOW_ID).getResult(String.class);
-
+        System.out.println(greeting);
         System.exit(0);
     }
+
+    public static class MDCContextPropagator implements ContextPropagator {
+
+
+        @Override
+        public String getName() {
+            return this.getClass().getName();
+        }
+
+        @Override
+        public Object getCurrentContext() {
+            Map<String, String> context = new HashMap<>();
+            if (MDC.getCopyOfContextMap() == null) {
+                return context;
+            }
+            for (Map.Entry<String, String> entry : MDC.getCopyOfContextMap().entrySet()) {
+                if (entry.getKey().startsWith("my-context")) {
+                    context.put(entry.getKey(), entry.getValue());
+                }
+            }
+            return context;
+        }
+
+        @Override
+        public void setCurrentContext(Object context) {
+            Map<String, String> contextMap = (Map<String, String>) context;
+            for (Map.Entry<String, String> entry : contextMap.entrySet()) {
+                MDC.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        @Override
+        public Map<String, Payload> serializeContext(Object context) {
+            Map<String, String> contextMap = (Map<String, String>) context;
+            Map<String, Payload> serializedContext = new HashMap<>();
+            for (Map.Entry<String, String> entry : contextMap.entrySet()) {
+                serializedContext.put(
+                        entry.getKey(), DataConverter.getDefaultInstance().toPayload(entry.getValue()).get());
+            }
+            return serializedContext;
+        }
+
+        @Override
+        public Object deserializeContext(Map<String, Payload> context) {
+            Map<String, String> contextMap = new HashMap<>();
+            for (Map.Entry<String, Payload> entry : context.entrySet()) {
+                contextMap.put(
+                        entry.getKey(),
+                        DataConverter.getDefaultInstance()
+                                .fromPayload(entry.getValue(), String.class, String.class));
+            }
+            return contextMap;
+        }
+    }
 }
+
+
