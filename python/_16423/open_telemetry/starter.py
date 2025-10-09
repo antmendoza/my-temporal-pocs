@@ -13,7 +13,7 @@ async def main():
     client = await Client.connect(
         "localhost:7233",
         # Use OpenTelemetry interceptor
-        interceptors=[TracingInterceptor()],
+        interceptors=[TracingInterceptor(always_create_workflow_spans=True)],
         runtime=runtime,
     )
 
