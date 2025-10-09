@@ -5,6 +5,11 @@ This sample shows how to configure OpenTelemetry to capture workflow traces and 
 For this sample, the optional `open_telemetry` dependency group must be included. To include, run:
 ```bash
 
+
+    uv python install 3.13
+
+    uv sync
+
     uv sync --group open-telemetry
 ```
 
@@ -14,11 +19,11 @@ To run, first see [README.md](../README.md) for prerequisites. Then run the foll
 ```
 Now, start the worker in its own terminal:
 ```bash
-    uv run open_telemetry/worker.py
+    uv run worker.py
 ```
 Then, in another terminal, run the following to execute the workflow:
 ```bash
-    uv run open_telemetry/starter.py
+    uv run starter.py
 ```
 The workflow should complete with the hello result.
 
