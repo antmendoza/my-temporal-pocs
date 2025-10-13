@@ -1,5 +1,6 @@
 import asyncio
 
+from temporalio.api.enums.v1.workflow_pb2 import WORKFLOW_ID_CONFLICT_POLICY_TERMINATE_EXISTING
 from temporalio.client import Client
 from temporalio.contrib.opentelemetry import TracingInterceptor
 
@@ -13,7 +14,9 @@ async def main():
     client = await Client.connect(
         "localhost:7233",
         # Use OpenTelemetry interceptor
-        interceptors=[TracingInterceptor(always_create_workflow_spans=True)],
+        interceptors=[TracingInterceptor(
+        #    always_create_workflow_spans=True
+        )],
         runtime=runtime,
     )
 
@@ -23,6 +26,7 @@ async def main():
         "Temporal",
         id=f"open_telemetry-workflow-id",
         task_queue="open_telemetry-task-queue",
+        id_conflict_policy=WORKFLOW_ID_CONFLICT_POLICY_TERMINATE_EXISTING
     )
     print(f"Workflow result: {result}")
 
