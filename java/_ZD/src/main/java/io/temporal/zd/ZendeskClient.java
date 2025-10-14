@@ -28,6 +28,8 @@ public class ZendeskClient {
   private final String authHeader;
   private final HttpClient http;
   private final ObjectMapper mapper = new ObjectMapper();
+  private final long minIntervalMillis;
+  private long lastRequestAtMs = 0L;
 
   public ZendeskClient(String baseUrl, String email, String secret, boolean useApiToken) {
     this(baseUrl, email, secret, useApiToken, Duration.ofSeconds(30));
@@ -52,6 +54,7 @@ public class ZendeskClient {
             .connectTimeout(timeout)
             .version(HttpClient.Version.HTTP_1_1)
             .build();
+    this.minIntervalMillis = 1000L; // guardrail: max 1 request per second
   }
 
   /**
@@ -61,16 +64,10 @@ public class ZendeskClient {
    * @return List of ticket objects (as JsonNode)
    */
   public List<JsonNode> listTicketsInView(long viewId) throws IOException, InterruptedException {
-    Thread.sleep(1000);
-    System.out.println("Fetching tickets in view " + viewId + "...");
-
     List<JsonNode> tickets = new ArrayList<>();
     String url = baseUrl + "/api/v2/views/" + viewId + "/tickets.json";
 
     while (url != null) {
-
-      System.out.println("  GET " + url);
-
       JsonNode body = sendGet(url);
       ArrayNode pageTickets = asArray(body.get("tickets"));
       if (pageTickets != null) {
@@ -85,10 +82,6 @@ public class ZendeskClient {
 
   /** Fetch all comments for a ticket, following pagination. */
   public List<JsonNode> listTicketComments(long ticketId) throws IOException, InterruptedException {
-
-    Thread.sleep(1000);
-    System.out.println("Fetching ticket comments for ticket " + ticketId + "...");
-
     List<JsonNode> comments = new ArrayList<>();
     String url = baseUrl + "/api/v2/tickets/" + ticketId + "/comments.json";
 
@@ -114,10 +107,6 @@ public class ZendeskClient {
     List<JsonNode> tickets = listTicketsInView(viewId);
     List<ObjectNode> out = new ArrayList<>();
     for (JsonNode t : tickets) {
-
-      Thread.sleep(1000);
-      System.out.println("Fetching ticket " + t.path("id").asLong() + "...");
-
       long id = t.path("id").asLong();
       List<JsonNode> comments = listTicketComments(id);
       ObjectNode bundle = mapper.createObjectNode();
@@ -131,6 +120,9 @@ public class ZendeskClient {
   }
 
   private JsonNode sendGet(String url) throws IOException, InterruptedException {
+
+    System.out.println("url " + url);
+
     HttpRequest req =
         HttpRequest.newBuilder()
             .uri(URI.create(url))
@@ -140,6 +132,7 @@ public class ZendeskClient {
             .GET()
             .build();
 
+    throttle();
     HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
     int code = resp.statusCode();
     if (code == 429) { // rate limited; attempt naive retry with backoff header if present
@@ -150,6 +143,7 @@ public class ZendeskClient {
       } catch (NumberFormatException ignored) {
         Thread.sleep(1000);
       }
+      throttle();
       resp = http.send(req, HttpResponse.BodyHandlers.ofString());
       code = resp.statusCode();
     }
@@ -158,6 +152,17 @@ public class ZendeskClient {
       throw new IOException("Zendesk API request failed: " + code + " " + msg + " (" + url + ")");
     }
     return mapper.readTree(resp.body());
+  }
+
+  // Ensure we do not exceed one request per second
+  private synchronized void throttle() throws InterruptedException {
+    long now = System.currentTimeMillis();
+    long elapsed = now - lastRequestAtMs;
+    long wait = minIntervalMillis - elapsed;
+    if (lastRequestAtMs != 0 && wait > 0) {
+      Thread.sleep(wait);
+    }
+    lastRequestAtMs = System.currentTimeMillis();
   }
 
   private static String truncate(String s, int max) {
