@@ -119,6 +119,35 @@ public class ZendeskClient {
     return out;
   }
 
+  /**
+   * Fetch organizations by IDs using Zendesk show_many endpoint. Returns a list of organization
+   * objects. Caller can map by {@code id}.
+   */
+  public List<JsonNode> getOrganizationsByIds(List<Long> ids)
+      throws IOException, InterruptedException {
+    List<JsonNode> orgs = new ArrayList<>();
+    if (ids == null || ids.isEmpty()) return orgs;
+
+    // Zendesk show_many supports up to 100 ids at a time.
+    final int BATCH = 100;
+    for (int i = 0; i < ids.size(); i += BATCH) {
+      int end = Math.min(ids.size(), i + BATCH);
+      List<Long> batch = ids.subList(i, end);
+      StringBuilder sb = new StringBuilder();
+      for (int j = 0; j < batch.size(); j++) {
+        if (j > 0) sb.append(',');
+        sb.append(batch.get(j));
+      }
+      String url = baseUrl + "/api/v2/organizations/show_many.json?ids=" + sb;
+      JsonNode body = sendGet(url);
+      ArrayNode arr = asArray(body.get("organizations"));
+      if (arr != null) {
+        for (JsonNode o : arr) orgs.add(o);
+      }
+    }
+    return orgs;
+  }
+
   private JsonNode sendGet(String url) throws IOException, InterruptedException {
 
     System.out.println("url " + url);

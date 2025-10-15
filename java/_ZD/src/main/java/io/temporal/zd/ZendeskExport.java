@@ -34,7 +34,39 @@ public class ZendeskExport {
     }
 
     List<ObjectNode> bundles = client.listViewTicketsWithComments(viewId);
+
+    // Collect organization IDs from tickets and fetch org details once
+    List<Long> orgIds = new ArrayList<>();
     for (ObjectNode b : bundles) {
+      JsonNode ticket = b.path("ticket");
+      if (ticket != null) {
+        long orgId = ticket.path("organization_id").asLong(0);
+        if (orgId != 0) orgIds.add(orgId);
+      }
+    }
+    // Remove duplicates while preserving order
+    List<Long> dedupedOrgIds = orgIds.stream().distinct().toList();
+    List<JsonNode> orgs = client.getOrganizationsByIds(dedupedOrgIds);
+    // Build a simple id -> org map
+    java.util.Map<Long, JsonNode> orgById = new java.util.HashMap<>();
+    for (JsonNode o : orgs) {
+      long id = o.path("id").asLong(0);
+      if (id != 0) orgById.put(id, o);
+    }
+
+    for (ObjectNode b : bundles) {
+      // Enrich ticket with organization name and external id if available
+      JsonNode ticket = b.path("ticket");
+      if (ticket != null && ticket.isObject()) {
+        long orgId = ticket.path("organization_id").asLong(0);
+        JsonNode org = orgById.get(orgId);
+        if (org != null && org.isObject()) {
+          String orgName = org.path("name").asText(null);
+          String orgExternalId = org.path("external_id").asText(null);
+          ((ObjectNode) ticket).put("organization_name", orgName);
+          ((ObjectNode) ticket).put("organization_external_id", orgExternalId);
+        }
+      }
       // Remove personal information before writing
       sanitizeInPlace(b);
       long id = b.path("ticket").path("id").asLong();
