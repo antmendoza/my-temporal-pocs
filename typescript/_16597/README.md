@@ -28,7 +28,7 @@ export TEMPORAL_CLIENT_CERT_PATH=/Users/temporalio/dev/temporal/certificates/nam
 export TEMPORAL_CLIENT_KEY_PATH=/Users/temporalio/dev/temporal/certificates/namespace-antonio-perez/client.key
 
 
-npm run workflow
+npm run metrics
 ```
 
 

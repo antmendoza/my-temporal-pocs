@@ -4,6 +4,7 @@ import { DefaultLogger, Runtime } from '@temporalio/worker';
 import { getEnv } from './helpers';
 import { MetricReader } from '@opentelemetry/sdk-metrics';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
+import { metrics } from '@opentelemetry/api';
 
 async function run() {
   Runtime.install({
@@ -29,6 +30,33 @@ async function run() {
   });
 
   await otel.start();
+  // After the SDK starts, the global MeterProvider is registered.
+  const meter = metrics.getMeter('temporal-metrics');
+
+  // Expose two observable gauges: one for workflow tasks, one for activity tasks.
+  const taskQueue = 'interceptors-opentelemetry-example';
+  let workflowBacklog = 0;
+  let activityBacklog = 0;
+
+  meter
+    .createObservableGauge('temporal_workflow_task_backlog', {
+      description: 'Approximate backlog count for workflow tasks per task queue',
+    })
+    .addCallback((observableResult) => {
+      observableResult.observe(workflowBacklog, {
+        task_queue: taskQueue,
+      });
+    });
+
+  meter
+    .createObservableGauge('temporal_activity_task_backlog', {
+      description: 'Approximate backlog count for activity tasks per task queue',
+    })
+    .addCallback((observableResult) => {
+      observableResult.observe(activityBacklog, {
+        task_queue: taskQueue,
+      });
+    });
   // Connect to localhost with default ConnectionOptions,
   // pass options to the Connection constructor to configure TLS and other settings.
 
@@ -50,7 +78,6 @@ async function run() {
     },
   });
 
-  const taskQueue = 'interceptors-opentelemetry-example';
   try {
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -63,7 +90,9 @@ async function run() {
         taskQueueType: 0, //"TASK_QUEUE_TYPE_WORKFLOW"
       });
 
-      console.log('Workflow :' + taskQueueDescWorkflow.stats?.approximateBacklogCount);
+      // @ts-ignore
+      workflowBacklog = taskQueueDescWorkflow.stats?.approximateBacklogCount ?? 0;
+      console.log('Workflow :' + workflowBacklog);
 
       const taskQueueDescActivity = await connection.workflowService.describeTaskQueue({
         namespace,
@@ -74,7 +103,9 @@ async function run() {
         taskQueueType: 1, //"TASK_QUEUE_TYPE_ACTIVITY"
       });
 
-      console.log('Activity :' + taskQueueDescActivity.stats?.approximateBacklogCount);
+      // @ts-ignore
+      activityBacklog = taskQueueDescActivity.stats?.approximateBacklogCount ?? 0;
+      console.log('Activity :' + activityBacklog);
 
       // Sleep 1 second
       await new Promise((resolve) => setTimeout(resolve, 2000));

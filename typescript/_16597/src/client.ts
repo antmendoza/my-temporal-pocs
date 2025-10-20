@@ -1,36 +1,8 @@
 import { Client, Connection } from '@temporalio/client';
-import { NodeSDK } from '@opentelemetry/sdk-node';
 import { example } from './workflows';
-import { DefaultLogger, Runtime } from '@temporalio/worker';
 import { getEnv } from './helpers';
-import { MetricReader } from '@opentelemetry/sdk-metrics';
-import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 
 async function run() {
-  Runtime.install({
-    logger: new DefaultLogger('WARN'),
-
-    telemetryOptions: {
-      metrics: {
-        prometheus: {
-          bindAddress: '127.0.0.1:9093',
-        },
-      },
-    },
-  });
-
-  const metricReader: MetricReader = new PrometheusExporter({
-    host: '127.0.0.1',
-    port: 9094,
-  });
-
-  const otel = new NodeSDK({
-    // @ts-ignore
-    metricReader,
-  });
-
-  await otel.start();
-
   const { address, namespace, serverNameOverride, serverRootCACertificate, clientCert, clientKey } = await getEnv();
 
   const connection = await Connection.connect({
@@ -62,7 +34,6 @@ async function run() {
       console.log(result); // Hello, Temporal!
     }
   } finally {
-    await otel.shutdown();
   }
 }
 
