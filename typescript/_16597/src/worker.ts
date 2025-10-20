@@ -1,21 +1,18 @@
-import { DefaultLogger, Runtime, Worker } from '@temporalio/worker';
+import { DefaultLogger, NativeConnection, Runtime, Worker } from '@temporalio/worker';
 import { Resource } from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { MetricReader } from '@opentelemetry/sdk-metrics';
-
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import {
   makeWorkflowExporter,
-  OpenTelemetryActivityInboundInterceptor,
 } from '@temporalio/interceptors-opentelemetry/lib/worker';
 import * as activities from './activities';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
+import { getEnv } from './helpers';
 
 async function main() {
-  const resource = new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'interceptors-sample-worker',
-  });
+
 
   Runtime.install({
     logger: new DefaultLogger('WARN'),
@@ -23,25 +20,40 @@ async function main() {
     telemetryOptions: {
       metrics: {
         prometheus: {
-          //     // Depending on you execution environment, you might need to set the host to `0.0.0.0` instead;
-          //     // beware however that doing so in environments where this is not needed might expose your
-          //     // metrics to the public Internet. This is why we default to the safer value of `127.0.0.1`.
           bindAddress: '127.0.0.1:9091',
         },
       },
     },
   });
 
+  const { address, namespace, serverNameOverride, serverRootCACertificate, clientCert, clientKey } =
+    await getEnv();
+
+  const connection = await NativeConnection.connect({
+    address,
+    tls: {
+      serverNameOverride,
+      serverRootCACertificate,
+      clientCertPair: clientKey &&
+        clientCert && {
+          crt: clientCert,
+          key: clientKey,
+        },
+    },
+  });
+
+
+
+  const resource = new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: 'interceptors-sample-worker',
+  });
+
+
   // Export spans to console for simplicity
   const exporter = new OTLPTraceExporter();
 
   const metricReader: MetricReader = new PrometheusExporter({
-    //   // Depending on you execution environment, you might need to set `host` to `0.0.0.0` instead;
-    //   // beware however that doing so in environments where this is not needed might expose your metrics
-    //   // to the public Internet. This is why we default to the safer value of `127.0.0.1`.
     host: '127.0.0.1',
-
-    //   // Runtime's metrics will be exposed on port 9091, Node's metrics on 9092.
     port: 9092,
   });
 
@@ -60,11 +72,15 @@ async function main() {
     sinks: {
       exporter: makeWorkflowExporter(exporter, resource),
     },
+    maxConcurrentActivityTaskExecutions:2,
+    maxConcurrentWorkflowTaskExecutions: 4,
     // Registers opentelemetry interceptors for Workflow and Activity calls
     interceptors: {
       // example contains both workflow and interceptors
       workflowModules: [require.resolve('./workflows')],
     },
+    namespace,
+    connection
   });
   try {
     await worker.run();

@@ -1,6 +1,5 @@
-import { Client, Connection } from '@temporalio/client';
+import { Connection } from '@temporalio/client';
 import { NodeSDK } from '@opentelemetry/sdk-node';
-import { example } from './workflows';
 import { DefaultLogger, Runtime } from '@temporalio/worker';
 import { getEnv } from './helpers';
 import { MetricReader } from '@opentelemetry/sdk-metrics';
@@ -30,6 +29,8 @@ async function run() {
   });
 
   await otel.start();
+  // Connect to localhost with default ConnectionOptions,
+  // pass options to the Connection constructor to configure TLS and other settings.
 
   const { address, namespace, serverNameOverride, serverRootCACertificate, clientCert, clientKey } = await getEnv();
 
@@ -49,17 +50,34 @@ async function run() {
     },
   });
 
-  const client = new Client({ connection, namespace });
-
   const taskQueue = 'interceptors-opentelemetry-example';
   try {
-    for (let i = 0; i < 200; i++) {
-      const result = await client.workflow.start(example, {
-        taskQueue,
-        workflowId: 'otel-example-0' + i,
-        args: ['Temporal'],
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const taskQueueDescWorkflow = await connection.workflowService.describeTaskQueue({
+        namespace,
+        taskQueue: { name: taskQueue },
+        includeTaskQueueStatus: true,
+        reportStats: true,
+        reportConfig: true,
+        taskQueueType: 0, //"TASK_QUEUE_TYPE_WORKFLOW"
       });
-      console.log(result); // Hello, Temporal!
+
+      console.log('Workflow :' + taskQueueDescWorkflow.stats?.approximateBacklogCount);
+
+      const taskQueueDescActivity = await connection.workflowService.describeTaskQueue({
+        namespace,
+        taskQueue: { name: taskQueue },
+        includeTaskQueueStatus: true,
+        reportStats: true,
+        reportConfig: true,
+        taskQueueType: 1, //"TASK_QUEUE_TYPE_ACTIVITY"
+      });
+
+      console.log('Activity :' + taskQueueDescActivity.stats?.approximateBacklogCount);
+
+      // Sleep 1 second
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   } finally {
     await otel.shutdown();

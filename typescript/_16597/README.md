@@ -10,9 +10,48 @@ docker-compose up
 ```
 
 ### Running this sample
+```bash
+temporal server start-dev
+```
 
-1. `temporal server start-dev` to start [Temporal Server](https://github.com/temporalio/cli/#installation).
-1. `npm install` to install dependencies.
-1. `npm run start.watch` to start the Worker.
-1. In another shell, `npm run workflow` to run the Workflow.
+```bash
+npm install
+```
 
+
+
+```bash
+
+export TEMPORAL_ADDRESS=antonio.a2dd6.tmprl.cloud:7233
+export TEMPORAL_NAMESPACE=antonio.a2dd6
+export TEMPORAL_CLIENT_CERT_PATH=/Users/temporalio/dev/temporal/certificates/namespace-antonio-perez/client.pem
+export TEMPORAL_CLIENT_KEY_PATH=/Users/temporalio/dev/temporal/certificates/namespace-antonio-perez/client.key
+
+
+npm run workflow
+```
+
+
+```bash
+
+export TEMPORAL_ADDRESS=antonio.a2dd6.tmprl.cloud:7233
+export TEMPORAL_NAMESPACE=antonio.a2dd6
+export TEMPORAL_CLIENT_CERT_PATH=/Users/temporalio/dev/temporal/certificates/namespace-antonio-perez/client.pem
+export TEMPORAL_CLIENT_KEY_PATH=/Users/temporalio/dev/temporal/certificates/namespace-antonio-perez/client.key
+
+
+npm run start.watch
+
+```
+
+
+```bash
+
+export TEMPORAL_ADDRESS=antonio.a2dd6.tmprl.cloud:7233
+export TEMPORAL_NAMESPACE=antonio.a2dd6
+export TEMPORAL_CLIENT_CERT_PATH=/Users/temporalio/dev/temporal/certificates/namespace-antonio-perez/client.pem
+export TEMPORAL_CLIENT_KEY_PATH=/Users/temporalio/dev/temporal/certificates/namespace-antonio-perez/client.key
+
+
+npm run workflow
+```
