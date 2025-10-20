@@ -20,21 +20,13 @@ async function main() {
     },
   });
 
-  const resource = new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'interceptors-sample-worker',
-  });
 
   const worker = await Worker.create({
     workflowsPath: require.resolve('./workflows'),
     activities,
     taskQueue: 'interceptors-opentelemetry-example',
     maxConcurrentActivityTaskExecutions: 2,
-    maxConcurrentWorkflowTaskExecutions: 4,
-    // Registers opentelemetry interceptors for Workflow and Activity calls
-    interceptors: {
-      // example contains both workflow and interceptors
-      workflowModules: [require.resolve('./workflows')],
-    },
+    maxConcurrentWorkflowTaskExecutions: 10,
     namespace,
     connection,
   });

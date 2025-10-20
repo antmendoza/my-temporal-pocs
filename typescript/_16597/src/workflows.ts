@@ -12,12 +12,9 @@ const { greet } = proxyActivities<typeof activities>({
 
 // A workflow that simply calls an activity
 export async function example(name: string): Promise<string> {
+
+  await greet(name);
+  await greet(name);
   return await greet(name);
 }
 
-// Export the interceptors
-export const interceptors: WorkflowInterceptorsFactory = () => ({
-  inbound: [new OpenTelemetryInboundInterceptor()],
-  outbound: [new OpenTelemetryOutboundInterceptor()],
-  internals: [new OpenTelemetryInternalsInterceptor()],
-});

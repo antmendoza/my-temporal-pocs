@@ -7,29 +7,8 @@ import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { metrics } from '@opentelemetry/api';
 
 async function run() {
-  Runtime.install({
-    logger: new DefaultLogger('WARN'),
+;
 
-    telemetryOptions: {
-      metrics: {
-        prometheus: {
-          bindAddress: '127.0.0.1:9093',
-        },
-      },
-    },
-  });
-
-  const metricReader: MetricReader = new PrometheusExporter({
-    host: '127.0.0.1',
-    port: 9094,
-  });
-
-  const otel = new NodeSDK({
-    // @ts-ignore
-    metricReader,
-  });
-
-  await otel.start();
   // After the SDK starts, the global MeterProvider is registered.
   const meter = metrics.getMeter('temporal-metrics');
 
@@ -81,37 +60,58 @@ async function run() {
   try {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const taskQueueDescWorkflow = await connection.workflowService.describeTaskQueue({
+
+      // we can use enhanced mode to get stats per task queue type, note that enhance mode is deprecated
+      const taskQueueDescWorkflowENHANCED = await connection.workflowService.describeTaskQueue({
         namespace,
         taskQueue: { name: taskQueue },
-        includeTaskQueueStatus: true,
         reportStats: true,
         reportConfig: true,
-        taskQueueType: 0, //"TASK_QUEUE_TYPE_WORKFLOW"
+       // taskQueueType: 0, //"TASK_QUEUE_TYPE_WORKFLOW"
+        apiMode: 1 //ENHANCED: enhance mode is deprecated
       });
 
       // @ts-ignore
-      workflowBacklog = taskQueueDescWorkflow.stats?.approximateBacklogCount ?? 0;
-      console.log('Workflow :' + workflowBacklog);
+      const workflow_stats = taskQueueDescWorkflowENHANCED.versionsInfo[""].typesInfo[1].stats.approximateBacklogCount  // Workflow tasks
+      // @ts-ignore
+      const activity_stats = taskQueueDescWorkflowENHANCED.versionsInfo[""].typesInfo[2].stats.approximateBacklogCount  // Activity tasks
 
-      const taskQueueDescActivity = await connection.workflowService.describeTaskQueue({
+      console.log("workflow_stats "+ JSON.stringify(workflow_stats))
+      console.log("activity_stats "+ JSON.stringify(activity_stats))
+
+
+      const TASK_QUEUE_TYPE_WORKFLOW = await connection.workflowService.describeTaskQueue({
         namespace,
         taskQueue: { name: taskQueue },
-        includeTaskQueueStatus: true,
+        taskQueueType: 1, //"TASK_QUEUE_TYPE_WORKFLOW"
         reportStats: true,
         reportConfig: true,
-        taskQueueType: 1, //"TASK_QUEUE_TYPE_ACTIVITY"
       });
 
-      // @ts-ignore
-      activityBacklog = taskQueueDescActivity.stats?.approximateBacklogCount ?? 0;
-      console.log('Activity :' + activityBacklog);
+      console.log("TASK_QUEUE_TYPE_WORKFLOW "+ TASK_QUEUE_TYPE_WORKFLOW.stats?.approximateBacklogCount)
+
+      const TASK_QUEUE_TYPE_ACTIVITY = await connection.workflowService.describeTaskQueue({
+        namespace,
+        taskQueue: { name: taskQueue },
+        reportStats: true,
+        taskQueueType: 2, //"TASK_QUEUE_TYPE_ACTIVITY"
+        reportConfig: true,
+      });
+
+      console.log("TASK_QUEUE_TYPE_ACTIVITY "+ TASK_QUEUE_TYPE_ACTIVITY.stats?.approximateBacklogCount)
+      console.log("--------- ")
+
+
+
+
+
+
+
 
       // Sleep 1 second
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   } finally {
-    await otel.shutdown();
   }
 }
 
