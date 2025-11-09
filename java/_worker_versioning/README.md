@@ -10,9 +10,11 @@ temporal server start-dev
 ## Example 1
 
 - start a workflow without any reference to worker versioning
-- start the worker without any reference/configuration for worker versioning
+- start an unversioned worker 
   - the worker start processing the workflow tasks
-- start another worker, same task queue, setting up worker versioning to loan-proces:v1 and autoupgrade
+- start versioned worker, same task queue, setting up worker versioning to loan-proces<random>:v1 and autoupgrade
+  - the previous worker continues processing existing workflow tasks
+- set current version to loan-process:<random>:v1
   - the second worker starts processing new workflow tasks
 
 

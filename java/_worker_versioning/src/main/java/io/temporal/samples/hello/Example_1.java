@@ -19,12 +19,17 @@ import java.util.concurrent.CompletableFuture;
 public class Example_1 {
 
     // Define the task queue name
-    static final String TASK_QUEUE = "HelloActivityTaskQueue";
+    static final String TASK_QUEUE = "HelloActivityTaskQueue"+System.currentTimeMillis();
 
     // Define our workflow unique id
     static final String WORKFLOW_ID = "HelloActivityWorkflow";
 
     static final String namespace = "default";
+
+    static final String deploymentName = "loan-proces"+System.currentTimeMillis();
+
+    static final String deploymentVersion = "v1";
+
 
     public static void main(String[] args) {
 
@@ -53,6 +58,7 @@ public class Example_1 {
             factory.start();
 
         }
+        System.out.println("\n********Started unversioned worker ***********\n");
 
 
         // Sleep to allow workflow to iterate a few times
@@ -65,7 +71,7 @@ public class Example_1 {
                     .setDeploymentOptions(
                             WorkerDeploymentOptions.newBuilder()
                                     .setUseVersioning(true)
-                                    .setVersion(WorkerDeploymentVersion.fromCanonicalString("loan-proces.v1"))
+                                    .setVersion(WorkerDeploymentVersion.fromCanonicalString(deploymentName + "." + deploymentVersion))
                                     .setDefaultVersioningBehavior(VersioningBehavior.AUTO_UPGRADE)
                                     .build())
                     .build();
@@ -79,7 +85,7 @@ public class Example_1 {
 
         }
 
-        System.out.println("Worker started with version loan-proces:v1");
+        System.out.println("\n********Worker started with version " + deploymentName + ":" + deploymentVersion + " ***********\n");
 
         // Sleep to allow workflow to iterate a few times
         sleep(5_000);
@@ -88,7 +94,7 @@ public class Example_1 {
         setCurrentVersionLoanV1(client);
 
 
-        System.out.println("Worker deployment version set to loan-proces:v1 as current");
+        System.out.println("\n********Worker deployment version set to " + deploymentName + ":" + deploymentVersion + " as current***********\n");
 
 
     }
@@ -97,8 +103,8 @@ public class Example_1 {
         client.getWorkflowServiceStubs().blockingStub()
                 .setWorkerDeploymentCurrentVersion(SetWorkerDeploymentCurrentVersionRequest.newBuilder()
                         .setNamespace(namespace)
-                        .setDeploymentName("loan-proces")
-                        .setBuildId("v1").build());
+                        .setDeploymentName(deploymentName)
+                        .setBuildId(deploymentVersion).build());
     }
 
     private static void listExecutions(WorkflowClient client) {
@@ -112,28 +118,32 @@ public class Example_1 {
 
                     sleep(3_000);
 
+                    System.out.println("Deployment info for task queue " + TASK_QUEUE + ", deployment version " +deploymentName +":");
+
                     ListWorkflowExecutionsResponse listWorkflowExecutionsResponse = client.getWorkflowServiceStubs().blockingStub().listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
                             .setNamespace(namespace)
-                            .setQuery("`TemporalWorkerDeploymentVersion`=\"loan-proces:v1\" AND `ExecutionStatus`=\"Running\"")
+                            .setQuery("`TemporalWorkerDeploymentVersion`=\"" + deploymentName + ":"+deploymentVersion+"\" AND `ExecutionStatus`=\"Running\"")
                             .build());
 
 
-                    System.out.println("Num running executions deployment version loan-proces:v1: " + listWorkflowExecutionsResponse.getExecutionsCount());
+                    System.out.println("- Num running executions in worker deployment version " + listWorkflowExecutionsResponse.getExecutionsCount());
 
                     listWorkflowExecutionsResponse.getExecutionsList().forEach(v -> {
-                        System.out.println("    Found execution with loan-proces:v1 " + v.getExecution().getWorkflowId());
+ //                       System.out.println("    - Found execution with " + deploymentName + ":"+deploymentVersion+" " + v.getExecution().getWorkflowId());
                     });
 
-                    DescribeTaskQueueResponse taskqueue = client.getWorkflowServiceStubs().blockingStub().describeTaskQueue(DescribeTaskQueueRequest.newBuilder().setReportStats(true)
-                            .setTaskQueue(TaskQueue.newBuilder().setNormalName(TASK_QUEUE).build()).build());
+                    DescribeTaskQueueResponse taskqueue = client.getWorkflowServiceStubs().blockingStub().describeTaskQueue(
+                            DescribeTaskQueueRequest.newBuilder()
+                            .setReportStats(true)
+                                    .setNamespace(namespace)
+                            .setTaskQueue(TaskQueue.newBuilder().setName(TASK_QUEUE).build()).build());
 
+                    System.out.println("- TaskQueue Versions info: \n" +taskqueue.getVersioningInfo().getCurrentDeploymentVersion());
 
-                    taskqueue.getVersionsInfoMap().forEach((p, v) -> {
-                        System.out.println("    version: " + p + "  TaskQueueVersionInfo: " + v);
-                    });
 
                 } catch (Exception e) {
 
+                        e.printStackTrace();
                 }
 
             }
@@ -151,6 +161,9 @@ public class Example_1 {
     }
 
     private static void startWorkflow(WorkflowClient client) {
+
+        System.out.println("\n*********Starting Workflow***********\n");
+
         // Create the workflow client stub. It is used to start our workflow execution.
         GreetingWorkflow workflow =
                 client.newWorkflowStub(
