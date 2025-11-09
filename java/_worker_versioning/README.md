@@ -7,63 +7,43 @@ temporal server start-dev
 
 ```
 
-## Example 1
+## Example 1: from unversioned to versioned worker with auto upgrade
 
-- start a workflow without any reference to worker versioning
+- start a workflow
 - start an unversioned worker 
   - the worker start processing the workflow tasks
-- start versioned worker, same task queue, setting up worker versioning to loan-proces<random>:v1 and autoupgrade
+- start versioned worker, same task queue, setting up worker versioning to `loan-proces<random>:v1` and `autoupgrade`
   - the previous worker continues processing existing workflow tasks
-- set current version to loan-process:<random>:v1
+- promote `loan-proces<random>:v1` to current version
+  - the second worker starts processing new workflow tasks
+
+```
+New Workflows: New Workflows are automatically directed to the Current Version.
+Auto-Upgrade Workflows: Auto-Upgrade Workflows are automatically moved to the Current Version when they're eligible for migration, ensuring they can continue running on actively maintained code.
+```
+
+
+## Example 2: auto-upgrade worker versioning
+- start a workflow 
+- start a versioned worker, setting up worker versioning to `loan-proces<random>:v1` and `autoupgrade`
+  - the worker does not process workflow tasks, because current version is not set
+- promote `loan-process:<random>:v1` to current version
+  - the worker starts processing workflow tasks
+- start a second versioned worker, setting up worker versioning to `loan-proces<random>:v2` and `autoupgrade`
+  - the previous worker continues processing existing workflow tasks
+- promote `loan-proces<random>:v2` to current version
   - the second worker starts processing new workflow tasks
 
 
-## Example 2
 
-
-## AUTO UPGRADE 
-
-
-- run [Runner_test_2.java](src/main/java/io/temporal/samples/hello/Runner_test_2.java)
-- run [Runner_test_3.java](src/main/java/io/temporal/samples/hello/Runner_test_3.java)
-
-
-- run [Client_auto_upgrade.java](src/main/java/io/temporal/samples/hello/Client_auto_upgrade.java)
-
-Set current version
-```bash
-temporal worker deployment set-current-version --deployment-name "test" --version "test.2" -y
-    
-```
-
-- workflow started before should start making progress
-
-
-
-Ramping up to a new version
-```bash
-
-temporal worker deployment set-ramping-version \
---deployment-name "test" \
---version "test.3" \
---percentage=5 -y
-
-```
-
-
-- run [Client_auto_upgrade_100_wf.java](src/main/java/io/temporal/samples/hello/Client_auto_upgrade_100_wf.java)
-
-- some workflows will be started with the new version
-
-Set current version 1.3
-```bash
-temporal worker deployment set-current-version --deployment-name "test" --version "test.3" -y
-    
-```
-
-All workflows (running workflows) will be moved to the new version
-
-
-## PINNED WORKFLOWS
-
-WIP
+## Example 3: worker versioning with ramping strategy
+- start 100 workflows
+- start a versioned worker, setting up worker versioning to `loan-proces<random>:v1` and `autoupgrade`
+  - the worker does not process workflow tasks, because current version is not set
+- promote `loan-process:<random>:v1` to current version
+  - the worker starts processing workflow tasks
+- start a second versioned worker, setting up worker versioning to `loan-proces<random>:v2` and `autoupgrade`
+  - the previous worker continues processing existing workflow tasks
+- start ramping `loan-proces<random>:v2` gradually from 0% to 100%
+  - the second worker starts processing new workflow tasks
+- finally promote `loan-proces<random>:v2` to current version
