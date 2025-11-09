@@ -45,5 +45,18 @@ Auto-Upgrade Workflows: Auto-Upgrade Workflows are automatically moved to the Cu
 - start a second versioned worker, setting up worker versioning to `loan-proces<random>:v2` and `autoupgrade`
   - the previous worker continues processing existing workflow tasks
 - start ramping `loan-proces<random>:v2` gradually from 0% to 100%
-  - the second worker starts processing new workflow tasks
+  - the second worker starts processing new workflow tasks based on the ramping percentage
 - finally promote `loan-proces<random>:v2` to current version
+
+
+
+
+## Example 4: unversioned worker with ramping strategy
+- start 100 workflows
+- start an unversioned worker
+  - the worker start processing the workflow tasks
+- start a second versioned worker, setting up worker versioning to `loan-proces<random>:v1` and `autoupgrade`
+  - the previous worker continues processing existing workflow tasks
+- start ramping `loan-proces<random>:v1` gradually from 0% to 100%
+  - the second worker starts processing new workflow tasks based on the ramping percentage
+- finally promote `loan-proces<random>:v1` to current version
