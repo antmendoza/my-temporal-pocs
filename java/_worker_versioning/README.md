@@ -96,7 +96,7 @@ As for Child Workflows, they automatically start on the same version as their pi
 ```
 
 
-## Example6: worker versioning with ramping strategy and PINNED
+## Example6: worker versioning with ramping strategy and from PINNED to auto-upgrade
 - start 100 workflows
 - start a versioned worker, setting up worker versioning to `loan-proces<random>:v1` and `pinned`
   - the worker does not process workflow tasks, because current version is not set
@@ -109,3 +109,9 @@ As for Child Workflows, they automatically start on the same version as their pi
 - move existing workflows to auto-upgrade mode
   - the second worker starts processing new workflow tasks
 - promote `loan-proces<random>:v2` to current version
+
+
+## Example10: worker versioning moving pinned workflows one by one to new version
+
+//TODO
+
