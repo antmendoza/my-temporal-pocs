@@ -2,10 +2,22 @@
 
 
 ```bash
-temporal server start-dev \
---dynamic-config-value frontend.workerVersioningWorkflowAPIs=true \
---dynamic-config-value system.enableDeploymentVersions=true
+
+temporal server start-dev 
+
 ```
+
+## Example 1
+
+- start a workflow without any reference to worker versioning
+- start the worker without any reference/configuration for worker versioning
+  - the worker start processing the workflow tasks
+- start another worker, same task queue, setting up worker versioning to loan-proces:v1 and autoupgrade
+  - the second worker starts processing new workflow tasks
+
+
+## Example 2
+
 
 ## AUTO UPGRADE 
 

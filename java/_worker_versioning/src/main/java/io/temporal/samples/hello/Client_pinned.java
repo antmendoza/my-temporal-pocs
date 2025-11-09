@@ -33,8 +33,8 @@ public class Client_pinned {
                             WorkflowOptions.newBuilder()
                                     //.setWorkflowId(WORKFLOW_ID)
                                     .setTaskQueue(TASK_QUEUE)
-                                    .setVersioningOverride(new VersioningOverride.PinnedVersioningOverride(
-                                            WorkerDeploymentVersion.fromCanonicalString("test.1.4")))
+                                   // .setVersioningOverride(new VersioningOverride.PinnedVersioningOverride(
+                                   //         WorkerDeploymentVersion.fromCanonicalString("test.1.4")))
                                     //.setWorkflowIdConflictPolicy(WorkflowIdConflictPolicy.WORKFLOW_ID_CONFLICT_POLICY_TERMINATE_EXISTING)
                                     .build());
 
@@ -54,7 +54,7 @@ public class Client_pinned {
         System.exit(0);
     }
 
-    private static void sleepMs(final int millis) {
+    public static void sleepMs(final int millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
