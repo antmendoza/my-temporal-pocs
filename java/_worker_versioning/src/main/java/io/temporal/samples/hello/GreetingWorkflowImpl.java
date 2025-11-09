@@ -19,7 +19,7 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
     public String mainMethod(String name) {
 
 
-        for (int i = 0; i < 300; i++) {
+        for (int i = 0; i < 100; i++) {
 
             Workflow.getTypedSearchAttributes()
                     .getUntypedValues().keySet().forEach(v ->
