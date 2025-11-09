@@ -115,3 +115,11 @@ As for Child Workflows, they automatically start on the same version as their pi
 
 //TODO
 
+
+
+
+- https://temporal.talentlms.com/plus/my/training/272/units/7034
+- https://docs.temporal.io/production-deployment/worker-deployments/worker-versioning
+
+
+
