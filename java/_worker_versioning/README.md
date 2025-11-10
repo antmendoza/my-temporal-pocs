@@ -111,6 +111,23 @@ As for Child Workflows, they automatically start on the same version as their pi
 - promote `loan-proces<random>:v2` to current version
 
 
+
+
+## Example 7: unversioned worker with ramping strategy and auto-upgrade (NDE)
+- start 100 workflows
+- start an unversioned worker
+  - the worker start processing the workflow tasks
+- start a second versioned worker, setting up worker versioning to `loan-proces<random>:v1` and `autoupgrade`
+  - the previous worker continues processing existing workflow tasks
+- start ramping `loan-proces<random>:v1` gradually from 0% to 100%
+  - the second worker starts processing new workflow tasks based on the ramping percentage
+- the new implementation has a non-deterministic change.
+- shutdown the second worker and deploy a new worker with workflow.versionning
+- the last worker continues processing tasks in a deterministic way
+- finally promote `loan-proces<random>:v1` to current version
+
+
+
 ## Example10: worker versioning moving pinned workflows one by one to new version
 
 //TODO
