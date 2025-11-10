@@ -115,6 +115,7 @@ As for Child Workflows, they automatically start on the same version as their pi
 
 //TODO
 
+- https://github.com/temporalio/temporal-worker-controller/blob/main/docs/migration-guide.md
 
 
 
