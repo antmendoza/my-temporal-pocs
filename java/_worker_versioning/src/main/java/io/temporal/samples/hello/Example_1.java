@@ -13,6 +13,7 @@ import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerDeploymentOptions;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerOptions;
+import io.temporal.workflow.Workflow;
 
 import java.util.concurrent.CompletableFuture;
 

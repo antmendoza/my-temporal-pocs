@@ -21,15 +21,6 @@ public class GreetingWorkflowImpl_withNDE implements GreetingWorkflow {
 
         for (int i = 0; i < 100; i++) {
 
-            Workflow.getTypedSearchAttributes()
-                    .getUntypedValues().keySet().forEach(v ->
-
-                    {
-                        String name1 = v.getName();
-                        Workflow.getLogger(GreetingWorkflowImpl_withNDE.class).info("GreetingWorkflowImpl \n " +
-                                name1 + " " + Workflow.getSearchAttributeValues(name1));
-                    });
-
 
             Workflow.sleep(Duration.ofSeconds(1));
 

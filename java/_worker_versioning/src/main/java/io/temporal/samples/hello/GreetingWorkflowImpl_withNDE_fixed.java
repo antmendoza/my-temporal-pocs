@@ -21,28 +21,19 @@ public class GreetingWorkflowImpl_withNDE_fixed implements GreetingWorkflow {
 
         while (true) {
 
-            Workflow.getTypedSearchAttributes()
-                    .getUntypedValues().keySet().forEach(v ->
-
-                    {
-                        String name1 = v.getName();
-                        Workflow.getLogger(GreetingWorkflowImpl_withNDE_fixed.class).info("GreetingWorkflowImpl \n " +
-                                name1 + " " + Workflow.getSearchAttributeValues(name1));
-                    });
-
-
             Workflow.sleep(Duration.ofSeconds(1));
 
-
             activities.sleepSeconds(1);
-
 
             if (Workflow.getInfo().isContinueAsNewSuggested()
                     // To avoid long history during testing, we limit the max history length
                     || Workflow.getInfo().getHistoryLength() > 20
             ) {
 
-                int version = Workflow.getVersion("GreetingWorkflow_withNDE_Versioning" + Workflow.getInfo().getHistoryLength(),
+                // https://stackoverflow.com/questions/74143884/how-to-use-cadence-temporal-versioning-api-workflow-getversion-in-a-loop
+                String changeId = "GreetingWorkflow_withNDE_Versioning" + Workflow.getInfo().getHistoryLength();
+                // workflow versioning
+                int version = Workflow.getVersion(changeId,
                         Workflow.DEFAULT_VERSION, 1);
                 if (version == 1) {
                     break;

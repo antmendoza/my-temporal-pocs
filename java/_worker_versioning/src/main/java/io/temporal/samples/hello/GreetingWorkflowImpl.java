@@ -21,21 +21,11 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
 
         for (int i = 0; i < 100; i++) {
 
-            Workflow.getTypedSearchAttributes()
-                    .getUntypedValues().keySet().forEach(v ->
-
-                    {
-                        String name1 = v.getName();
-                        Workflow.getLogger(GreetingWorkflowImpl.class).info("GreetingWorkflowImpl \n " +
-                                name1 + " " + Workflow.getSearchAttributeValues(name1));
-                    });
-
-
             Workflow.sleep(Duration.ofSeconds(1));
             activities.sleepSeconds(1);
         }
 
-        Workflow.continueAsNew(name);
+      //  Workflow.continueAsNew(name);
 
         return "hello";
     }
