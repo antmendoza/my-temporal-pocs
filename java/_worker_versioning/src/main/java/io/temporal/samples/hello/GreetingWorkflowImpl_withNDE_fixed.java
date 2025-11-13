@@ -36,16 +36,17 @@ public class GreetingWorkflowImpl_withNDE_fixed implements GreetingWorkflow {
                 int version = Workflow.getVersion(changeId,
                         Workflow.DEFAULT_VERSION, 1);
                 if (version == 1) {
-                    break;
+                    //break;
+                    Workflow.continueAsNew(name);
                 }
             }
 
 
         }
 
-        Workflow.continueAsNew(name);
 
-        return "hello";
+        //Workflow.continueAsNew(name);
+        //return "hello";
     }
 
 }

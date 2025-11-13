@@ -19,7 +19,7 @@ public class GreetingWorkflowImpl_withNDE implements GreetingWorkflow {
     public String mainMethod(String name) {
 
 
-        for (int i = 0; i < 100; i++) {
+        while (true) {
 
 
             Workflow.sleep(Duration.ofSeconds(1));
@@ -32,15 +32,14 @@ public class GreetingWorkflowImpl_withNDE implements GreetingWorkflow {
                     // To avoid long history during testing, we limit the max history length
                     || Workflow.getInfo().getHistoryLength() > 20
             ) {
-
-                break;
+                Workflow.continueAsNew(name);
 
             }
         }
 
-        Workflow.continueAsNew(name);
 
-        return "hello";
+
+        //return "hello";
     }
 
 }
