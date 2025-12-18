@@ -15,13 +15,12 @@ import io.temporal.worker.WorkerFactory;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
+import org.slf4j.MDC;
+
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 public class HelloActivity {
 
@@ -54,16 +53,22 @@ public class HelloActivity {
 
         @Override
         public String run() {
+
+            MDC.put("my-context-from-workflow", "hello my-context-from-workflow");
+
             return activities.extractContext();
         }
     }
 
-    /** Simple activity implementation, that concatenates two strings. */
+    /**
+     * Simple activity implementation, that concatenates two strings.
+     */
     public static class GreetingActivitiesImpl implements GreetingActivities {
 
         @Override
         public String extractContext() {
-            return MDC.get("my-context");
+
+            return MDC.get("my-context-from-client") + " | " + MDC.get("my-context-from-workflow");
         }
     }
 
@@ -88,7 +93,7 @@ public class HelloActivity {
 
         factory.start();
 
-        MDC.put("my-context", "hello from context propagator");
+        MDC.put("my-context-from-client", "hello my-context-from-client");
 
         // Create the workflow client stub. It is used to start our workflow execution.
         GreetingWorkflow workflow =
