@@ -23,18 +23,32 @@ WorkflowClient client =
 - Before starting a workflow, set the MDC context:
 
 ```
-    MDC.put("my-context", "hello from context propagator");        
+    MDC.put("my-context-from-client", "hello my-context-from-client");
 ```
-        
+
+
+- Inside the workflow, set another value in the MDC context:
+```
+  MDC.put("my-context-from-workflow", "hello my-context-from-workflow");
+```
+
 
 - Activity returns whatever is in the context:
 
 ```
   @Override
   public String extractContext() {
-      return MDC.get("my-context");
+      return MDC.get("my-context-from-client") + " | " + MDC.get("my-context-from-workflow");
   }
 ```
 
 
-- [Example of the generated workflow history](0199b89c-3f5e-74be-86ac-4c1df9ad2128_events.json)
+- Output when running the workflow:
+
+```
+  hello my-context-from-client | hello my-context-from-workflow
+
+```
+
+
+- [Example of the generated workflow history](019b322c-8926-73ad-b433-3550f6a7c253_events.json)
