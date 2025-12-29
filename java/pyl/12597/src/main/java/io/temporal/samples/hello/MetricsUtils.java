@@ -1,13 +1,12 @@
 package io.temporal.samples.hello;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.sun.net.httpserver.HttpServer;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MetricsUtils {
 
