@@ -91,6 +91,10 @@ async def main():
         ),
     )
 
+    # Get usage information
+    usage = await client.cloud_service().get_usage(
+    print(f"Usage info: {usage}")
+
     # Run a worker for the workflow
     worker = Worker(
         client,
