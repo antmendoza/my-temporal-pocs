@@ -18,7 +18,7 @@ export async function example(name: string): Promise<string> {
     "key1": "value",
   });
 
-  await sleep(1000);
+  await sleep(5_000);
 
   //while the workflow is sleeping the client send a signal
 
