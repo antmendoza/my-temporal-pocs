@@ -14,8 +14,8 @@ This project reproduces the following scenario:
 
 
 ## Running the Project
-1.	Start the Temporal server
-2.	Run the script
+- Start the Temporal server
+- Run the script
 
 ```bash
 ./run.sh
