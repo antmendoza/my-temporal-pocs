@@ -1,6 +1,4 @@
-// @@@SNIPSTART typescript-hello-workflow
 import { proxyActivities, sleep, upsertMemo} from '@temporalio/workflow';
-// Only import the activity types
 import type * as activities from './activities';
 
 const { greet } = proxyActivities<typeof activities>({
@@ -11,7 +9,6 @@ const { greet } = proxyActivities<typeof activities>({
 
 
 
-//initiate the workflow sith signal with start
 export async function example(name: string): Promise<string> {
 
   upsertMemo({
@@ -19,12 +16,6 @@ export async function example(name: string): Promise<string> {
   });
 
   await sleep(5_000);
-
-  //while the workflow is sleeping the client send a signal
-
-  //after some time the timer fired.
-
-  //NDE during workflow replay
 
 
   return await greet(name);

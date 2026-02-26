@@ -25,22 +25,8 @@ async function getClient() {
 }
 
 async function run() {
-  const worker = await self_start_worker("first-worker");
-
-  const workflowHandle = await startWorkflow(await getClient());
 
 
-  //wait for the worker to process the first workflow task and schedule the timer
-  await new Promise((resolve) => setTimeout(resolve, 100));
-
-  worker.shutdown();
-
-  while (worker.getStatus().runState != "STOPPED") {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-
-
-  await workflowHandle.signal('hello');
   await self_start_worker("second-worker");
 
 
@@ -52,4 +38,3 @@ run().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-// @@@SNIPEND

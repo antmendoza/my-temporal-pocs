@@ -1,7 +1,6 @@
 import { Connection, Client } from '@temporalio/client';
 import { loadClientConnectConfig } from '@temporalio/envconfig';
 import { example } from './workflows';
-import { nanoid } from 'nanoid';
 
 export async function startWorkflow(client: Client) {
   const handle = await client.workflow.start(example, {
