@@ -2,7 +2,6 @@ package io.temporal.samples.earlyreturn;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.activity.LocalActivityOptions;
-import io.temporal.workflow.TimerOptions;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;

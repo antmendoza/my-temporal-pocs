@@ -1,7 +1,6 @@
 package io.temporal.samples.earlyreturn;
 
 import com.google.protobuf.Timestamp;
-import io.temporal.api.enums.v1.EventType;
 import io.temporal.api.history.v1.HistoryEvent;
 import io.temporal.client.WorkflowClient;
 import java.util.LinkedHashMap;

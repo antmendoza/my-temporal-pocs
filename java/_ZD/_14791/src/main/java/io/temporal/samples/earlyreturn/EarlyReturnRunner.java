@@ -1,8 +1,6 @@
 package io.temporal.samples.earlyreturn;
 
 import io.temporal.api.enums.v1.WorkflowIdConflictPolicy;
-import io.temporal.api.workflowservice.v1.CountWorkflowExecutionsRequest;
-import io.temporal.api.workflowservice.v1.GetSystemInfoRequest;
 import io.temporal.client.*;
 import io.temporal.serviceclient.SimpleSslContextBuilder;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -48,6 +46,7 @@ public class EarlyReturnRunner {
       throw new RuntimeException(e);
     }
   }
+
   public WorkflowClient setupWorkflowClient() throws SSLException {
 
     WorkflowServiceStubsOptions.Builder builder =
@@ -57,10 +56,13 @@ public class EarlyReturnRunner {
 
     if (!properties.isTemporalLocalServer()) {
 
-      InputStream clientCert =
-          EarlyReturnRunner.class.getResourceAsStream(properties.getTemporalCertLocation());
-      InputStream clientKey =
-          EarlyReturnRunner.class.getResourceAsStream(properties.getTemporalKeyLocation());
+      String certPath = properties.getTemporalCertLocation();
+      String keyPath = properties.getTemporalKeyLocation();
+      InputStream clientCert = EarlyReturnRunner.class.getResourceAsStream(certPath);
+      InputStream clientKey = EarlyReturnRunner.class.getResourceAsStream(keyPath);
+      if (clientCert == null) throw new RuntimeException("Client cert not found on classpath: " + certPath);
+      if (clientKey == null) throw new RuntimeException("Client key not found on classpath: " + keyPath);
+
       builder.setSslContext(SimpleSslContextBuilder.forPKCS8(clientCert, clientKey).build());
     }
 
@@ -110,20 +112,23 @@ public class EarlyReturnRunner {
 
       WorkflowStub.fromTyped(workflow).getResult(TxResult.class);
 
-      InspectWorkflowHistory history =
-          new InspectWorkflowHistory(client, options.getWorkflowId());
+      InspectWorkflowHistory history = new InspectWorkflowHistory(client, options.getWorkflowId());
 
       System.out.println(" >  first workflow task latency");
       System.out.println(
-          "   > " + history.getFirstWorkflowTaskLatencyMillis() + " ms : ->  WorkflowHistory Latency");
+          "   > "
+              + history.getFirstWorkflowTaskLatencyMillis()
+              + " ms : ->  WorkflowHistory Latency");
       System.out.println(
           "   > "
               + grpcLoggingInterceptor.getTimeFirstWorkflowTaskExecution().toEpochMilli()
               + " ms : ->  GrpcInterceptor Latency (from PollWorkflowTaskResponse to RespondWorkflowTaskCompleted)");
 
-      System.out.println(" >  activity execution latency (ActivityTaskStarted -> ActivityTaskCompleted)");
+      System.out.println(
+          " >  activity execution latency (ActivityTaskStarted -> ActivityTaskCompleted)");
       Map<String, Long> historyActivityLatencies = history.getActivityLatenciesMillis();
-      Map<String, Long> interceptorActivityLatencies = activityLatencyInterceptor.getLatenciesMillis();
+      Map<String, Long> interceptorActivityLatencies =
+          activityLatencyInterceptor.getLatenciesMillis();
       historyActivityLatencies.forEach(
           (activityType, historyMillis) -> {
             Long interceptorMillis = interceptorActivityLatencies.get(activityType);
