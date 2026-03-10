@@ -37,11 +37,6 @@ public class TransactionWorkflowImpl implements TransactionWorkflow {
       initDone = true;
     }
 
-    // simulate some processing time
-    Workflow.newTimer(
-        Duration.ofSeconds(30),
-        TimerOptions.newBuilder().setSummary("simulate some processing time").build());
-
     return null;
   }
 

@@ -12,7 +12,7 @@ public class TransactionActivitiesImpl implements TransactionActivities {
 
   @Override
   public Transaction initTransaction(Transaction tx) {
-    sleep(100);
+    sleep(1000);
     return tx;
   }
 

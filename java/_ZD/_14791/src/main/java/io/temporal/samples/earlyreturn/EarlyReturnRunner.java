@@ -9,9 +9,11 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
+import io.temporal.worker.WorkerFactoryOptions;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import javax.net.ssl.SSLException;
 
 public class EarlyReturnRunner {
@@ -19,6 +21,7 @@ public class EarlyReturnRunner {
 
   static final TemporalProperties properties = new TemporalProperties();
   GrpcLoggingInterceptor grpcLoggingInterceptor = new GrpcLoggingInterceptor();
+  ActivityLatencyInterceptor activityLatencyInterceptor = new ActivityLatencyInterceptor();
 
   public static void main(String[] args) throws SSLException {
     EarlyReturnRunner runner = new EarlyReturnRunner();
@@ -45,24 +48,6 @@ public class EarlyReturnRunner {
       throw new RuntimeException(e);
     }
   }
-
-  private void makeGetSystemInfoCall(WorkflowClient client) {
-    client
-        .getWorkflowServiceStubs()
-        .blockingStub()
-        .getSystemInfo(GetSystemInfoRequest.newBuilder().build());
-  }
-
-  private void makeCountWorkflowsCall(WorkflowClient client) {
-    client
-        .getWorkflowServiceStubs()
-        .blockingStub()
-        .countWorkflowExecutions(
-            CountWorkflowExecutionsRequest.newBuilder()
-                .setNamespace(properties.getTemporalNamespace())
-                .build());
-  }
-
   public WorkflowClient setupWorkflowClient() throws SSLException {
 
     WorkflowServiceStubsOptions.Builder builder =
@@ -87,7 +72,12 @@ public class EarlyReturnRunner {
   }
 
   private void startWorker(WorkflowClient client) {
-    WorkerFactory factory = WorkerFactory.newInstance(client);
+    WorkerFactory factory =
+        WorkerFactory.newInstance(
+            client,
+            WorkerFactoryOptions.newBuilder()
+                .setWorkerInterceptors(activityLatencyInterceptor)
+                .build());
     Worker worker = factory.newWorker(TASK_QUEUE);
 
     worker.registerWorkflowImplementationTypes(TransactionWorkflowImpl.class);
@@ -102,6 +92,7 @@ public class EarlyReturnRunner {
     System.out.println("\n Running " + description);
 
     grpcLoggingInterceptor.resetFirstWorkflowTaskRecords();
+    activityLatencyInterceptor.reset();
 
     TransactionRequest txRequest =
         new TransactionRequest(
@@ -119,16 +110,30 @@ public class EarlyReturnRunner {
 
       WorkflowStub.fromTyped(workflow).getResult(TxResult.class);
 
-      long latencyMillis =
-          new InspectWorkflowHistory(client, options.getWorkflowId())
-              .getFirstWorkflowTaskLatencyMillis();
+      InspectWorkflowHistory history =
+          new InspectWorkflowHistory(client, options.getWorkflowId());
 
       System.out.println(" >  first workflow task latency");
-      System.out.println("   > " + latencyMillis + " ms : ->  WorkflowHistory Latency");
+      System.out.println(
+          "   > " + history.getFirstWorkflowTaskLatencyMillis() + " ms : ->  WorkflowHistory Latency");
       System.out.println(
           "   > "
               + grpcLoggingInterceptor.getTimeFirstWorkflowTaskExecution().toEpochMilli()
-              + " ms : ->  Latency measured in GrpcInterceptor (from PollWorkflowTaskResponse to RespondWorkflowTaskCompleted)");
+              + " ms : ->  GrpcInterceptor Latency (from PollWorkflowTaskResponse to RespondWorkflowTaskCompleted)");
+
+      System.out.println(" >  activity execution latency (ActivityTaskStarted -> ActivityTaskCompleted)");
+      Map<String, Long> historyActivityLatencies = history.getActivityLatenciesMillis();
+      Map<String, Long> interceptorActivityLatencies = activityLatencyInterceptor.getLatenciesMillis();
+      historyActivityLatencies.forEach(
+          (activityType, historyMillis) -> {
+            Long interceptorMillis = interceptorActivityLatencies.get(activityType);
+            System.out.println("   [" + activityType + "]");
+            System.out.println("     > " + historyMillis + " ms : ->  WorkflowHistory Latency");
+            System.out.println(
+                "     > "
+                    + (interceptorMillis != null ? interceptorMillis : "n/a")
+                    + " ms : ->  ActivityInterceptor Latency");
+          });
 
     } catch (Exception e) {
       System.err.println("Transaction initialization failed: " + e.getMessage());
