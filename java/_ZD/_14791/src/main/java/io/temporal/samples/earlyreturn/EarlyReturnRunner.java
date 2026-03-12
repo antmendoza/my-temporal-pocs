@@ -8,6 +8,8 @@ import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
+
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
@@ -21,7 +23,7 @@ public class EarlyReturnRunner {
   GrpcLoggingInterceptor grpcLoggingInterceptor = new GrpcLoggingInterceptor();
   ActivityLatencyInterceptor activityLatencyInterceptor = new ActivityLatencyInterceptor();
 
-  public static void main(String[] args) throws SSLException {
+  public static void main(String[] args) throws SSLException, FileNotFoundException {
     EarlyReturnRunner runner = new EarlyReturnRunner();
     WorkflowClient client = runner.setupWorkflowClient();
     runner.startWorker(client);
@@ -47,7 +49,7 @@ public class EarlyReturnRunner {
     }
   }
 
-  public WorkflowClient setupWorkflowClient() throws SSLException {
+  public WorkflowClient setupWorkflowClient() throws SSLException, FileNotFoundException {
 
     WorkflowServiceStubsOptions.Builder builder =
         WorkflowServiceStubsOptions.newBuilder()
@@ -58,8 +60,11 @@ public class EarlyReturnRunner {
 
       String certPath = properties.getTemporalCertLocation();
       String keyPath = properties.getTemporalKeyLocation();
-      InputStream clientCert = EarlyReturnRunner.class.getResourceAsStream(certPath);
-      InputStream clientKey = EarlyReturnRunner.class.getResourceAsStream(keyPath);
+
+
+      InputStream clientCert = new java.io.FileInputStream(certPath);
+      InputStream clientKey = new java.io.FileInputStream(keyPath);
+
       if (clientCert == null) throw new RuntimeException("Client cert not found on classpath: " + certPath);
       if (clientKey == null) throw new RuntimeException("Client key not found on classpath: " + keyPath);
 
