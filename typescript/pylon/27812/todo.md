@@ -1,0 +1,3 @@
+- [] monitor CPU and Memory usage
+- [] deploy AWS
+- 

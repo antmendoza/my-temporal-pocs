@@ -1,0 +1,65 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+      grpc:
+        endpoint: 0.0.0.0:4317
+  # The prometheus receiver scrapes metrics needed for the OpenTelemetry Collector Dashboard.
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'cadvisor'
+          scrape_interval: 10s
+          static_configs:
+            - targets: [ 'cadvisor:8080' ]
+
+  filelog:
+    include_file_path: true
+    poll_interval: 500ms
+    include:
+      - /var/log/**/*example*/*.log
+
+processors:
+  batch:
+    send_batch_max_size: 100
+    send_batch_size: 10
+    timeout: 10s
+
+connectors:
+  datadog/connector:
+
+exporters:
+  datadog/exporter:
+    api:
+      site: datadoghq.com
+      key: ${DATADOG_API_KEY}
+    host_metadata:
+      tags:
+        # Add static tags that will be applied to all metrics
+        - env:antmendoza-dev
+        # - service:temporal-sdk-metrics
+        # - version:${DD_VERSION:0.1.0}
+        # - team:platform
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+
+service:
+  pipelines:
+    metrics:
+      receivers: [ prometheus, otlp ]
+      processors: [ batch ]
+      exporters: [
+        #debug,
+        datadog/exporter ]
+    #    traces:
+    #      receivers: [otlp]
+    #      processors: [batch]
+    #      exporters: [datadog/exporter, debug]
+    logs:
+      receivers: [ otlp ]
+      processors: [ batch ]
+      exporters: [ datadog/exporter ]

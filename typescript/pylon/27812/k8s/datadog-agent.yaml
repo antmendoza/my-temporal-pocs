@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: datadog-agent
+  namespace: temporal-metrics
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: datadog-agent
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "nodes/proxy", "nodes/stats", "nodes/metrics"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods", "endpoints", "services", "events", "namespaces"]
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: datadog-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: datadog-agent
+subjects:
+  - kind: ServiceAccount
+    name: datadog-agent
+    namespace: temporal-metrics
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: datadog-agent
+  namespace: temporal-metrics
+  labels:
+    app: datadog-agent
+spec:
+  selector:
+    matchLabels:
+      app: datadog-agent
+  template:
+    metadata:
+      labels:
+        app: datadog-agent
+    spec:
+      serviceAccountName: datadog-agent
+      containers:
+        - name: agent
+          image: gcr.io/datadoghq/agent:7
+          imagePullPolicy: IfNotPresent
+          env:
+            # Ensure the agent always has a stable hostname; use the Kubernetes node name
+            - name: DD_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            # Point kubelet checks to the node's IP and relax TLS for local clusters
+            - name: DD_KUBERNETES_KUBELET_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: DD_KUBELET_TLS_VERIFY
+              value: "false"
+            - name: DD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: datadog
+                  key: api-key
+            - name: DD_SITE
+              value: datadoghq.com
+            # Enable APM and OTLP intake
+            - name: DD_APM_ENABLED
+              value: "true"
+            # Enable OTLP receiver protocols
+            - name: DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC
+              value: "true"
+            - name: DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP
+              value: "true"
+            # Explicitly configure OTLP endpoints to bind to all interfaces
+            - name: DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT
+              value: "0.0.0.0:4317"
+            - name: DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT
+              value: "0.0.0.0:4318"
+            # Accept OTLP metrics from workloads
+            - name: DD_OTLP_CONFIG_METRICS_ENABLED
+              value: "true"
+            # Enable logs collection (OTLP can send logs)
+            - name: DD_LOGS_ENABLED
+              value: "true"
+            # Enable container collection for better visibility
+            - name: DD_CONTAINER_COLLECTION_ENABLED
+              value: "true"
+          ports:
+            - containerPort: 8126
+              name: apm
+            - containerPort: 4317
+              name: otlp-grpc
+            - containerPort: 4318
+              name: otlp-http
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datadog-agent
+  namespace: temporal-metrics
+  labels:
+    app: datadog-agent
+spec:
+  selector:
+    app: datadog-agent
+  ports:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: otlp-grpc
+    - name: otlp-http
+      port: 4318
+      targetPort: otlp-http
+    - name: apm
+      port: 8126
+      targetPort: apm

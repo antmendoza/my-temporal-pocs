@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"ActivityOutboundCallsInterceptor\\\\|heartbeat\" /Users/temporalio/dev/temporal/my-temporal-sdk-metrics/ts-sdk-metrics/node_modules/@temporalio/activity/lib/*.d.ts)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}
