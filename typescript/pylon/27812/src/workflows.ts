@@ -9,7 +9,7 @@ import type * as activities from './activities';
 const { greet } = proxyActivities<typeof activities>({
   startToCloseTimeout: '5 minute',
   heartbeatTimeout: '2 seconds',
-// cancellationType: "TRY_CANCEL",
+ //cancellationType: "TRY_CANCEL",
 });
 
 // A workflow that simply calls an activity
