@@ -27,14 +27,17 @@ docker-compose up
 Use retry values to create a custom metric: 
 
 ```
-  Context.current().metricMeter.createGauge('my_custom_metric').set(Context.current().info.attempt);
+  Context.current().metricMeter.createGauge('my_custom_metric_gauge').set(Context.current().info.attempt);
+  Context.current().metricMeter.createCounter('my_custom_metric_counter').add(1);
 
 ```
 
 #### Custom Metrics
 
-Go to https://app.datadoghq.com/metric/explorer?exp_metric=my_custom_metric and add the following query
+Go to https://app.datadoghq.com/metric/explorer?exp_metric=my_custom_metric_gauge and add the following query
 ```
-avg:my_custom_metric{*}
+avg:my_custom_metric_gauge{*}
 ```
+
+
 ![Screenshot 2026-04-16 at 14.49.46.png](Screenshot%202026-04-16%20at%2014.49.46.png)
