@@ -221,7 +221,7 @@ public class Example_3 {
                                     .build());
 
 
-            WorkflowClient.start(workflow::mainMethod, "");
+            WorkflowClient.start(workflow::mainMethod, "", null);
 
 
         }

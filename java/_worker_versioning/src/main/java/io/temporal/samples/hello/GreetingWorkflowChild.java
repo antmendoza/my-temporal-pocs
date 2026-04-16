@@ -1,9 +1,11 @@
 package io.temporal.samples.hello;
 
-import io.temporal.workflow.*;
+import io.temporal.workflow.QueryMethod;
+import io.temporal.workflow.WorkflowInterface;
+import io.temporal.workflow.WorkflowMethod;
 
 @WorkflowInterface
-public interface GreetingWorkflow {
+public interface GreetingWorkflowChild {
 
 
     @WorkflowMethod

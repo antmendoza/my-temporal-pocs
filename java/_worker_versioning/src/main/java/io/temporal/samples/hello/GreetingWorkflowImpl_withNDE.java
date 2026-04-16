@@ -16,7 +16,7 @@ public class GreetingWorkflowImpl_withNDE implements GreetingWorkflow {
 
 
     @Override
-    public String mainMethod(String name) {
+    public String mainMethod(String name, Integer iterations) {
 
 
         while (true) {
