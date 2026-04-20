@@ -14,9 +14,7 @@ before the call reaches the server.
 modify the underlying `StartWorkflowOptions`. There is no supported way for an
 interceptor to customize them.
 
-This breaks use cases like acceptance test systems that redirect workflows to a
-test task queue via an interceptor — the redirect works for
-`SignalWithStartWorkflow` but silently has no effect for `UpdateWithStartWorkflow`.
+
 
 ## Reproduction
 
