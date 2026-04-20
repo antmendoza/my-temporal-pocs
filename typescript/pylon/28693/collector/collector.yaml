@@ -34,6 +34,9 @@ exporters:
     api:
       site: datadoghq.com
       key: ${DD_API_KEY}
+    metrics:
+      sums:
+       # cumulative_monotonic_mode: raw_value
   debug:
     verbosity: detailed
     sampling_initial: 5

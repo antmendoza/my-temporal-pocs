@@ -19,9 +19,10 @@ async function main() {
     telemetryOptions: {
       metrics: {
         otel: {
-          url:"grpc://0.0.0.0:4317"
-        }
-     },
+          url: 'grpc://0.0.0.0:4317',
+          //temporality: 'delta',
+        },
+      },
     },
   });
 
