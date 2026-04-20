@@ -5,7 +5,7 @@ import io.temporal.workflow.Workflow;
 
 import java.time.Duration;
 
-public class GreetingWorkflowImpl_withNDE implements GreetingWorkflow {
+public class GreetingWorkflowImpl_withNDE_8 implements GreetingWorkflow {
 
 
     private final GreetingActivities activities =
@@ -19,27 +19,21 @@ public class GreetingWorkflowImpl_withNDE implements GreetingWorkflow {
     public String mainMethod(String name, Integer iterations) {
 
 
-        while (true) {
-
+        for (int i = 0; i < iterations; i++) {
 
             Workflow.sleep(Duration.ofSeconds(1));
-
-
             activities.sleepSeconds(1);
 
-
-            if (Workflow.getInfo().isContinueAsNewSuggested()
-                    // To avoid long history during testing, we limit the max history length
-                    || Workflow.getInfo().getHistoryLength() > 20
-            ) {
-                Workflow.continueAsNew(name, iterations);
-
-            }
+            activities.sleepSeconds(1);
         }
 
 
 
-        //return "hello";
+      //  Workflow.continueAsNew(name);
+
+        return "hello";
     }
+
+
 
 }
