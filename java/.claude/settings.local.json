@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://search.maven.org/solrsearch/select?q=g:io.temporal+AND+a:temporal-sdk&rows=1&core=gav&wt=json\")",
+      "Bash(curl -s \"https://search.maven.org/solrsearch/select?q=g:io.temporal+AND+a:temporal-sdk&rows=10&core=gav&wt=json\")",
+      "Bash(python3 -c \"import json,sys; r=json.load\\(sys.stdin\\); [print\\(d['v']\\) for d in r['response']['docs']]\")",
+      "Bash(mvn -q -DskipTests compile)",
+      "Bash(mvn -DskipTests compile)",
+      "Bash(mvn clean *)",
+      "Bash(mvn -q -DskipTests clean compile)"
+    ]
+  }
+}
