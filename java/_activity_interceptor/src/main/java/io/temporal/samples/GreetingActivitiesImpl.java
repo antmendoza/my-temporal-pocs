@@ -36,10 +36,14 @@ public class GreetingActivitiesImpl implements GreetingActivities {
 
   @Override
   public void auditLogging() {
+
+    // this method is not always called as a Temporal activity, we don't have access to the activityContext.attempts
     num_attempts ++;
-    // simulate some random exception if attempt is less than 3
-    if(num_attempts < 10) {
+
+    // simulate some random exception during the first attempt
+    if(num_attempts < 3) {
       throw new RuntimeException("some random exception pushing logs");
     }
+
   }
 }

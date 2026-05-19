@@ -61,7 +61,8 @@ public class SimpleWorkflowInterceptor extends WorkerInterceptorBase {
                         ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(5))
                                 .setRetryOptions(
                                         RetryOptions.newBuilder()
-                                                //.setMaximumAttempts(5)
+                                                //delay the retry to show the workflow execution waits until the activity is completed
+                                                .setInitialInterval(Duration.ofSeconds(10))
                                                 .setBackoffCoefficient(1.0)
                                                 .build())
                                 .build());

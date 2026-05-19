@@ -33,4 +33,25 @@ Start a local Temporal server on `:7233`, then:
 ./mvnw compile exec:java -Dexec.mainClass="io.temporal.samples.Starter"
 ```
 
-The workflow runs `activity_1` (`trackAuditLogging=true`), `activity_2` (`trackAuditLogging=false`), `activity_3` (`trackAuditLogging=true`). `GreetingActivitiesImpl.auditLogging()` throws for the first 9 invocations and only succeeds on the 10th, so the inline audit fails initially and the workflow ends up scheduling fallback `auditLogging` activities for `activity_1` and `activity_3` (not `activity_2`, since its input opts out).
+
+## Output
+
+The workflow runs 
+- `activity_1` (`trackAuditLogging=true`) 
+- `activity_2` (`trackAuditLogging=false`)
+- `Workflow.sleep(Duration.ofSeconds(3))` to simulate time to allow audit logging downstream service to recover
+- `activity_3` (`trackAuditLogging=true`) 
+
+`GreetingActivitiesImpl.auditLogging()` throws for the first two invocations and 
+succeeds afterwards (shared static counter). With `activity_2` opting out via
+`trackAuditLogging=false`, the inline audit attempt only runs for `activity_1`
+and `activity_3`. The inline attempt for `activity_1` fails (first call → throw),
+so the workflow schedules a fallback `auditLogging` activity for it. By the time
+`activity_3` runs (after `Workflow.sleep(3s)` and the fallback retries), the
+shared counter is past the throwing window, so its inline audit succeeds, and no
+fallback is scheduled.  
+
+The fallback `auditLogging` stub is configured with `initialInterval=10s` and `backoffCoefficient=1.0` so retries are slow enough to make the post-workflow wait at `Promise.allOf(...).get()` visible in the run output.
+
+
+![image.png](image.png)

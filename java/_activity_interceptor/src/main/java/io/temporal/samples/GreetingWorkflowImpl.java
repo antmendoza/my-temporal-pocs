@@ -20,7 +20,9 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
 
         activities.activity_1(new MyActivityInput(true,"activityInput1"));
 
-        activities.activity_2(new MyActivityInput(false,"activityInput2"));
+        activities.activity_2(new MyActivityInput(false,"activityInput2.1"));
+
+        Workflow.sleep(Duration.ofSeconds(3));
 
         activities.activity_3(new MyActivityInput(true,"activityInput3"));
 
