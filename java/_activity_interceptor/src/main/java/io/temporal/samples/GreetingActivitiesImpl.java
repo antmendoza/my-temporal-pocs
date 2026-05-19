@@ -1,4 +1,4 @@
-package com.antmendoza.temporal;
+package io.temporal.samples;
 
 import io.temporal.activity.Activity;
 import org.checkerframework.checker.nullness.qual.NonNull;

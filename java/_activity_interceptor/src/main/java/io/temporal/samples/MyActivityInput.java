@@ -1,4 +1,4 @@
-package com.antmendoza.temporal;
+package io.temporal.samples;
 
 public class MyActivityInput {
 

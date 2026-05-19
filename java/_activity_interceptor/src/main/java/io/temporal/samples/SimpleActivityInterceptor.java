@@ -1,4 +1,4 @@
-package com.antmendoza.temporal;
+package io.temporal.samples;
 
 import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.common.interceptors.*;
@@ -22,12 +22,16 @@ public class SimpleActivityInterceptor extends WorkerInterceptorBase implements 
     private static class SimpleActivityInboundCallsInterceptor
             extends ActivityInboundCallsInterceptorBase {
 
+        private ActivityExecutionContext context;
+
         public SimpleActivityInboundCallsInterceptor(ActivityInboundCallsInterceptor next) {
             super(next);
         }
 
         @Override
         public void init(ActivityExecutionContext context) {
+
+            this.context = context;
             super.init(context);
         }
 
@@ -35,13 +39,24 @@ public class SimpleActivityInterceptor extends WorkerInterceptorBase implements 
         public ActivityOutput execute(ActivityInput input) {
             ActivityOutput output = super.execute(input);
 
-            if(!(output.getResult() instanceof MyActivityResult)){
+
+            Object activityArg_0 = input.getArguments().length > 0 ? input.getArguments()[0] : null;
+            if (!(activityArg_0 instanceof MyActivityInput)) {
+                return output;
+            }
+
+            if (!((MyActivityInput) activityArg_0).isTrackAuditLogging()
+                    ||
+                    !(output.getResult() instanceof MyActivityResult)) {
                 return output;
             }
 
 
             boolean businessLoggingActivitySuccess = true;
             try {
+
+                String activityType = context.getInfo().getActivityType();
+                log.info("running auditLogging activity for activityType={}", activityType);
 
                 // Direct Java call: bypasses the activity stub, so this does NOT
                 // schedule a Temporal activity (no history events, no retries, no
@@ -50,7 +65,7 @@ public class SimpleActivityInterceptor extends WorkerInterceptorBase implements 
                 new GreetingActivitiesImpl().auditLogging();
 
             } catch (Exception e) {
-                log.error("[error] <<< ", e);
+                log.error("[errordoctor] <<< ", e);
                 businessLoggingActivitySuccess = false;
             }
 

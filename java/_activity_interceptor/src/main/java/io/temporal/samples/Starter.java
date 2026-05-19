@@ -1,4 +1,4 @@
-package com.antmendoza.temporal;
+package io.temporal.samples;
 
 import io.temporal.api.enums.v1.WorkflowIdConflictPolicy;
 import io.temporal.client.WorkflowClient;

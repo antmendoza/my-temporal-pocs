@@ -1,4 +1,4 @@
-package com.antmendoza.temporal;
+package io.temporal.samples;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
@@ -70,14 +70,13 @@ public class SimpleWorkflowInterceptor extends WorkerInterceptorBase {
         public <R> ActivityOutput<R> executeActivity(ActivityInput<R> input) {
             ActivityOutput<R> output = super.executeActivity(input);
 
-
-            Object activityArg_0 = input.getArgs()[0];
+            Object activityArg_0 = input.getArgs().length> 0? input.getArgs()[0] : null;
             if (!(activityArg_0 instanceof MyActivityInput)) {
                 return output;
             }
 
             if (!((MyActivityResult) output.getResult().get()).isAuditLoggingActivitySuccess()
-                    //we could use context propagation to pass the information to the activity instead of the input
+
                     && ((MyActivityInput) activityArg_0).isTrackAuditLogging()) {
 
                 log.info(

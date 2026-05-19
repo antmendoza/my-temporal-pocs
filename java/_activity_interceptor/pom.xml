@@ -41,7 +41,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>com.antmendoza.temporal.Starter</mainClass>
+                            <mainClass>io.temporal.samples.Starter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

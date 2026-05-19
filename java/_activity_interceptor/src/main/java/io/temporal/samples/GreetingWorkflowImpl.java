@@ -1,4 +1,4 @@
-package com.antmendoza.temporal;
+package io.temporal.samples;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
