@@ -1,4 +1,4 @@
-package activities_2
+package activities_v2
 
 import (
 	"context"
@@ -8,6 +8,6 @@ import (
 
 func Activity(ctx context.Context) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Activity")
-	return "Hello 2!", nil
+	logger.Info("Activity activities_v2")
+	return "activities_v2", nil
 }

@@ -3,6 +3,7 @@ package helloworld
 import (
 	"time"
 
+	"github.com/temporalio/samples-go/helloworld/activities_v1"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -17,7 +18,9 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	logger.Info("HelloWorld workflow started", "name", name)
 
 	var result string
-	err := workflow.ExecuteActivity(ctx, Activity, name).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, activities_v1.Activity, name).Get(ctx, &result)
+	//err := workflow.ExecuteActivity(ctx, "Activity", name).Get(ctx, &result)
+
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err
