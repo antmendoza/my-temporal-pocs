@@ -1,0 +1,33 @@
+{
+  "name": "pylon-32371",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc --build",
+    "start": "ts-node src/worker.ts",
+    "start.watch": "nodemon src/worker.ts",
+    "workflow": "ts-node src/client.ts"
+  },
+  "nodemonConfig": {
+    "execMap": {
+      "ts": "ts-node"
+    },
+    "ext": "ts",
+    "watch": [
+      "src"
+    ]
+  },
+  "dependencies": {
+    "@temporalio/activity": "1.18.1",
+    "@temporalio/client": "1.18.1",
+    "@temporalio/worker": "1.18.1",
+    "@temporalio/workflow": "1.18.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.0",
+    "@types/node": "^16.11.43",
+    "nodemon": "^2.0.12",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.9.5"
+  }
+}

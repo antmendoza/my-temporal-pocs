@@ -1,0 +1,39 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    send_batch_size: 1000
+    timeout: 5s
+
+exporters:
+  # Exposes SDK metrics in Prometheus format for Prometheus to scrape.
+  # add_metric_suffixes: false keeps names like `temporal_request` /
+  # `temporal_workflow_completed` so they match the temporal-core-sdks-otel dashboard.
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    add_metric_suffixes: false
+    # resource_to_telemetry_conversion stays disabled: the SDK already attaches
+    # per-datapoint attrs that collide with resource attrs (service.name etc.),
+    # which the prometheus exporter rejects as "duplicate label names".
+    resource_to_telemetry_conversion:
+      enabled: false
+  debug:
+    verbosity: basic
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus, debug]

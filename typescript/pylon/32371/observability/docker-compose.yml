@@ -1,0 +1,40 @@
+version: "3.5"
+
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector-32371
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./collector.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC (TS worker -> collector)
+      - "4318:4318"   # OTLP HTTP
+      - "8889:8889"   # Prometheus exporter (scraped by Prometheus)
+      - "13133:13133" # health_check
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: prometheus-32371
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/config.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - otel-collector
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: grafana-32371
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
