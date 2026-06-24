@@ -10,6 +10,12 @@ processors:
   batch:
     send_batch_size: 1000
     timeout: 5s
+  transform/strip_instance:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - delete_key(attributes, "service_instance_id")
+          - delete_key(attributes, "service.instance.id")
 
 exporters:
   # Exposes SDK metrics in Prometheus format for Prometheus to scrape.
@@ -17,12 +23,13 @@ exporters:
   # `temporal_workflow_completed` so they match the temporal-core-sdks-otel dashboard.
   prometheus:
     endpoint: 0.0.0.0:8889
-    add_metric_suffixes: false
+    metric_expiration: 2m
+    # add_metric_suffixes: false
     # resource_to_telemetry_conversion stays disabled: the SDK already attaches
     # per-datapoint attrs that collide with resource attrs (service.name etc.),
     # which the prometheus exporter rejects as "duplicate label names".
-    resource_to_telemetry_conversion:
-      enabled: false
+#    resource_to_telemetry_conversion:
+#      enabled: false
   debug:
     verbosity: basic
 
@@ -35,5 +42,5 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      processors: [batch]
+      processors: [transform/strip_instance, batch]
       exporters: [prometheus, debug]

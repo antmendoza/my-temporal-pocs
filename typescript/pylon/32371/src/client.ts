@@ -6,13 +6,23 @@ async function run() {
   const connection = await Connection.connect();
   const client = new Client({ connection });
 
-  const result = await client.workflow.execute(example, {
-    taskQueue: TASK_QUEUE,
-    workflowId: `pylon-32371-${Date.now()}`,
-    args: ['Temporal'],
-  });
 
-  console.log(result);
+  for (let i = 0; i < 100; i++) {
+
+    const result = await client.workflow.execute(example, {
+      taskQueue: TASK_QUEUE,
+      workflowId: `pylon-32371-${Date.now()}`,
+      args: ['Temporal'],
+    });
+    console.log(result);
+
+
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  }
+
+
 }
 
 run().catch((err) => {

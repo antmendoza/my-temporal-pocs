@@ -10,6 +10,7 @@ async function main() {
         otel: {
           url: 'grpc://localhost:4317',
           metricsExportInterval: '5s',
+//          temporality: 'cumulative',
         },
       },
     },

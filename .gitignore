@@ -20,3 +20,4 @@ bin/
 /python/**/path/
 **/node_modules
 **/coverage
+/pylon/
