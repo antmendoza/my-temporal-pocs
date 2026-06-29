@@ -6,13 +6,17 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
+import java.util.concurrent.CountDownLatch;
 
-public class Starter {
+/**
+ * Long-lived worker: starts the worker, kicks off the workflow, then blocks so it keeps polling the
+ * task queue and can serve queries (including from a client on a different SDK version).
+ */
+public class WorkerMain {
 
-    static final String TASK_QUEUE = "_32859-task-queue";
-    static final String WORKFLOW_ID = "_32859-workflow";
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("WorkerMain SDK version: " + io.temporal.serviceclient.Version.LIBRARY_VERSION);
 
-    public static void main(String[] args) {
         WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
         WorkflowClient client = WorkflowClient.newInstance(service);
 
@@ -22,7 +26,7 @@ public class Starter {
                         .build();
 
         WorkerFactory factory = WorkerFactory.newInstance(client, factoryOptions);
-        Worker worker = factory.newWorker(TASK_QUEUE);
+        Worker worker = factory.newWorker(Starter.TASK_QUEUE);
         worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
         worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
         factory.start();
@@ -31,15 +35,14 @@ public class Starter {
                 client.newWorkflowStub(
                         GreetingWorkflow.class,
                         WorkflowOptions.newBuilder()
-                                .setWorkflowId(WORKFLOW_ID)
-                                .setTaskQueue(TASK_QUEUE)
+                                .setWorkflowId(Starter.WORKFLOW_ID)
+                                .setTaskQueue(Starter.TASK_QUEUE)
                                 .build());
 
         String result = workflow.greet("Temporal");
         System.out.println(result);
 
-
-
-        System.exit(0);
+        System.out.println("Worker staying alive to serve queries; Ctrl-C to stop.");
+        new CountDownLatch(1).await();
     }
 }

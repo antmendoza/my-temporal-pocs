@@ -4,5 +4,11 @@ import io.temporal.activity.ActivityInterface;
 
 @ActivityInterface
 public interface GreetingActivities {
-    String composeGreeting(String name);
+    String IsAdditionalEvidenceCollectionEnabled(int msSleep);
+
+
+
+    String Method2(int msSleep);
+
+    String Method3(int msSleep);
 }

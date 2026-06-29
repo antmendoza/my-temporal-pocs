@@ -2,14 +2,32 @@ package io.temporal.samples.hello;
 
 public class GreetingActivitiesImpl implements GreetingActivities {
     @Override
-    public String composeGreeting(String name) {
+    public String IsAdditionalEvidenceCollectionEnabled(int msSleep) {
 
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(msSleep);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        return "Hello " + name + "!";
+        return "done";
     }
+
+    @Override
+    public String Method2(int msSleep) {
+        try {
+            Thread.sleep(msSleep);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return "done";    }
+
+    @Override
+    public String Method3(int msSleep) {
+        try {
+            Thread.sleep(msSleep);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return "done";    }
 }

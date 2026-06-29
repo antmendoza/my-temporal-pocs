@@ -42,26 +42,32 @@ public class VersionSearchAttributeInterceptor extends WorkerInterceptorBase {
     @Override
     public int getVersion(String changeId, int minSupported, int maxSupported) {
 
-
+      int version = super.getVersion(changeId, minSupported, maxSupported);
       upsertTypedSearchAttributes(
               SearchAttributeUpdate.valueSet(
-                      SearchAttributeKey.forKeyword("YourAttributeName_2")
-                      , changeId ));
-
+                      SearchAttributeKey.forKeyword("YourAttributeName")
+                      , changeId));
       upsertTypedSearchAttributes(
               SearchAttributeUpdate.valueSet(
                       SearchAttributeKey.forKeyword("YourAttributeName_3")
                       , changeId ));
 
-      int version = super.getVersion(changeId, minSupported, maxSupported);
+      return version;
+    }
+
+    @Override
+    public <R> ActivityOutput<R> executeActivity(ActivityInput<R> input) {
+
 
       upsertTypedSearchAttributes(
               SearchAttributeUpdate.valueSet(
-                      SearchAttributeKey.forKeyword("YourAttributeName")
-                      , changeId + ":" + version));
+                      SearchAttributeKey.forKeyword("MostRecentStartedActivity")
+                      , input.getActivityName() ));
 
-
-      return version;
+      return super.executeActivity(input);
     }
+
+
+
   }
 }
