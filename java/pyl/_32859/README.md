@@ -2,14 +2,22 @@
 
 Cross-version replay check for the Temporal Java SDK.
 
-
-
+This repository demonstrates how gzip compression (enabled by default in java v1.36.0) can cause NDE.
 
 `run.sh` builds two self-contained jars, each pinned to a different SDK version, then:
 
 1. **WorkerMain** (`WORKER_VER`) runs the workflow to completion and exits.
 2. **QueryClient** (`QUERY_VER`) starts its own worker and queries the workflow, so the
    query is answered by replaying the history on `QUERY_VER` — exercising cross-version replay.
+
+## Version overrides
+
+Defaults are `WORKER_VER=1.35.0` and `QUERY_VER=1.36.0`. Override either:
+
+```bash
+WORKER_VER=1.34.0 ./run.sh     # change the workflow-run SDK version
+QUERY_VER=1.35.0 ./run.sh      # change the query/replay SDK version
+```
 
 
 ## Run
@@ -125,14 +133,5 @@ Query result: something
 -----------
 
 
-```
-
-### Version overrides
-
-Defaults are `WORKER_VER=1.35.0` and `QUERY_VER=1.36.0`. Override either:
-
-```bash
-WORKER_VER=1.34.0 ./run.sh     # change the workflow-run SDK version
-QUERY_VER=1.35.0 ./run.sh      # change the query/replay SDK version
 ```
 
