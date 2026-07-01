@@ -6,15 +6,14 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
-import java.util.concurrent.CountDownLatch;
 
 /**
- * Long-lived worker: starts the worker, kicks off the workflow, then blocks so it keeps polling the
- * task queue and can serve queries (including from a client on a different SDK version).
+ * Runs the workflow to completion on this SDK version, then shuts the worker down and exits. The
+ * query is served later by {@link QueryClient}, which spins up its own worker.
  */
 public class WorkerMain {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         System.out.println("WorkerMain SDK version: " + io.temporal.serviceclient.Version.LIBRARY_VERSION);
 
         WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
@@ -42,7 +41,8 @@ public class WorkerMain {
         String result = workflow.greet("Temporal");
         System.out.println(result);
 
-        System.out.println("Worker staying alive to serve queries; Ctrl-C to stop.");
-        new CountDownLatch(1).await();
+        System.out.println("Workflow finished; shutting worker down.");
+        factory.shutdown();
+        System.exit(0);
     }
 }

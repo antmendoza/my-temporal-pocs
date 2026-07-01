@@ -1,13 +1,16 @@
 package io.temporal.samples.hello;
 
-import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowStub;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.worker.Worker;
+import io.temporal.worker.WorkerFactory;
+import io.temporal.worker.WorkerFactoryOptions;
 
 /**
- * Standalone client that only queries an already-running/completed workflow. Run this with a
- * different {@code -Dtemporal.version} than the worker to exercise cross-SDK-version querying.
+ * Starts its own worker (on this SDK version) and then queries the workflow. Because a query is
+ * answered by replaying the workflow history on a polling worker, running this on a different SDK
+ * version than {@link WorkerMain} exercises cross-version replay through the query path.
  */
 public class QueryClient {
 
@@ -17,13 +20,24 @@ public class QueryClient {
         WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
         WorkflowClient client = WorkflowClient.newInstance(service);
 
+        WorkerFactoryOptions factoryOptions =
+                WorkerFactoryOptions.newBuilder()
+                        .setWorkerInterceptors(new VersionSearchAttributeInterceptor())
+                        .build();
+
+        WorkerFactory factory = WorkerFactory.newInstance(client, factoryOptions);
+        Worker worker = factory.newWorker(Starter.TASK_QUEUE);
+        worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
+        worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
+        factory.start();
+
         WorkflowStub stub = client.newUntypedWorkflowStub(Starter.WORKFLOW_ID);
-        WorkflowExecution exec = stub.getExecution();
-        System.out.println("Querying workflowId=" + exec.getWorkflowId());
+        System.out.println("Querying workflowId=" + Starter.WORKFLOW_ID);
 
         String result = stub.query("getGreetingQuery", String.class, "Temporal");
         System.out.println("Query result: " + result);
 
+        factory.shutdown();
         System.exit(0);
     }
 }

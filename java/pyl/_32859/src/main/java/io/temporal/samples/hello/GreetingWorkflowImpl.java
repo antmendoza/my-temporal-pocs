@@ -22,14 +22,10 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
     @Override
     public String greet(String name) {
 
-
         if(WorkflowUnsafe.isReplaying()) {
-
-            System.out.println("Replaying workflow with SDK version: " + io.temporal.serviceclient.Version.LIBRARY_VERSION);
-
-
+            System.out.println("wokflow log: Replaying workflow with SDK version: " + io.temporal.serviceclient.Version.LIBRARY_VERSION);
         }else {
-            System.out.println("Running workflow with SDK version: " + io.temporal.serviceclient.Version.LIBRARY_VERSION);
+            System.out.println("wokflow log: Running workflow with SDK version: " + io.temporal.serviceclient.Version.LIBRARY_VERSION);
 
         }
 
@@ -37,19 +33,15 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
 
         promises.add(Async.function(this::method2));
         promises.add(Async.function(this::method1));
+//        promises.add(Async.function(this::method1));
+//        promises.add(Async.function(this::method2));
 
         Promise.allOf(promises).get();
 
-        //errorEventCount(30);
 
-        return activities.IsAdditionalEvidenceCollectionEnabled(200);
+        return activities.Method3(200);
     }
 
-    private static void errorEventCount(int eventCount) {
-        if (Workflow.getInfo().getHistoryLength() < eventCount) {
-            throw new RuntimeException("error"); //failing the workflow task will evict the workflow from the worker cache
-        }
-    }
 
     @Override
     public String getGreetingQuery(String name) {
@@ -59,19 +51,25 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
     private String method1() {
 
 
-  //      Promise p = Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 1000);
+        Workflow.getVersion("version1", Workflow.DEFAULT_VERSION, 1);
+        Workflow.getVersion("version1", Workflow.DEFAULT_VERSION, 2);
 
-        //Workflow.upsertSearchAttributes(Map.of("YourAttributeName", "value"));
-
-        activities.IsAdditionalEvidenceCollectionEnabled(200);
+        Promise p = Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
+        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
+        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
+        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
+        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
+        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
 
         Workflow.getVersion("version1", Workflow.DEFAULT_VERSION, 1);
+        Workflow.getVersion("version2", Workflow.DEFAULT_VERSION, 1);
+        Workflow.getVersion("version1", Workflow.DEFAULT_VERSION, 2);
 
         activities.Method3(200);
 
-        //Workflow.upsertSearchAttributes(Map.of("YourAttributeName", "value2"));
 
-//        p.get();
+        p.get();
+
 
         return "method1";
     }
