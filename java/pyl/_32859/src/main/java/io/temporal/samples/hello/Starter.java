@@ -2,7 +2,6 @@ package io.temporal.samples.hello;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
@@ -13,8 +12,7 @@ public class Starter {
     static final String WORKFLOW_ID = "_32859-workflow";
 
     public static void main(String[] args) {
-        WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-        WorkflowClient client = WorkflowClient.newInstance(service);
+        WorkflowClient client = TemporalClientFactory.newClient();
 
         WorkerFactoryOptions factoryOptions =
                 WorkerFactoryOptions.newBuilder()

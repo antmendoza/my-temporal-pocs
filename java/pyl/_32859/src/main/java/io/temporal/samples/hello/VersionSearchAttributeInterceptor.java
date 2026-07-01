@@ -15,9 +15,6 @@ import io.temporal.common.interceptors.WorkflowOutboundCallsInterceptorBase;
  */
 public class VersionSearchAttributeInterceptor extends WorkerInterceptorBase {
 
-  static final SearchAttributeKey<String> INTERCEPTOR_SA =
-      SearchAttributeKey.forKeyword("YourAttributeName");
-
   @Override
   public WorkflowInboundCallsInterceptor interceptWorkflow(WorkflowInboundCallsInterceptor next) {
     return new InboundCalls(next);
@@ -45,11 +42,11 @@ public class VersionSearchAttributeInterceptor extends WorkerInterceptorBase {
       int version = super.getVersion(changeId, minSupported, maxSupported);
       upsertTypedSearchAttributes(
               SearchAttributeUpdate.valueSet(
-                      SearchAttributeKey.forKeyword("YourAttributeName")
+                      SearchAttributeKey.forKeyword("test44")
                       , changeId));
       upsertTypedSearchAttributes(
               SearchAttributeUpdate.valueSet(
-                      SearchAttributeKey.forKeyword("YourAttributeName_3")
+                      SearchAttributeKey.forKeyword("test44")
                       , changeId ));
 
       return version;
@@ -61,7 +58,7 @@ public class VersionSearchAttributeInterceptor extends WorkerInterceptorBase {
 
       upsertTypedSearchAttributes(
               SearchAttributeUpdate.valueSet(
-                      SearchAttributeKey.forKeyword("MostRecentStartedActivity")
+                      SearchAttributeKey.forKeyword("test45")
                       , input.getActivityName() ));
 
       return super.executeActivity(input);

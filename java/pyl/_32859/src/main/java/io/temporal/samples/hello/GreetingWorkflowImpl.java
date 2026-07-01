@@ -33,8 +33,6 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
 
         promises.add(Async.function(this::method2));
         promises.add(Async.function(this::method1));
-//        promises.add(Async.function(this::method1));
-//        promises.add(Async.function(this::method2));
 
         Promise.allOf(promises).get();
 
@@ -52,23 +50,12 @@ public class GreetingWorkflowImpl implements GreetingWorkflow {
 
 
         Workflow.getVersion("version1", Workflow.DEFAULT_VERSION, 1);
-        Workflow.getVersion("version1", Workflow.DEFAULT_VERSION, 2);
 
-        Promise p = Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
-        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
-        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
-        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
-        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
-        Async.function(activities::IsAdditionalEvidenceCollectionEnabled, 200);
 
-        Workflow.getVersion("version1", Workflow.DEFAULT_VERSION, 1);
-        Workflow.getVersion("version2", Workflow.DEFAULT_VERSION, 1);
-        Workflow.getVersion("version1", Workflow.DEFAULT_VERSION, 2);
 
         activities.Method3(200);
 
 
-        p.get();
 
 
         return "method1";

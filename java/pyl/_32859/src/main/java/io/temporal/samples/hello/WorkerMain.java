@@ -2,7 +2,6 @@ package io.temporal.samples.hello;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
@@ -16,12 +15,11 @@ public class WorkerMain {
     public static void main(String[] args) {
         System.out.println("WorkerMain SDK version: " + io.temporal.serviceclient.Version.LIBRARY_VERSION);
 
-        WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-        WorkflowClient client = WorkflowClient.newInstance(service);
+        WorkflowClient client = TemporalClientFactory.newClient();
 
         WorkerFactoryOptions factoryOptions =
                 WorkerFactoryOptions.newBuilder()
-                        .setWorkerInterceptors(new VersionSearchAttributeInterceptor())
+                     //   .setWorkerInterceptors(new VersionSearchAttributeInterceptor())
                         .build();
 
         WorkerFactory factory = WorkerFactory.newInstance(client, factoryOptions);

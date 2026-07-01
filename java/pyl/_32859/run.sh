@@ -8,19 +8,9 @@
 #   WORKER_VER=1.34.0 ./run.sh     # override workflow-run SDK version
 #   QUERY_VER=1.35.0 ./run.sh      # override query/replay SDK version
 #
-
-# Requires a local dev server:  temporal server start-dev
-
-temporal operator search-attribute create --name MostRecentStartedActivity --type Keyword >&2
-
-
-temporal operator search-attribute create --name YourAttributeName_3 --type Keyword >&2
-temporal operator search-attribute create --name YourAttributeName_2 --type Keyword >&2
-temporal operator search-attribute create --name YourAttributeName_1 --type Keyword >&2
-temporal operator search-attribute create --name YourAttributeName --type Keyword >&2
-
-
-
+# Connects to Temporal Cloud using src/main/resources/temporal.properties and the mTLS
+# certs under src/main/resources/certs. Set temporal_local_server=true in that file to use
+# a local dev server instead.
 
 
 set -euo pipefail
@@ -33,10 +23,30 @@ QUERY_MAIN="io.temporal.samples.hello.QueryClient"
 WORKER_JAR="target/app-${WORKER_VER}.jar"
 QUERY_JAR="target/app-${QUERY_VER}.jar"
 
-if ! temporal operator cluster health >/dev/null 2>&1; then
-  echo "ERROR: no local Temporal server reachable. Start one with: temporal server start-dev" >&2
-  exit 1
+# Point the Temporal CLI at the same target as the app, read from temporal.properties.
+PROPS="src/main/resources/temporal.properties"
+LOCAL=$(grep -E '^temporal_local_server=' "$PROPS" | head -1 | cut -d= -f2 | tr -d '[:space:]')
+if [[ "$LOCAL" != "true" ]]; then
+  if [[ -z "${TEMPORAL_API_KEY:-}" ]]; then
+    echo "ERROR: TEMPORAL_API_KEY must be set to connect to Temporal Cloud." >&2
+    exit 1
+  fi
+  export TEMPORAL_ADDRESS=$(grep -E '^temporal_starter_target_endpoint=' "$PROPS" | head -1 | cut -d= -f2 | tr -d '[:space:]')
+  export TEMPORAL_NAMESPACE=$(grep -E '^temporal_namespace=' "$PROPS" | head -1 | cut -d= -f2 | tr -d '[:space:]')
+  export TEMPORAL_TLS=true
 fi
+
+#if ! temporal operator cluster health >/dev/null 2>&1; then
+#  echo "ERROR: Temporal server unreachable (${TEMPORAL_ADDRESS:-localhost:7233}). Check temporal.properties/certs, or start a dev server." >&2
+#  exit 1
+#fi
+
+# Register the custom search attributes used by the workflow (idempotent).
+#temporal operator search-attribute create --name MostRecentStartedActivity --type Keyword >&2 || true
+#temporal operator search-attribute create --name YourAttributeName_3 --type Keyword >&2 || true
+#temporal operator search-attribute create --name YourAttributeName_2 --type Keyword >&2 || true
+#temporal operator search-attribute create --name YourAttributeName_1 --type Keyword >&2 || true
+#temporal operator search-attribute create --name YourAttributeName --type Keyword >&2 || true
 
 echo ">> building workflow-run jar (SDK $WORKER_VER) -> $WORKER_JAR"
 mvn -q -Dtemporal.version="$WORKER_VER" -Dapp.finalName="app-${WORKER_VER}" clean package
