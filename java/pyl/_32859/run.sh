@@ -36,18 +36,6 @@ if [[ "$LOCAL" != "true" ]]; then
   export TEMPORAL_TLS=true
 fi
 
-#if ! temporal operator cluster health >/dev/null 2>&1; then
-#  echo "ERROR: Temporal server unreachable (${TEMPORAL_ADDRESS:-localhost:7233}). Check temporal.properties/certs, or start a dev server." >&2
-#  exit 1
-#fi
-
-# Register the custom search attributes used by the workflow (idempotent).
-#temporal operator search-attribute create --name MostRecentStartedActivity --type Keyword >&2 || true
-#temporal operator search-attribute create --name YourAttributeName_3 --type Keyword >&2 || true
-#temporal operator search-attribute create --name YourAttributeName_2 --type Keyword >&2 || true
-#temporal operator search-attribute create --name YourAttributeName_1 --type Keyword >&2 || true
-#temporal operator search-attribute create --name YourAttributeName --type Keyword >&2 || true
-
 echo ">> building workflow-run jar (SDK $WORKER_VER) -> $WORKER_JAR"
 mvn -q -Dtemporal.version="$WORKER_VER" -Dapp.finalName="app-${WORKER_VER}" clean package
 if [[ "$QUERY_VER" != "$WORKER_VER" ]]; then
@@ -55,10 +43,14 @@ if [[ "$QUERY_VER" != "$WORKER_VER" ]]; then
   mvn -q -Dtemporal.version="$QUERY_VER" -Dapp.finalName="app-${QUERY_VER}" package
 fi
 
+# Silence grpc-netty-shaded warnings on recent JDKs:
+#   --sun-misc-unsafe-memory-access=allow  -> terminally-deprecated sun.misc.Unsafe (JDK 23+)
+#   --enable-native-access=ALL-UNNAMED     -> restricted System.loadLibrary native access (JDK 22+)
+JAVA_FLAGS="--sun-misc-unsafe-memory-access=allow --enable-native-access=ALL-UNNAMED"
+
 echo ">> running workflow to completion on SDK $WORKER_VER"
-java -cp "$WORKER_JAR" "$WORKER_MAIN"
+java $JAVA_FLAGS -cp "$WORKER_JAR" "$WORKER_MAIN"
 
 echo ">> querying (starts its own worker) on SDK $QUERY_VER"
-java -cp "$QUERY_JAR" "$QUERY_MAIN"
+java $JAVA_FLAGS -cp "$QUERY_JAR" "$QUERY_MAIN"
 
-echo ">> done"

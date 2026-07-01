@@ -34,6 +34,7 @@ public class QueryClient {
 
         String result = stub.query("getGreetingQuery", String.class, "Temporal");
         System.out.println("Query result: " + result);
+        System.out.println("\n-----------\n");
 
         factory.shutdown();
         System.exit(0);

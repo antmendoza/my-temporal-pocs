@@ -46,7 +46,7 @@
   <properties>
     <exec.mainClass>io.temporal.samples.hello.Starter</exec.mainClass>
     <maven.compiler.source>11</maven.compiler.source>
-    <temporal.version>1.30.0</temporal.version>
+    <temporal.version>1.36.0</temporal.version>
     <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <app.finalName>app</app.finalName>

@@ -37,9 +37,9 @@ public class WorkerMain {
                                 .build());
 
         String result = workflow.greet("Temporal");
-        System.out.println(result);
 
-        System.out.println("Workflow finished; shutting worker down.");
+        System.out.println("Workflow finished; shutting worker down." +
+                "\n-----------\n");
         factory.shutdown();
         System.exit(0);
     }
