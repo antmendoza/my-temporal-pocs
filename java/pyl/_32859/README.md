@@ -2,9 +2,9 @@
 
 Cross-version replay check for the Temporal Java SDK.
 
-This repository demonstrates how gzip compression (enabled by default in java v1.36.0) can cause NDE. 
+This repository demonstrates how gzip compression (enabled by default in java v1.36.0) can cause NDE.
 
-Disabling gzip compression works.
+Disabling gzip compression avoids the issue
 
 `run.sh` builds two self-contained jars, each pinned to a different SDK version, then:
 
