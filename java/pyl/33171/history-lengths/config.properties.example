@@ -1,0 +1,11 @@
+# Temporal Cloud connection (API key auth)
+# Copy to config.properties and fill in. config.properties is gitignored.
+
+# Regional gRPC endpoint, host:port
+endpoint=us-west-2.aws.api.temporal.io:7233
+
+# Fully-qualified namespace, e.g. pay-orchestration-prod.g66lv
+namespace=pay-orchestration-prod.g66lv
+
+# API key. May be left blank here and supplied via env TEMPORAL_API_KEY instead.
+apiKey=
