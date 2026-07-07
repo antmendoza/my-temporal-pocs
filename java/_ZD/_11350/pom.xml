@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <temporal-sdk.version>1.28.0</temporal-sdk.version>
+        <temporal-sdk.version>1.36.0</temporal-sdk.version>
         <opentelemetry-opentracing.version>1.47.0</opentelemetry-opentracing.version>
     </properties>
 

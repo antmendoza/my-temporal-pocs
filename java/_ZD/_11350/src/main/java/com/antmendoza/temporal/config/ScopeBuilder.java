@@ -8,6 +8,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.temporal.common.reporter.MicrometerClientStatsReporter;
@@ -36,6 +37,23 @@ public class ScopeBuilder {
                         }
                         List<Tag> tags = id.getTags().stream().filter(t -> !t.getKey().equals("node_id")).toList();
                         return id.replaceTags(tags);
+
+
+                    }
+
+                    @Override
+                    public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
+                        if (id.getType() != Meter.Type.DISTRIBUTION_SUMMARY
+                                && id.getType() != Meter.Type.TIMER) {
+                            return config;
+                        }
+                        return DistributionStatisticConfig.builder()
+                                // buckets in the metric's base unit (seconds for latency timers)
+                                .serviceLevelObjectives(
+                                        0.010, 0.025, 0.050, 0.100, 0.250,
+                                        0.500, 1.0, 2.5, 5.0, 10.0, 33.0, 60.0)
+                                .build()
+                                .merge(config);
                     }
                 });
 
