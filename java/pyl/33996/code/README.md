@@ -43,6 +43,9 @@ So a history recorded on one compiler fails to replay on the other.
 Requires JDK 21 and Maven. Run from the `code/` directory.
 
 ```bash
+
+export USE_LAMBDA = true
+
 # Build both, and write each module's runtime classpath to target/cp.txt
 for v in 2.2.0 2.4.0; do
   ( cd "kotlin-$v" && mvn -q compile dependency:build-classpath -Dmdep.outputFile=target/cp.txt )

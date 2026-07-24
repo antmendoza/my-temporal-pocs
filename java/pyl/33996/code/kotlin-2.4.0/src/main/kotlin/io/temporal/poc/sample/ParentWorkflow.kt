@@ -58,10 +58,22 @@ class GreetingWorkflowImpl : GreetingWorkflow {
     /** Mirrors GroupTaskHandler.createChildTask: one child per workflow task. */
     private fun createChild(index: Int, assignee: String) {
         val child = Workflow.newChildWorkflowStub(GreetingChildWorkflow::class.java)
-        // START_CHILD via a method reference to the child stub interface method - this is the
-        // reference whose Kotlin lowering changed between 2.2.0 (REF_invokeInterface) and 2.4.0
-        // (static bridge via REF_invokeStatic).
-        val promise = Async.function{child.emphasize(assignee)}
+
+
+
+        val useLambda = System.getenv().getOrDefault("USE_LAMBDA", "true")
+        val promise:Promise<String>;
+        if(useLambda.toBoolean()){
+            promise = Async.function{child.emphasize(assignee)}
+        }
+        else{
+
+            // START_CHILD via a method reference to the child stub interface method - this is the
+            // reference whose Kotlin lowering changed between 2.2.0 (REF_invokeInterface) and 2.4.0
+            // (static bridge via REF_invokeStatic).
+            promise = Async.function(child::emphasize, assignee)
+        }
+
         // Block until the child has started so there is one child per workflow task and the child's
         // signal-back can interleave with the next child start.
         Workflow.getWorkflowExecution(child).get()
