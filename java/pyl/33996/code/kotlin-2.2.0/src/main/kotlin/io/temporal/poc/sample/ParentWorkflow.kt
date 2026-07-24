@@ -3,12 +3,12 @@ package io.temporal.poc.sample
 import io.temporal.activity.ActivityOptions
 import io.temporal.workflow.Async
 import io.temporal.workflow.Promise
+import io.temporal.workflow.QueryMethod
 import io.temporal.workflow.SignalMethod
 import io.temporal.workflow.Workflow
 import io.temporal.workflow.WorkflowInterface
 import io.temporal.workflow.WorkflowMethod
 import java.time.Duration
-
 
 
 /**
@@ -77,10 +77,15 @@ class GreetingWorkflowImpl : GreetingWorkflow {
         }
     }
 
+    override fun query(): String {
+        return "some query result"
+    }
+
     companion object {
         private const val CHILD_COUNT = 20
     }
 }
+
 
 
 @WorkflowInterface
@@ -91,4 +96,8 @@ interface GreetingWorkflow {
     /** Signalled by each child once it has started (mirrors GroupTaskWorkflow.subTaskCreated). */
     @SignalMethod
     fun subTaskCreated(assignee: String)
+
+    @QueryMethod
+    fun query(): String
+
 }

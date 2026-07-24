@@ -26,35 +26,20 @@ object Recorder {
     fun main(args: Array<String>) {
         val out = File(if (args.isNotEmpty()) args[0] else "history-kotlin-2.4.0.json")
 
-        val env = TestWorkflowEnvironment.newInstance()
-        val worker = env.newWorker(SampleWorker.TASK_QUEUE)
-        worker.registerWorkflowImplementationTypes(
-            GreetingWorkflowImpl::class.java,
-            GreetingChildWorkflowImpl::class.java
-        )
-        worker.registerActivitiesImplementations(GreetingActivitiesImpl())
-        env.start()
 
-        val client = env.workflowClient
-        val stub = client.newWorkflowStub(
-            GreetingWorkflow::class.java,
-            WorkflowOptions.newBuilder()
-                .setTaskQueue(SampleWorker.TASK_QUEUE)
-                .setWorkflowId("sample-record")
-                .build()
-        )
 
-        // The workflow self-drives: it creates children in a loop and each child signals the parent
-        // back, so no external signal is needed here.
-        val exec = WorkflowClient.start(stub::greet, "world")
+        val worker = SampleWorker;
+        worker.main(arrayOf());
 
-        val result = WorkflowStub.fromTyped(stub).getResult(String::class.java)
-        println("Workflow completed with result: $result")
 
-        val historyJson = env.getWorkflowExecutionHistory(exec).toJson(true)
-        out.writeText(historyJson)
+        val historyAsJson = SampleStarter.execute()
+
+        out.writeText(historyAsJson)
         println("Wrote history to ${out.absolutePath}")
 
-        env.close()
+
+        worker.shutdown();
+
+
     }
 }

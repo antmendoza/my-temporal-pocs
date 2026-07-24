@@ -5,6 +5,7 @@ import io.temporal.workflow.WorkflowInterface
 import io.temporal.workflow.WorkflowMethod
 
 
+
 class GreetingChildWorkflowImpl : GreetingChildWorkflow {
     override fun emphasize(greeting: String): String {
         // Signal the parent that this sub-task was created (mirrors the child -> parent

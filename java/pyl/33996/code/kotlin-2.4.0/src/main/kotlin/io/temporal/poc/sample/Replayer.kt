@@ -16,9 +16,8 @@ import java.io.File
 object Replayer {
     @JvmStatic
     fun main(args: Array<String>) {
-        require(args.isNotEmpty()) { "Usage: Replayer <history.json>" }
-        val history = File(args[0])
+        val history = File(if (args.isNotEmpty()) args[0] else "history-kotlin-2.2.0.json")
         WorkflowReplayer.replayWorkflowExecution(history, GreetingWorkflowImpl::class.java)
-        println("Replay OK: no non-determinism for ${args[0]}")
+        println("Replay OK: no non-determinism for ${history}")
     }
 }

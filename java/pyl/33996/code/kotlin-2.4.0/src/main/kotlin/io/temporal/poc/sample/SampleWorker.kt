@@ -7,12 +7,14 @@ import io.temporal.worker.WorkerFactory
 object SampleWorker {
     const val TASK_QUEUE = "sample-queue"
 
+    private lateinit var factory: WorkerFactory
+
     @JvmStatic
     fun main(args: Array<String>) {
         val service = WorkflowServiceStubs.newLocalServiceStubs()
         val client = WorkflowClient.newInstance(service)
 
-        val factory = WorkerFactory.newInstance(client)
+        factory = WorkerFactory.newInstance(client)
         val worker = factory.newWorker(TASK_QUEUE)
 
         worker.registerWorkflowImplementationTypes(
@@ -24,4 +26,11 @@ object SampleWorker {
         factory.start()
         println("Worker started, polling '$TASK_QUEUE'")
     }
+
+
+
+    fun shutdown() {
+        factory.shutdown()
+    }
+
 }
