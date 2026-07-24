@@ -3,8 +3,14 @@ package io.temporal.poc.sample
 import io.temporal.client.WorkflowClient
 import io.temporal.client.WorkflowOptions
 import io.temporal.serviceclient.WorkflowServiceStubs
-import java.util.UUID
 
+/**
+ * Starts the workflow against a real (local) `temporal server`. The workflow self-drives: it creates
+ * children in a loop and each child signals the parent back, so no external signal is needed.
+ *
+ * For a self-contained reproduction that needs no server, use [Recorder] (records a history via an
+ * in-memory test environment) and [Replayer] (replays it).
+ */
 object SampleStarter {
     @JvmStatic
     fun main(args: Array<String>) {
@@ -19,12 +25,7 @@ object SampleStarter {
                 .build()
         )
 
-        WorkflowClient.start(workflow::greet, "")
-
-        Thread.sleep(2_000)
-        workflow.signal("test")
-
-        Thread.sleep(40_000)
-        println("Result: ")
+        val result = workflow.greet("world")
+        println("Result: $result")
     }
 }
