@@ -44,7 +44,7 @@ Requires JDK 21 and Maven. Run from the `code/` directory.
 
 ```bash
 
-export USE_LAMBDA = true
+export USE_LAMBDA=false
 
 # Build both, and write each module's runtime classpath to target/cp.txt
 for v in 2.2.0 2.4.0; do

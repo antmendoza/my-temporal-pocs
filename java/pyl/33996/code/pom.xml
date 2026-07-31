@@ -12,7 +12,7 @@
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <temporal.version>1.33.0</temporal.version>
+        <temporal.version>1.33.100</temporal.version>
     </properties>
 
     <dependencies>

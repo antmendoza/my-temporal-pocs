@@ -5,13 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.temporal.poc</groupId>
-    <artifactId>kotlin-child-order-240</artifactId>
+    <artifactId>async-fanout-33529</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
+        <!-- Kotlin 2.x lowers method references via invokedynamic, which is what trips the
+             stub-reference detection in ticket 33529. -->
         <kotlin.version>2.4.0</kotlin.version>
-        <temporal.version>1.33.100</temporal.version>
+        <!-- Stock release from Maven Central. Switch to a locally-published build (e.g. 1.33.100
+             via `publishToMavenLocal`) to test an SDK-side fix. -->
+        <temporal.version>1.33.0</temporal.version>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -27,9 +31,12 @@
             <artifactId>temporal-sdk</artifactId>
             <version>${temporal.version}</version>
         </dependency>
+        <!-- Registers the Kotlin MethodReferenceDisassemblyService via ServiceLoader. Present so the
+             repro reflects a real Kotlin project; the ticket's point is that even WITH it on the
+             classpath, an invokedynamic-lowered method reference is not recognized. -->
         <dependency>
             <groupId>io.temporal</groupId>
-            <artifactId>temporal-testing</artifactId>
+            <artifactId>temporal-kotlin</artifactId>
             <version>${temporal.version}</version>
         </dependency>
         <dependency>
@@ -40,9 +47,10 @@
     </dependencies>
 
     <build>
-        <finalName>kotlin-child-order</finalName>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <finalName>async-fanout-33529</finalName>
         <plugins>
+            <!-- Mixed Kotlin + Java module. Kotlin compiles first (seeing the Java sources), then
+                 javac compiles the Java sources against the produced Kotlin classes. -->
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -53,16 +61,35 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>compile</phase>
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <source>src/main/kotlin</source>
+                                <source>src/main/java</source>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <executions>
+                    <!-- Disable the default compile and re-bind it after Kotlin so javac sees the
+                         Kotlin output. -->
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
                     </execution>
                     <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>test-compile</goal>
+                            <goal>compile</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -72,7 +99,9 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <configuration>
-                    <mainClass>io.temporal.poc.sample.SampleWorker</mainClass>
+                    <!-- Kotlin repro (the bug). Run the Java control with:
+                         mvn exec:java -Dexec.mainClass=io.temporal.samples.asyncactivityfanout.AsyncActivityFanOutComparisonJava -->
+                    <mainClass>io.temporal.samples.asyncactivityfanout.AsyncActivityFanOutComparisonKotlin</mainClass>
                 </configuration>
             </plugin>
         </plugins>
