@@ -8,8 +8,6 @@ import io.temporal.workflow.WorkflowMethod
 
 class GreetingChildWorkflowImpl : GreetingChildWorkflow {
     override fun emphasize(greeting: String): String {
-        // Signal the parent that this sub-task was created (mirrors the child -> parent
-        // subTaskCreated signal), so signals interleave with the parent's child-creation loop.
         val parentId = Workflow.getInfo().parentWorkflowId.orElseThrow()
         Workflow.newExternalWorkflowStub(GreetingWorkflow::class.java, parentId)
             .subTaskCreated(greeting)
