@@ -56,13 +56,19 @@ wired end-to-end. See `../../../notes-for-tickets/34529.md`.
 ```bash
 # 1. deps (uv)
 uv venv --python 3.12 && uv pip install "temporalio>=1.15,<2"
+```
 
+```bash
 # 2. dev server (separate terminal)
 temporal server start-dev
+```
 
+```bash
 # 3. worker (separate terminal)
 .venv/bin/python -m auto_suspend.worker
+```
 
+```bash
 # 4. run the example
 .venv/bin/python -m auto_suspend.starter
 ```

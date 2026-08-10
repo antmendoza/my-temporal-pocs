@@ -33,6 +33,9 @@ class WorkflowResult:
 class AutoSuspendWorkflow:
     @workflow.run
     async def run(self) -> WorkflowResult:
+
+
+
         sbx = await new_sandbox(
             ProviderDetails(type=PROVIDER_LOCAL, config={"image": "ubuntu:26.04"}),
             idle_timeout_seconds=IDLE_TIMEOUT_SECONDS,

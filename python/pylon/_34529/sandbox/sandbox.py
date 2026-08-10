@@ -18,7 +18,7 @@ from temporalio import workflow
 with workflow.unsafe.imports_passed_through():
     from . import dispatch
     from .compute import NO_IDLE_TIMEOUT, CommandResult, ProviderDetails, ProviderSnapshot
-    from .workflow import SandboxWorkflow
+    from .workflow import SandboxWorkflow, SANDBOX_INIT_UPDATE
 
 # Generous timeout: a command may run for a long time inside the sandbox.
 DISPATCH_ACTIVITY_TIMEOUT = timedelta(minutes=20)
@@ -106,7 +106,7 @@ async def new_sandbox(
     )
 
     await workflow.execute_activity(
-        "send-sandbox-init",
+        SANDBOX_INIT_UPDATE,
         dispatch.SendInitInput(
             sandbox_id, str(workflow.uuid4()), provider, idle_timeout_seconds, snapshot
         ),
