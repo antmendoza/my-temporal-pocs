@@ -78,7 +78,7 @@ def _boot_in_vm_worker(
         [str(_PROJECT_ROOT), env.get("PYTHONPATH", "")]
     ).rstrip(os.pathsep)
     proc = subprocess.Popen(
-        [sys.executable, "-m", "agentcore.worker", task_queue_name],
+        [sys.executable, "-m", "agentcore_replace.worker", task_queue_name],
         cwd=str(_PROJECT_ROOT),
         env=env,
     )

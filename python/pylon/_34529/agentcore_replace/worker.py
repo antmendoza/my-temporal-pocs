@@ -26,7 +26,7 @@ from concurrent.futures import ThreadPoolExecutor
 from temporalio.client import Client
 from temporalio.worker import Worker
 
-from sandbox.registration import register
+from sandbox_replace.registration import register
 
 
 def _task_queue() -> str:

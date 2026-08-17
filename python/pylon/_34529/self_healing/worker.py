@@ -1,0 +1,37 @@
+"""Always-on worker for the self-healing example.
+
+Runs SelfHealingWorkflow plus the sandbox SDK's workflow/activities on a fixed
+task queue. This worker also drives provisioning/re-provisioning (start-sandbox,
+reprovision-worker), which boot the ephemeral in-VM workers on `sandbox-<id>`.
+"""
+
+from __future__ import annotations
+
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+from temporalio.client import Client
+from temporalio.worker import Worker
+
+from sandbox.registration import register
+from self_healing.workflow import TASK_QUEUE, SelfHealingWorkflow
+
+
+async def main() -> None:
+    client = await Client.connect("localhost:7233")
+    sandbox_workflows, sandbox_activities = register(client)
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        worker = Worker(
+            client,
+            task_queue=TASK_QUEUE,
+            workflows=[SelfHealingWorkflow, *sandbox_workflows],
+            activities=sandbox_activities,
+            activity_executor=executor,
+        )
+        print(f"worker running on task queue {TASK_QUEUE!r} (ctrl-c to exit)")
+        await worker.run()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

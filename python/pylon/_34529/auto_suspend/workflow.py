@@ -14,6 +14,7 @@ from temporalio import workflow
 
 with workflow.unsafe.imports_passed_through():
     from sandbox.compute import PROVIDER_LOCAL, ProviderDetails
+    from sandbox.providers.mockAgentCore import PROVIDER_MOCK_AGENTCORE
     from sandbox.sandbox import new_sandbox
 
 TASK_QUEUE = "auto-suspend-queue"
@@ -33,13 +34,23 @@ class WorkflowResult:
 class AutoSuspendWorkflow:
     @workflow.run
     async def run(self) -> WorkflowResult:
-
-
-
         sbx = await new_sandbox(
-            ProviderDetails(type=PROVIDER_LOCAL, config={"image": "ubuntu:26.04"}),
+            ProviderDetails(type=PROVIDER_MOCK_AGENTCORE, config={"image": "ubuntu:26.04"}),
             idle_timeout_seconds=IDLE_TIMEOUT_SECONDS,
         )
+        # sbx = await new_sandbox(
+        #     ProviderDetails(type=PROVIDER_LOCAL, config={"image": "ubuntu:26.04"}),
+        #     idle_timeout_seconds=IDLE_TIMEOUT_SECONDS,
+        # )
+
+        # Runs on the sandbox's own task queue -> served by the in-VM worker.
+        act = await sbx.run_activity(3)
+        workflow.logger.info("ran in-VM activity: %s", act.stdout)
+
+        # Runs on the sandbox's own task queue -> served by the in-VM worker.
+        act = await sbx.run_activity(20)
+        workflow.logger.info("ran in-VM activity: %s", act.stdout)
+
 
         await sbx.execute_command("mkdir -p session")
         await sbx.execute_command("touch session/persist.txt")

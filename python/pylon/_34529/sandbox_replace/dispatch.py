@@ -38,6 +38,7 @@ class SendInitInput:
     update_id: str
     provider: ProviderDetails
     idle_timeout_seconds: float
+    session_ref: str = ""
     snapshot: Optional[ProviderSnapshot] = None
 
 
@@ -93,7 +94,12 @@ class DispatchActivities:
         try:
             await handle.execute_update(
                 SandboxWorkflow.init,
-                SandboxInitInput(inp.provider, inp.idle_timeout_seconds, inp.snapshot),
+                SandboxInitInput(
+                    inp.provider,
+                    inp.idle_timeout_seconds,
+                    inp.session_ref,
+                    inp.snapshot,
+                ),
                 id=inp.update_id,
             )
         except Exception as e:

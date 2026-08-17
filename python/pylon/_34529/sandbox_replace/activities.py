@@ -10,12 +10,21 @@ detect it and fall back to snapshot-based suspend.
 from __future__ import annotations
 
 import os
+import tempfile
 import time
 from dataclasses import dataclass
 from typing import Optional
 
 from temporalio import activity
 from temporalio.exceptions import ApplicationError
+
+
+def _session_base() -> str:
+    # Durable, VM-independent checkpoint store (stand-in for BYO S3/EFS), keyed by
+    # the parent-supplied session_ref so it survives sandbox teardown/recreation.
+    # Resolved lazily inside activities so no restricted call runs at import time
+    # (this module is pulled into workflow-sandbox validation).
+    return os.path.join(tempfile.gettempdir(), "sandbox-harness", "sessions")
 
 from . import compute
 from .compute import (
@@ -83,22 +92,14 @@ class ExecuteCommandActivityInput:
 @dataclass
 class ActivityInSandboxInput:
     sleepTimeSeconds: int
-    # Durable per-sandbox path ("managed session storage") that survives a VM
-    # eviction; the activity checkpoints progress here so a re-provisioned worker
-    # resumes instead of restarting.
-    session_dir: str
+    # Durable, VM-independent session key. Resolved to a checkpoint dir that
+    # survives sandbox teardown, so a fresh sandbox for the same session resumes.
+    session_ref: str
 
 
 @dataclass
 class ActivityInSandboxResult:
     result: str
-
-
-@dataclass
-class ReprovisionWorkerInput:
-    provider: ProviderDetails
-    status: ProviderStatus
-    task_queue_name: str
 
 
 
@@ -189,14 +190,15 @@ def execute_command(inp: ExecuteCommandActivityInput) -> ExecuteCommandActivityO
 @activity.defn(name="execute-activity-in-sandbox")
 def execute_activity_in_sandbox(inp: ActivityInSandboxInput) -> ActivityInSandboxResult:
     # Scheduled on the sandbox's own task queue -> served by the in-VM worker the
-    # provider booted. Two mechanics make the work survive a VM eviction that
-    # outlasts the micro-VM lifetime:
-    #   * heartbeat every second -> a dead worker is detected via heartbeat_timeout
-    #     (the self-healing trigger the SandboxWorkflow reacts to);
-    #   * checkpoint elapsed seconds to session storage -> a fresh worker after
-    #     re-provision resumes from here instead of restarting from zero.
+    # provider booted. Heartbeats for liveness (so a dead worker is detected via
+    # heartbeat_timeout and the failure propagates to the parent), and checkpoints
+    # elapsed seconds to the DURABLE session store keyed by session_ref. Because
+    # that store is independent of any single sandbox, the fresh sandbox the parent
+    # creates after a failure resumes from here instead of restarting from zero.
     info = activity.info()
-    progress_file = os.path.join(inp.session_dir, "progress")
+    durable_dir = os.path.join(_session_base(), inp.session_ref)
+    os.makedirs(durable_dir, exist_ok=True)
+    progress_file = os.path.join(durable_dir, "progress")
     try:
         with open(progress_file) as f:
             elapsed = int(f.read().strip() or "0")
@@ -216,15 +218,6 @@ def execute_activity_in_sandbox(inp: ActivityInSandboxInput) -> ActivityInSandbo
             f"{info.task_queue} (resumed from {resumed_from}s)"
         )
     )
-
-
-@activity.defn(name="reprovision-worker")
-def reprovision_worker(inp: ReprovisionWorkerInput) -> None:
-    provider = _lookup(inp.provider)
-    try:
-        provider.reboot_worker(inp.status, inp.task_queue_name)
-    except UnsupportedOperation as e:
-        raise _guard_unsupported(e)
 
 
 

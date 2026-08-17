@@ -91,6 +91,7 @@ class Sandbox:
 async def new_sandbox(
     provider: ProviderDetails,
     *,
+    session_ref: str = "",
     idle_timeout_seconds: float = 0.0,
     cleanup: CleanupBehavior = CleanupBehavior.WITH_WORKFLOW,
     snapshot: Optional[ProviderSnapshot] = None,
@@ -120,7 +121,12 @@ async def new_sandbox(
     await workflow.execute_activity(
         "send-sandbox-init",
         dispatch.SendInitInput(
-            sandbox_id, str(workflow.uuid4()), provider, idle_timeout_seconds, snapshot
+            sandbox_id,
+            str(workflow.uuid4()),
+            provider,
+            idle_timeout_seconds,
+            session_ref,
+            snapshot,
         ),
         start_to_close_timeout=DISPATCH_ACTIVITY_TIMEOUT,
     )

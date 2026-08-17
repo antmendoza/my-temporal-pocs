@@ -27,7 +27,6 @@ def register(client: Client) -> Tuple[List[type], list]:
         activities.resume_sandbox,
         activities.execute_command,
         activities.execute_activity_in_sandbox,
-        activities.reprovision_worker,
         activities.snapshot_sandbox,
         activities.start_sandbox_from_snapshot,
         activities.delete_snapshot,

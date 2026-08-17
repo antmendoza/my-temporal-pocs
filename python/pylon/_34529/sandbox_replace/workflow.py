@@ -19,11 +19,7 @@ from typing import Optional
 
 from temporalio import workflow
 from temporalio.common import RetryPolicy
-from temporalio.exceptions import (
-    ActivityError,
-    ApplicationError,
-    TimeoutError as TemporalTimeoutError,
-)
+from temporalio.exceptions import ActivityError, ApplicationError
 
 with workflow.unsafe.imports_passed_through():
     from . import activities
@@ -39,8 +35,6 @@ with workflow.unsafe.imports_passed_through():
 SANDBOX_WORKFLOW_TYPE = "SandboxWorkflow"
 DEFAULT_OP_TIMEOUT = timedelta(minutes=10)
 IDLE_AUTO_SUSPEND = timedelta(minutes=5)
-# Max times execute_activity re-provisions a lost in-VM worker before giving up.
-MAX_REPROVISION_ATTEMPTS = 5
 
 # Update / query / signal names (match the Go constants for cross-language parity).
 SANDBOX_INIT_UPDATE = "sandbox-init"
@@ -65,6 +59,9 @@ class SandboxInitInput:
     provider: ProviderDetails
     # 0 → use IDLE_AUTO_SUSPEND default; NO_IDLE_TIMEOUT (-1) → never auto-suspend.
     idle_timeout_seconds: float
+    # Durable, VM-independent session key supplied by the parent. In-VM activities
+    # checkpoint under it, so a *new* sandbox created for the same session resumes.
+    session_ref: str = ""
     snapshot: Optional[ProviderSnapshot] = None
 
 
@@ -100,6 +97,7 @@ class SandboxWorkflow:
         self._provider: Optional[ProviderDetails] = None
         self._status: Optional[ProviderStatus] = None
         self._idle_timeout_seconds: float = 0.0
+        self._session_ref: str = ""
         self._cancel_requested = False
         # Bumped at the start and end of every command; the idle loop watches it
         # to know when activity happened and re-arm its timer.
@@ -210,6 +208,7 @@ class SandboxWorkflow:
             raise
         self._provider = inp.provider
         self._idle_timeout_seconds = inp.idle_timeout_seconds
+        self._session_ref = inp.session_ref
         self._lifecycle = Lifecycle.RUNNING
 
     @init.validator
@@ -249,63 +248,36 @@ class SandboxWorkflow:
 
     @workflow.update(name=SANDBOX_EXECUTE_ACTIVITY_UPDATE)
     async def execute_activity(self, inp: ExecuteActivityInput) -> ExecuteActivityResult:
+        # Replace-and-restore variant: this child does NOT self-heal. The activity
+        # runs on the in-VM worker's task queue exactly once. If the micro-VM is
+        # evicted mid-run (worker dies -> heartbeat_timeout) or nothing is polling
+        # (schedule_to_start_timeout), the resulting ActivityError propagates out of
+        # this update handler -> fails the dispatch -> surfaces in the PARENT, which
+        # tears this sandbox down and creates a fresh one bound to the same
+        # session_ref. Progress survives because the activity checkpoints under the
+        # durable, VM-independent session_ref (not this sandbox's ephemeral workdir).
         self._command_seq += 1
         self._active_commands += 1
         try:
             if self._lifecycle == Lifecycle.SUSPENDED:
                 await self._resume()
 
-            # Self-healing loop. The activity runs on the in-VM worker's task queue.
-            # If the micro-VM is evicted mid-run, the worker dies and stops
-            # heartbeating (heartbeat_timeout) — or a follow-up attempt finds no
-            # worker polling (schedule_to_start_timeout). Either surfaces as a
-            # TimeoutError; we re-provision a fresh worker and retry. The activity
-            # checkpoints to session storage, so each retry resumes rather than
-            # restarts — letting work outlive a single micro-VM lifetime.
-            last_err: Optional[Exception] = None
-            for attempt in range(1, MAX_REPROVISION_ATTEMPTS + 1):
-                try:
-                    out = await workflow.execute_activity(
-                        activities.execute_activity_in_sandbox,
-                        activities.ActivityInSandboxInput(
-                            sleepTimeSeconds=inp.sleepTimeSeconds,
-                            session_dir=self._status.instance_id,
-                        ),
-                        task_queue=self._task_queue_name(),
-                        start_to_close_timeout=DEFAULT_OP_TIMEOUT,
-                        heartbeat_timeout=timedelta(seconds=10),
-                        schedule_to_start_timeout=timedelta(seconds=30),
-                        # We own retry + re-provisioning at the workflow level.
-                        retry_policy=RetryPolicy(maximum_attempts=1),
-                    )
-                    return ExecuteActivityResult(stdout=out.result)
-                except ActivityError as e:
-                    if not isinstance(e.cause, TemporalTimeoutError):
-                        raise
-                    last_err = e
-                    workflow.logger.warning(
-                        "in-VM worker lost on attempt %d/%d (%s); re-provisioning",
-                        attempt,
-                        MAX_REPROVISION_ATTEMPTS,
-                        e.cause,
-                    )
-                    await self._reprovision()
-            assert last_err is not None
-            raise last_err
+            out = await workflow.execute_activity(
+                activities.execute_activity_in_sandbox,
+                activities.ActivityInSandboxInput(
+                    sleepTimeSeconds=inp.sleepTimeSeconds,
+                    session_ref=self._session_ref,
+                ),
+                task_queue=self._task_queue_name(),
+                start_to_close_timeout=DEFAULT_OP_TIMEOUT,
+                heartbeat_timeout=timedelta(seconds=10),
+                schedule_to_start_timeout=timedelta(seconds=30),
+                retry_policy=RetryPolicy(maximum_attempts=1),
+            )
         finally:
             self._active_commands -= 1
             self._command_seq += 1  # re-arm the idle timer from a fresh baseline
-
-    async def _reprovision(self) -> None:
-        """Boot a fresh in-VM worker for this sandbox after a VM eviction. Runs on
-        the default task queue (the always-on worker), which drives provisioning."""
-        await workflow.execute_activity(
-            activities.reprovision_worker,
-            activities.ReprovisionWorkerInput(
-                self._provider, self._status, self._task_queue_name()
-            ),
-            start_to_close_timeout=DEFAULT_OP_TIMEOUT,
-        )
+        return ExecuteActivityResult(stdout=out.result)
 
     @execute_command.validator
     def _validate_execute_command(self, inp: ExecuteCommandInput) -> None:
