@@ -105,6 +105,6 @@ def execute_activity_in_sandbox(inp: ActivityInSandboxInput) -> ActivityInSandbo
     return ActivityInSandboxResult(
         result=(
             f"completed {inp.sleepTimeSeconds}s of work on task queue "
-            f"{info.task_queue} (resumed from {resumed_from}s)"
+            f"{info.task_queue} (last resumed from {resumed_from}s)"
         )
     )

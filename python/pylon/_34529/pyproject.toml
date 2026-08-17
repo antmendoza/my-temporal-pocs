@@ -1,7 +1,7 @@
 [project]
-name = "zd-34529-sandbox-harness"
+name = "sandbox-harness"
 version = "0.1.0"
-description = "Python port of the Sandbox Orchestration Harness (ticket 34529)"
+description = "Sandbox Orchestration Harness"
 requires-python = ">=3.9"
 dependencies = ["temporalio>=1.15.0,<2"]
 

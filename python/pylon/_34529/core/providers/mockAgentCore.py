@@ -24,7 +24,7 @@ PROVIDER_MOCK_AGENTCORE = "mock-agentcore-runtime"
 
 BASE = os.path.join(tempfile.gettempdir(), "sandbox-harness")
 
-# Project root (_34529/) so the in-VM worker subprocess resolves `-m workers.vm_worker`.
+# Project root so the in-VM worker subprocess resolves `-m workers.vm_worker`.
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # instance_id (workdir) -> in-VM worker subprocess; and -> pending eviction timer.

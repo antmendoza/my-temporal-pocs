@@ -9,11 +9,7 @@ evicted (idle auto-suspend, 8h max lifetime), the provider terminates this proce
 a resume boots a fresh one from the snapshot.
 
 It registers the sandbox SDK's workflows/activities so the session's work can be
-routed to it. Run standalone:
-
-    python -m agentcore.worker <task-queue-name>
-
-or let `sandbox/providers/mockAgentCore.py` launch it.
+routed to it.
 """
 
 from __future__ import annotations
@@ -36,7 +32,7 @@ def _task_queue() -> str:
     if env:
         return env
     raise SystemExit(
-        "usage: python -m agentcore.worker <task-queue-name> "
+        "usage: python -m workers.vm_worker <task-queue-name> "
         "(or set TEMPORAL_TASK_QUEUE)"
     )
 
