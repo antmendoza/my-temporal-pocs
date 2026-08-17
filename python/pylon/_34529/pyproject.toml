@@ -6,7 +6,7 @@ requires-python = ">=3.9"
 dependencies = ["temporalio>=1.15.0,<2"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["sandbox", "auto_suspend"]
+packages = ["core", "workers", "starter"]
 
 [build-system]
 requires = ["hatchling"]

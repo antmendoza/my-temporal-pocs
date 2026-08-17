@@ -44,9 +44,8 @@ next command — exactly the lifecycle the customer needs to survive.
 
 An ephemeral worker keyed to a single session. It reads the task queue from `argv[1]`
 (or `TEMPORAL_TASK_QUEUE`), connects, and polls only that queue with the sandbox SDK
-registered. Unlike `auto_suspend/worker.py` (the always-on worker that runs the
-orchestrating `AutoSuspendWorkflow` on a fixed queue), this one lives only as long as
-its micro-VM.
+registered. Unlike the always-on orchestrator worker (`self_healing/worker.py` /
+`general_purpose_worker/worker.py`), this one lives only as long as its micro-VM.
 
 Run it standalone:
 
@@ -56,45 +55,25 @@ Run it standalone:
 
 ## Run the demo against the mock
 
-The `auto_suspend` example defaults to `local-subprocess`. To watch the in-VM worker
-lifecycle, point it at the mock — one line in `auto_suspend/workflow.py`:
+Two examples use this mock to solve the ticket-34529 goal — detect a downed micro-VM and
+bring the work back up. Both route the work activity to the in-VM worker on `sandbox-<id>`
+and set a short `max_lifetime` so the VM is evicted mid-task:
 
-```python
-sbx = await new_sandbox(
-    ProviderDetails(type=PROVIDER_MOCK_AGENTCORE, config={"image": "ubuntu:26.04"}),
-    idle_timeout_seconds=IDLE_TIMEOUT_SECONDS,
-)
-```
+- `self_healing/` — the child `SandboxWorkflow` reboots the worker in place.
+- `general_purpose_worker/` — the parent creates a new sandbox/VM.
 
-(and import it: `from sandbox.providers.mockAgentCore import PROVIDER_MOCK_AGENTCORE`)
-
-Then, in three terminals:
-
-```bash
-temporal server start-dev                       # 1. dev server
-.venv/bin/python -u -m auto_suspend.worker      # 2. always-on orchestrator worker
-.venv/bin/python -m auto_suspend.starter        # 3. run the example
-```
-
-The starter prints the before/after listing (identical — the file survives). The
-orchestrator worker's stdout shows the micro-VM lifecycle:
+Run commands and expected output are in **`README_self_healing.md`**. The orchestrator
+worker's stdout shows the micro-VM lifecycle (`-u` for unbuffered, real-time lines):
 
 ```
 [mock-agentcore] booted micro-VM worker pid=18608 task_queue='sandbox-<id>' instance=/…/sbx-…
 [in-vm-worker] running on task queue 'sandbox-<id>' (ctrl-c to exit)
-…idle → snapshot suspend fallback → stop…
-[mock-agentcore] evicted micro-VM worker pid=18608 instance=/…/sbx-…
-[mock-agentcore] booted micro-VM worker pid=18925 task_queue='sandbox-<id>' instance=/…/sbx-…   # resume from snapshot
-[mock-agentcore] evicted micro-VM worker pid=18925 instance=/…/sbx-…                            # final stop
+[mock-agentcore] evicted micro-VM worker pid=18608 instance=/…/sbx-…   # max_lifetime hit mid-task
+[mock-agentcore] booted micro-VM worker pid=18925 task_queue='sandbox-<id>' instance=/…/sbx-…   # re-provisioned
 ```
-
-Use `-u` (unbuffered) on the orchestrator worker so those lines surface in real time.
 
 ## Caveats — it's a mock
 
-- The in-VM worker boots and polls `sandbox-<id>`, but the auto-suspend demo still runs
-  the sandbox activities on the orchestrator's queue, so the in-VM worker sits idle.
-  It proves the **boot/evict/reboot lifecycle**, not task routing to the in-VM worker.
 - Subprocesses are children of the orchestrator worker process. If that process dies
   without calling `stop`, a child worker can linger — acceptable for a local mock.
 - Real AgentCore adds pieces this mock omits: the `InvokeAgentRuntime` boot trigger

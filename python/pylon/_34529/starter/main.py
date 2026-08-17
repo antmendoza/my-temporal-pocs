@@ -1,4 +1,4 @@
-"""Starts the self-healing example workflow and prints the activity result."""
+"""Starts the parent-recreate example workflow and prints the activity result."""
 
 from __future__ import annotations
 
@@ -6,14 +6,14 @@ import asyncio
 
 from temporalio.client import Client
 
-from self_healing.workflow import TASK_QUEUE, SelfHealingWorkflow
+from core.parent_workflow import TASK_QUEUE, ParentRecreateWorkflow
 
 
 async def main() -> None:
     client = await Client.connect("localhost:7233")
     result = await client.execute_workflow(
-        SelfHealingWorkflow.run,
-        id="self-healing-example",
+        ParentRecreateWorkflow.run,
+        id="parent-recreate-example",
         task_queue=TASK_QUEUE,
     )
     print("result:", result)

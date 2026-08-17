@@ -1,8 +1,8 @@
 """The in-VM Temporal worker — the process the mock AgentCore provider boots
 inside each micro-VM.
 
-Unlike `auto_suspend/worker.py` (the always-on worker that runs the orchestrating
-AutoSuspendWorkflow on a fixed task queue), this worker is ephemeral and keyed to a
+Unlike the always-on worker that runs the orchestrating example workflow on a fixed
+task queue (`workers/orchestrator_worker.py`), this worker is ephemeral and keyed to a
 single sandbox session: it polls the sandbox's own task queue (`sandbox-<id>`, passed
 by the provider on start) and lives only as long as the micro-VM. When the VM is
 evicted (idle auto-suspend, 8h max lifetime), the provider terminates this process;
@@ -26,7 +26,7 @@ from concurrent.futures import ThreadPoolExecutor
 from temporalio.client import Client
 from temporalio.worker import Worker
 
-from sandbox_replace.registration import register
+from core.registration import register
 
 
 def _task_queue() -> str:

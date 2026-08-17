@@ -1,9 +1,8 @@
-"""Worker for the auto-suspend example.
+"""Always-on worker for the parent-recreate (replace-and-restore) example.
 
-Registers AutoSuspendWorkflow plus the sandbox SDK's workflow/activities on a
-single task queue. In-sandbox activities are synchronous (subprocess/shutil) so
-a thread-pool executor is supplied; the dispatch activities are async and run on
-the event loop.
+Runs ParentRecreateWorkflow plus the core SDK's workflows/activities on a
+fixed task queue. This worker drives provisioning (start-sandbox / stop-sandbox),
+which boots and evicts the ephemeral in-VM workers on `sandbox-<id>`.
 """
 
 from __future__ import annotations
@@ -14,8 +13,8 @@ from concurrent.futures import ThreadPoolExecutor
 from temporalio.client import Client
 from temporalio.worker import Worker
 
-from auto_suspend.workflow import TASK_QUEUE, AutoSuspendWorkflow
-from sandbox.registration import register
+from core.parent_workflow import TASK_QUEUE, ParentRecreateWorkflow
+from core.registration import register
 
 
 async def main() -> None:
@@ -26,7 +25,7 @@ async def main() -> None:
         worker = Worker(
             client,
             task_queue=TASK_QUEUE,
-            workflows=[AutoSuspendWorkflow, *sandbox_workflows],
+            workflows=[ParentRecreateWorkflow, *sandbox_workflows],
             activities=sandbox_activities,
             activity_executor=executor,
         )
