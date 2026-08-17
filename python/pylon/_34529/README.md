@@ -26,6 +26,12 @@ down and bring the work back up on a new one.**
   and `vm_worker.py` (the ephemeral in-VM worker, one per sandbox).
 - `starter/main.py` — starts `ParentRecreateWorkflow`.
 
+## Install dependencies
+
+```bash
+uv sync
+```
+
 ## Run it
 
 Three terminals:
