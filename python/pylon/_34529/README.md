@@ -62,6 +62,9 @@ down and recreating` line for each loss. Each eviction also logs a `temporalio.e
 traceback and `Completing activity as failed`; that is expected (the SDK recording the
 timed-out attempt), not a crash — the parent catches it and recreates the sandbox.
 
+![img.png](img.png)
+
+
 ## Knobs
 
 In `core/parent_workflow.py`: `WORK_SECONDS` (default 20), `VM_MAX_LIFETIME_SECONDS`
